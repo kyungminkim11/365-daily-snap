@@ -1,0 +1,2242 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>365 Daily Snap Admin</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f6f3ec;
+        --panel: #fffdf8;
+        --warm: #ebe4d8;
+        --ink: #1d1b18;
+        --charcoal: #34302a;
+        --muted: #766f65;
+        --line: #d9d1c4;
+        --stone: #d8d0c3;
+        --focus: #8a6f49;
+        --danger: #9d3e31;
+        --good: #326b42;
+        --shadow: 0 18px 60px rgba(29, 27, 24, 0.08);
+        --shadow-tight: 0 10px 30px rgba(29, 27, 24, 0.06);
+        font-family:
+          Inter, Pretendard, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--paper);
+      }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        line-height: 1.5;
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+        padding-bottom: 88px;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      button,
+      label.file-button {
+        cursor: pointer;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .shell {
+        width: min(1280px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        border-bottom: 1px solid var(--line);
+        background: rgb(246 243 236 / 0.94);
+        backdrop-filter: blur(18px);
+      }
+
+      .topbar-inner {
+        display: flex;
+        min-height: 66px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .brand {
+        font-weight: 720;
+        letter-spacing: -0.03em;
+      }
+
+      .topbar .eyebrow {
+        margin-top: 3px;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.75fr);
+        gap: 24px;
+        align-items: center;
+        padding: 30px 0 18px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 760px;
+        margin-bottom: 0;
+        font-size: clamp(32px, 4vw, 56px);
+        font-weight: 500;
+        line-height: 1.03;
+        letter-spacing: -0.045em;
+      }
+
+      h2 {
+        margin-bottom: 0;
+        font-size: clamp(28px, 4vw, 42px);
+        font-weight: 540;
+        line-height: 1.08;
+        letter-spacing: -0.04em;
+      }
+
+      h3 {
+        margin-bottom: 0;
+        font-size: 19px;
+        font-weight: 650;
+        letter-spacing: -0.025em;
+      }
+
+      .lead {
+        max-width: 700px;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.8;
+      }
+
+      .button,
+      .file-button {
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--ink);
+        border-radius: 4px;
+        background: var(--ink);
+        color: var(--paper);
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+        transition:
+          background 160ms ease,
+          border-color 160ms ease,
+          color 160ms ease,
+          transform 160ms ease;
+      }
+
+      .button.secondary,
+      .file-button.secondary {
+        border-color: var(--line);
+        background: transparent;
+        color: var(--ink);
+      }
+
+      .button:hover,
+      .file-button:hover {
+        background: var(--charcoal);
+        border-color: var(--charcoal);
+      }
+
+      .button.secondary:hover,
+      .file-button.secondary:hover {
+        background: var(--warm);
+        border-color: var(--ink);
+        color: var(--ink);
+      }
+
+      .button.danger {
+        border-color: rgba(157, 62, 49, 0.42);
+        background: transparent;
+        color: var(--danger);
+      }
+
+      .button.danger:hover {
+        border-color: var(--danger);
+        background: rgba(157, 62, 49, 0.08);
+      }
+
+      .button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .button.compact,
+      .file-button.compact {
+        min-height: 34px;
+        padding: 7px 10px;
+        font-size: 12px;
+      }
+
+      .button:focus-visible,
+      .file-button:focus-visible,
+      .chip:focus-visible,
+      .tab-button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      select:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .topbar .actions {
+        justify-content: flex-end;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        border: 1px solid var(--line);
+        background: rgb(255 253 248 / 0.68);
+      }
+
+      .stat {
+        min-height: 96px;
+        padding: 16px;
+        border-right: 1px solid var(--line);
+      }
+
+      .stat:last-child {
+        border-right: 0;
+      }
+
+      .stat strong {
+        display: block;
+        margin-top: 9px;
+        font-size: 34px;
+        font-weight: 520;
+        letter-spacing: -0.05em;
+      }
+
+      .notice {
+        border: 1px solid var(--line);
+        background: rgb(255 253 248 / 0.5);
+        margin: 12px 0 18px;
+        padding: 14px 16px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      .quick-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: var(--line);
+        margin-bottom: 18px;
+      }
+
+      .quick-step {
+        min-height: 112px;
+        background: rgb(255 253 248 / 0.72);
+        padding: 16px;
+      }
+
+      .quick-step span {
+        display: block;
+        margin-bottom: 18px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.16em;
+      }
+
+      .quick-step strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 15px;
+        letter-spacing: -0.02em;
+      }
+
+      .quick-step p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .tabs {
+        position: sticky;
+        top: 66px;
+        z-index: 35;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--line);
+        background: rgb(246 243 236 / 0.94);
+        padding: 12px 0;
+        backdrop-filter: blur(18px);
+        scrollbar-width: none;
+      }
+
+      .tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab-button,
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--muted);
+        padding: 9px 12px;
+        font-size: 13px;
+        font-weight: 650;
+        white-space: nowrap;
+        transition:
+          background 160ms ease,
+          border-color 160ms ease,
+          color 160ms ease;
+      }
+
+      .tab-button.is-active,
+      .chip.is-active {
+        border-color: var(--ink);
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      .tab-panel {
+        display: none;
+        padding: 22px 0 112px;
+      }
+
+      .tab-panel.is-active {
+        display: block;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(290px, 340px) minmax(0, 1fr);
+        gap: 22px;
+        align-items: start;
+      }
+
+      .side {
+        position: sticky;
+        top: 126px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .panel-card,
+      .item-card,
+      .inquiry-card {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: rgb(255 253 248 / 0.78);
+        box-shadow: var(--shadow-tight);
+      }
+
+      .panel {
+        padding: 20px;
+      }
+
+      .panel-head {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+
+      .panel-head h2 {
+        font-size: clamp(24px, 3vw, 34px);
+      }
+
+      .hint {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      .grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      label {
+        display: grid;
+        gap: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: rgb(255 255 255 / 0.54);
+        color: var(--ink);
+        padding: 11px 12px;
+        outline: none;
+      }
+
+      textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--focus);
+        box-shadow: 0 0 0 3px rgba(138, 111, 73, 0.12);
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+
+      .item-list,
+      .inquiry-list {
+        display: grid;
+        gap: 18px;
+      }
+
+      .item-card {
+        display: grid;
+        grid-template-columns: minmax(220px, 0.34fr) minmax(0, 1fr);
+        gap: 18px;
+        padding: 14px;
+      }
+
+      .project-editor {
+        display: grid;
+        gap: 14px;
+        min-width: 0;
+      }
+
+      .project-toolbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 13px;
+      }
+
+      .project-toolbar h3 {
+        margin: 4px 0 2px;
+        font-size: clamp(20px, 2vw, 28px);
+        line-height: 1.12;
+      }
+
+      .project-actions {
+        justify-content: flex-end;
+      }
+
+      .preview,
+      .media-thumb {
+        position: relative;
+        min-height: 260px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: var(--stone);
+      }
+
+      .preview img,
+      .preview video,
+      .media-thumb img,
+      .media-thumb video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        object-fit: cover;
+      }
+
+      .preview.empty,
+      .empty-state {
+        display: grid;
+        min-height: 180px;
+        place-items: center;
+        border: 1px solid var(--line);
+        padding: 24px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .watermark,
+      .media-badge {
+        position: absolute;
+        z-index: 2;
+        border: 1px solid rgba(255, 253, 248, 0.28);
+        background: rgba(29, 27, 24, 0.42);
+        color: rgba(255, 253, 248, 0.9);
+        padding: 5px 7px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        pointer-events: none;
+        text-transform: uppercase;
+        backdrop-filter: blur(10px);
+      }
+
+      .watermark {
+        right: 10px;
+        bottom: 10px;
+      }
+
+      .media-badge {
+        left: 10px;
+        top: 10px;
+      }
+
+      .media-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 12px;
+      }
+
+      .media-tile {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        padding: 10px;
+      }
+
+      .media-tile .media-thumb {
+        min-height: 190px;
+        aspect-ratio: 4 / 5;
+      }
+
+      .media-fields {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .media-tile-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .row-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .location-control {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: end;
+      }
+
+      .media-location {
+        margin-top: 10px;
+      }
+
+      .search-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 80;
+        display: none;
+        align-items: end;
+        background: rgba(29, 27, 24, 0.38);
+        padding: 16px;
+        backdrop-filter: blur(8px);
+      }
+
+      .search-modal.is-open {
+        display: flex;
+      }
+
+      .search-dialog {
+        width: min(760px, 100%);
+        max-height: min(720px, calc(100vh - 32px));
+        margin: 0 auto;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .search-results {
+        display: grid;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .search-result {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--ink);
+        padding: 12px;
+        text-align: left;
+      }
+
+      .search-result:hover {
+        border-color: var(--ink);
+        background: var(--warm);
+      }
+
+      .search-result strong {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .map-preview {
+        min-height: 220px;
+        margin-top: 14px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: var(--warm);
+      }
+
+      .map-preview iframe {
+        display: block;
+        width: 100%;
+        height: 260px;
+        border: 0;
+      }
+
+      .status {
+        min-height: 24px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .status.is-good {
+        color: var(--good);
+      }
+
+      .status.is-error {
+        color: var(--danger);
+      }
+
+      .savebar {
+        position: fixed;
+        inset: auto 0 0;
+        z-index: 40;
+        border-top: 1px solid var(--line);
+        background: rgb(246 243 236 / 0.94);
+        backdrop-filter: blur(18px);
+        padding: 12px 0;
+      }
+
+      .savebar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+
+      .inquiry-card {
+        padding: 18px;
+      }
+
+      .inquiry-card.is-new {
+        border-color: var(--ink);
+      }
+
+      .inquiry-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 12px;
+      }
+
+      .pill {
+        border: 1px solid var(--line);
+        color: var(--muted);
+        padding: 5px 8px;
+        font-size: 12px;
+      }
+
+      @media (max-width: 980px) {
+        .hero,
+        .layout,
+        .item-card {
+          grid-template-columns: 1fr;
+        }
+
+        .side {
+          position: static;
+        }
+
+        .stats {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .quick-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .project-toolbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .project-actions {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (max-width: 680px) {
+        body {
+          padding-bottom: 148px;
+        }
+
+        .shell {
+          width: min(100% - 24px, 1320px);
+        }
+
+        .topbar {
+          position: static;
+        }
+
+        .topbar-inner {
+          min-height: auto;
+          padding: 14px 0;
+        }
+
+        .topbar .actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+
+        .topbar .actions .button:first-child {
+          grid-column: 1 / -1;
+        }
+
+        .topbar-inner,
+        .savebar-inner,
+        .inquiry-head {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .hero {
+          gap: 16px;
+          padding: 24px 0 14px;
+        }
+
+        h1 {
+          font-size: clamp(30px, 10vw, 42px);
+          line-height: 1.08;
+        }
+
+        .lead {
+          margin-top: 14px;
+          font-size: 14px;
+          line-height: 1.75;
+        }
+
+        .stat {
+          min-height: 84px;
+          padding: 13px;
+        }
+
+        .stat strong {
+          font-size: 29px;
+        }
+
+        .notice,
+        .quick-step,
+        .panel {
+          padding: 14px;
+        }
+
+        .tabs {
+          top: 0;
+          margin-inline: -12px;
+          padding: 10px 12px;
+        }
+
+        .tab-panel {
+          padding-top: 18px;
+        }
+
+        .actions,
+        .button,
+        .file-button,
+        .location-control {
+          width: 100%;
+        }
+
+        .location-control {
+          grid-template-columns: 1fr;
+        }
+
+        .grid.two,
+        .grid.three {
+          grid-template-columns: 1fr;
+        }
+
+        .item-card {
+          gap: 12px;
+          padding: 10px;
+        }
+
+        .preview,
+        .media-thumb {
+          min-height: 220px;
+        }
+
+        .media-grid {
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 10px;
+        }
+
+        .media-tile {
+          padding: 9px;
+        }
+
+        .media-tile .media-thumb {
+          min-height: 150px;
+        }
+
+        .savebar {
+          padding: 10px 0;
+        }
+
+        .savebar-inner {
+          gap: 8px;
+        }
+
+        .search-modal {
+          padding: 8px;
+        }
+
+        .search-dialog {
+          max-height: calc(100vh - 16px);
+          border-radius: 8px 8px 0 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell topbar-inner">
+        <div>
+          <div class="brand">365 Daily Snap Admin</div>
+          <p class="eyebrow">Portfolio Content Manager</p>
+        </div>
+        <div class="actions">
+          <a class="button secondary" href="/" target="_blank" rel="noreferrer">공개 사이트 보기</a>
+          <button class="button secondary" id="copyPublicLinkButton" type="button">사이트 링크 복사</button>
+          <button class="button" id="reloadButton" type="button">다시 불러오기</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Content dashboard</p>
+          <h1>사진, 프로젝트, 문의를 한 곳에서 관리합니다.</h1>
+          <p class="lead">
+            프로젝트에 사진과 영상을 올리고, 태그·모델·촬영 위치를 선택해 공개 포트폴리오에 바로 연결합니다.
+            새 문의와 사이트 문구도 같은 화면에서 확인할 수 있습니다.
+          </p>
+        </div>
+        <div class="stats" aria-label="콘텐츠 현황">
+          <div class="stat"><p class="eyebrow">Projects</p><strong id="projectCount">0</strong></div>
+          <div class="stat"><p class="eyebrow">Media</p><strong id="mediaCount">0</strong></div>
+          <div class="stat"><p class="eyebrow">Models</p><strong id="modelCount">0</strong></div>
+          <div class="stat"><p class="eyebrow">Inquiries</p><strong id="inquiryCount">0</strong></div>
+        </div>
+      </section>
+
+      <p class="notice">
+        저장 전 변경사항은 공개 사이트에 반영되지 않습니다. 사진 위치를 검색해 좌표를 저장하면
+        방문자가 실제 지도에서 촬영 위치를 확인할 수 있습니다.
+      </p>
+
+      <section class="quick-strip" aria-label="관리 순서">
+        <div class="quick-step">
+          <span>01</span>
+          <strong>프로젝트 만들기</strong>
+          <p>촬영 단위로 제목, 설명, 장소를 먼저 정리합니다.</p>
+        </div>
+        <div class="quick-step">
+          <span>02</span>
+          <strong>사진·영상 추가</strong>
+          <p>프로젝트 안에 여러 미디어를 올리고 개별 위치와 모델을 지정합니다.</p>
+        </div>
+        <div class="quick-step">
+          <span>03</span>
+          <strong>저장 후 확인</strong>
+          <p>저장한 뒤 공개 사이트에서 포트폴리오와 지도가 잘 보이는지 확인합니다.</p>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="관리 메뉴">
+        <button class="tab-button is-active" type="button" data-tab="projects">프로젝트</button>
+        <button class="tab-button" type="button" data-tab="options">옵션·모델</button>
+        <button class="tab-button" type="button" data-tab="copy">문구·필터</button>
+        <button class="tab-button" type="button" data-tab="inquiries">문의함</button>
+      </nav>
+
+      <section class="tab-panel is-active" id="panel-projects">
+        <div class="layout">
+          <aside class="side">
+            <div class="panel-card">
+              <section class="panel">
+                <div class="panel-head">
+                  <p class="eyebrow">New project</p>
+                  <h2>새 프로젝트</h2>
+                  <p class="hint">촬영 단위로 묶어두면 업로드한 사진과 영상이 포트폴리오에 자동 노출됩니다.</p>
+                </div>
+                <div class="grid">
+                  <label>프로젝트 제목 <input id="projectTitleInput" type="text" placeholder="예: 연남동 자연광 프로필" /></label>
+                  <label>설명 <textarea id="projectDescriptionInput" placeholder="촬영 분위기, 장소, 사용 목적을 짧게 적어주세요."></textarea></label>
+                  <label>카테고리 <select id="projectCategorySelect"></select></label>
+                  <div class="location-control">
+                    <label>장소 <select id="projectLocationSelect"></select></label>
+                    <button class="button secondary" id="searchCreateLocationButton" type="button">위치 검색</button>
+                  </div>
+                  <div>
+                    <p class="eyebrow">태그 선택</p>
+                    <div class="chip-row" id="projectTagPicker"></div>
+                  </div>
+                  <div>
+                    <p class="eyebrow">모델 선택</p>
+                    <div class="chip-row" id="projectModelPicker"></div>
+                  </div>
+                  <button class="button" id="addProjectButton" type="button">프로젝트 추가</button>
+                </div>
+              </section>
+            </div>
+          </aside>
+
+          <section>
+            <div class="panel-head">
+              <p class="eyebrow">Projects</p>
+              <h2>프로젝트 목록</h2>
+              <p class="hint">프로젝트에 올린 미디어가 공개 포트폴리오, 필터, 지도 화면으로 함께 연결됩니다.</p>
+            </div>
+            <div class="item-list" id="projectList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="panel-options">
+        <div class="layout">
+          <aside class="side">
+            <div class="panel-card">
+              <section class="panel">
+                <div class="panel-head">
+                  <p class="eyebrow">Create options</p>
+                  <h2>선택지 관리</h2>
+                </div>
+                <div class="grid">
+                  <button class="button secondary" id="addCategoryButton" type="button">카테고리 추가</button>
+                  <button class="button secondary" id="addTagButton" type="button">태그 추가</button>
+                  <button class="button secondary" id="addLocationButton" type="button">장소 추가</button>
+                </div>
+              </section>
+            </div>
+            <div class="panel-card">
+              <section class="panel">
+                <div class="panel-head">
+                  <p class="eyebrow">Model profile</p>
+                  <h2>모델 태그 만들기</h2>
+                  <p class="hint">모델 태그에 URL을 넣으면 공개 페이지에서 해당 SNS나 링크로 이동합니다.</p>
+                </div>
+                <div class="grid">
+                  <label>모델 이름 <input id="modelNameInput" type="text" placeholder="예: minji" /></label>
+                  <label>모델 링크 <input id="modelUrlInput" type="url" placeholder="https://instagram.com/..." /></label>
+                  <label>메모 <input id="modelNoteInput" type="text" placeholder="선택 사항" /></label>
+                  <button class="button" id="addModelButton" type="button">모델 추가</button>
+                </div>
+              </section>
+            </div>
+          </aside>
+
+          <section>
+            <div class="panel-head">
+              <p class="eyebrow">Saved options</p>
+              <h2>저장된 선택지</h2>
+            </div>
+            <div class="grid">
+              <div class="panel-card"><section class="panel"><h3>카테고리</h3><div class="chip-row" id="categoryList"></div></section></div>
+              <div class="panel-card"><section class="panel"><h3>태그</h3><div class="chip-row" id="tagList"></div></section></div>
+              <div class="panel-card"><section class="panel"><h3>장소</h3><div class="chip-row" id="locationList"></div></section></div>
+              <div class="panel-card"><section class="panel"><h3>모델</h3><div class="chip-row" id="modelList"></div></section></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="panel-copy">
+        <div class="layout">
+          <aside class="side">
+            <div class="panel-card">
+              <section class="panel">
+                <div class="panel-head"><p class="eyebrow">Site copy</p><h2>첫 화면 문구</h2></div>
+                <div class="grid">
+                  <label>작은 문구 <input id="heroEyebrow" type="text" /></label>
+                  <label>메인 제목 <input id="heroTitle" type="text" /></label>
+                  <label>설명 <textarea id="heroDescription"></textarea></label>
+                </div>
+              </section>
+            </div>
+          </aside>
+          <section>
+            <div class="panel-card">
+              <section class="panel">
+                <div class="panel-head"><p class="eyebrow">Portfolio intro</p><h2>포트폴리오 문구와 필터</h2></div>
+                <div class="grid">
+                  <label>포트폴리오 제목 <input id="portfolioTitle" type="text" /></label>
+                  <label>포트폴리오 설명 <textarea id="portfolioDescription"></textarea></label>
+                  <label>기본 필터 <textarea id="filtersInput"></textarea></label>
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="panel-inquiries">
+        <div class="panel-head">
+          <p class="eyebrow">Inbox</p>
+          <h2>문의 수신함</h2>
+          <p class="hint">방문자가 홈페이지 문의 폼으로 보낸 내용을 확인하고 처리 상태를 정리합니다.</p>
+        </div>
+        <div class="actions" style="margin-bottom: 18px">
+          <button class="button secondary" id="reloadInquiriesButton" type="button">문의 새로고침</button>
+        </div>
+        <div class="inquiry-list" id="inquiryList"></div>
+      </section>
+    </main>
+
+    <div class="search-modal" id="locationSearchModal" aria-hidden="true">
+      <section class="search-dialog panel" role="dialog" aria-modal="true" aria-labelledby="locationSearchTitle">
+        <div class="panel-head">
+          <p class="eyebrow">Location search</p>
+          <h2 id="locationSearchTitle">촬영 위치 찾기</h2>
+          <p class="hint">
+            장소명을 검색해 선택하면 도시, 구, 지역명과 좌표가 함께 저장됩니다.
+            저장된 좌표는 공개 사이트의 지도와 사진 상세 화면에 표시됩니다.
+          </p>
+        </div>
+        <div class="grid">
+          <label>장소 검색
+            <input id="locationSearchInput" type="search" placeholder="예: 서울 마포구 연남동, 성수동 카페거리" />
+          </label>
+          <div class="actions">
+            <button class="button" id="runLocationSearchButton" type="button">검색</button>
+            <button class="button secondary" id="closeLocationSearchButton" type="button">닫기</button>
+          </div>
+          <p class="status" id="locationSearchStatus">장소명을 입력하고 검색하세요.</p>
+          <div class="search-results" id="locationSearchResults"></div>
+          <div class="map-preview" id="locationSearchPreview"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="savebar">
+      <div class="shell savebar-inner">
+        <p class="status" id="status">콘텐츠를 불러오는 중입니다.</p>
+        <button class="button" id="saveButton" type="button">변경사항 저장</button>
+      </div>
+    </div>
+
+    <script>
+      const API_CONTENT_URL = "/api/content";
+      const API_INQUIRIES_URL = "/api/inquiries";
+      const API_UPLOAD_MEDIA_URL = "/api/upload-media";
+      const ADMIN_TOKEN_STORAGE_KEY = "365-daily-snap-admin-token";
+      const IS_LOCAL_BROWSER = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
+      const NETLIFY_BINARY_LIMIT_BYTES = 4.5 * 1024 * 1024;
+      const DEFAULT_TAXONOMY = {
+        categories: ["인물 사진", "커플 스냅", "프로필 촬영", "여행 스냅", "야간 스냅", "카페 촬영", "반려동물"],
+        tags: ["인물", "프로필", "데일리", "포트폴리오협업", "카페", "거리", "야외", "실내", "낮", "밤", "자연광", "클로즈업", "전신", "반신", "웨딩무드", "한복", "바다", "플라워", "시네마틱", "차분한", "움직임", "네온", "반려동물", "동물스냅", "촬영기록"],
+        locations: [
+          { city: "서울", district: "마포구", place: "연남동", lat: 37.5627, lng: 126.9253, mapX: 56, mapY: 36 },
+          { city: "서울", district: "마포구", place: "홍대입구", lat: 37.5572, lng: 126.9245, mapX: 54, mapY: 48 },
+          { city: "경기", district: "협의", place: "장소 미정", lat: "", lng: "", mapX: 50, mapY: 50 },
+        ],
+      };
+      const state = {
+        content: null,
+        inquiries: [],
+        draftProjectTags: new Set(),
+        draftProjectModels: new Set(),
+        isDirty: false,
+        isUploading: false,
+        locationSearchTarget: null,
+        locationSearchResults: [],
+      };
+      const $ = (selector) => document.querySelector(selector);
+
+      function getAdminToken() {
+        return localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY) || "";
+      }
+
+      function setAdminToken(token) {
+        const nextToken = String(token || "").trim();
+
+        if (nextToken) {
+          localStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, nextToken);
+        }
+      }
+
+      async function apiFetch(url, options = {}, retryOnUnauthorized = true) {
+        const headers = new Headers(options.headers || {});
+        const token = getAdminToken();
+
+        if (token) {
+          headers.set("X-Admin-Token", token);
+        }
+
+        const response = await fetch(url, { ...options, headers });
+
+        if (response.status === 401 && retryOnUnauthorized) {
+          const nextToken = window.prompt("관리자 토큰을 입력해주세요.");
+
+          if (nextToken) {
+            setAdminToken(nextToken);
+            return apiFetch(url, options, false);
+          }
+        }
+
+        return response;
+      }
+
+      function splitList(value) {
+        return String(value || "").split(",").map((item) => item.trim()).filter(Boolean);
+      }
+
+      function uniqueList(list) {
+        return Array.from(new Set((list || []).map((item) => String(item || "").trim()).filter(Boolean)));
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function setStatus(message, tone = "") {
+        const status = $("#status");
+        status.textContent = message;
+        status.className = `status ${tone ? `is-${tone}` : ""}`;
+      }
+
+      function markDirty() {
+        state.isDirty = true;
+        renderStats();
+        setStatus("변경사항이 있습니다. 저장을 눌러 공개 사이트에 반영하세요.");
+      }
+
+      function fileNameToTitle(fileName) {
+        return String(fileName || "새 항목").replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+      }
+
+      function getMediaSource(item = {}) {
+        return item.mediaDataUrl || item.src || "";
+      }
+
+      function isVideoMedia(item = {}) {
+        const src = String(item.src || "").toLowerCase();
+        return item.type === "video" || /\.(mp4|m4v|mov|webm|ogg)(\?|#|$)/.test(src);
+      }
+
+      function getLocationKey(location = {}) {
+        return [location.city, location.district, location.place].filter(Boolean).join(" - ");
+      }
+
+      function getLocationLabel(location = {}) {
+        return [location.city, location.district, location.place].filter(Boolean).join(" - ");
+      }
+
+      function normalizeLocation(location = {}) {
+        return {
+          city: String(location.city || "서울").trim() || "서울",
+          district: String(location.district || "마포구").trim() || "마포구",
+          place: String(location.place || "장소 미정").trim() || "장소 미정",
+          lat: location.lat || "",
+          lng: location.lng || "",
+          mapX: Number.isFinite(Number(location.mapX)) ? Number(location.mapX) : 50,
+          mapY: Number.isFinite(Number(location.mapY)) ? Number(location.mapY) : 50,
+        };
+      }
+
+      function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+      }
+
+      function mapPositionFromLatLng(lat, lng) {
+        const latitude = Number(lat);
+        const longitude = Number(lng);
+
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+          return { mapX: 50, mapY: 50 };
+        }
+
+        return {
+          mapX: Math.round(clamp(((longitude - 126.86) / (127.14 - 126.86)) * 84 + 8, 8, 92)),
+          mapY: Math.round(clamp(((37.68 - latitude) / (37.68 - 37.43)) * 84 + 8, 8, 92)),
+        };
+      }
+
+      function shortCity(value = "") {
+        return String(value || "")
+          .replace("특별시", "")
+          .replace("광역시", "")
+          .replace("특별자치시", "")
+          .replace("특별자치도", "")
+          .trim();
+      }
+
+      function locationFromSearchResult(result = {}) {
+        const address = result.address || {};
+        const properties = result.properties || {};
+        const coordinates = result.geometry?.coordinates || [];
+        const displayParts = getSearchDisplayName(result).split(" · ").map((item) => item.trim()).filter(Boolean);
+        const lat = Number(result.lat ?? coordinates[1]);
+        const lng = Number(result.lon ?? coordinates[0]);
+        const position = mapPositionFromLatLng(lat, lng);
+        const city = shortCity(address.city || address.state || address.province || properties.city || properties.state || displayParts.at(-2) || "서울") || "서울";
+        const district =
+          address.borough ||
+          address.city_district ||
+          address.county ||
+          address.suburb ||
+          properties.district ||
+          properties.locality ||
+          properties.county ||
+          displayParts.find((item) => /구$|군$|시$|동$/.test(item)) ||
+          "지역 미정";
+        const place =
+          address.neighbourhood ||
+          address.quarter ||
+          address.road ||
+          address.village ||
+          address.town ||
+          address.name ||
+          properties.name ||
+          properties.locality ||
+          properties.street ||
+          displayParts[0] ||
+          "장소 미정";
+
+        return normalizeLocation({
+          city,
+          district,
+          place,
+          lat: Number.isFinite(lat) ? Number(lat.toFixed(7)) : "",
+          lng: Number.isFinite(lng) ? Number(lng.toFixed(7)) : "",
+          ...position,
+        });
+      }
+
+      function getSearchDisplayName(result = {}) {
+        if (result.display_name) {
+          return result.display_name;
+        }
+
+        const properties = result.properties || {};
+        return uniqueList([
+          properties.name,
+          properties.street,
+          properties.locality || properties.district,
+          properties.city || properties.state,
+          properties.country,
+        ]).join(" · ");
+      }
+
+      function getMapEmbedUrl(location = {}) {
+        if (location.lat === "" || location.lng === "" || location.lat == null || location.lng == null) {
+          return "";
+        }
+
+        const lat = Number(location.lat);
+        const lng = Number(location.lng);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          return "";
+        }
+
+        const bbox = [lng - 0.008, lat - 0.006, lng + 0.008, lat + 0.006].join(",");
+        return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${encodeURIComponent(`${lat},${lng}`)}`;
+      }
+
+      function getGoogleMapUrl(location = {}) {
+        if (location.lat && location.lng) {
+          return `https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`;
+        }
+
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(getLocationLabel(location))}`;
+      }
+
+      function getNaverMapUrl(location = {}) {
+        return `https://map.naver.com/p/search/${encodeURIComponent(getLocationLabel(location))}`;
+      }
+
+      function addOrReuseLocation(location) {
+        const nextLocation = normalizeLocation(location);
+        const existing = state.content.taxonomy.locations.find((item) => getLocationKey(item) === getLocationKey(nextLocation));
+
+        if (existing) {
+          Object.assign(existing, nextLocation);
+          return existing;
+        }
+
+        state.content.taxonomy.locations.push(nextLocation);
+        return nextLocation;
+      }
+
+      function ensureContentShape(content = {}) {
+        const taxonomy = {
+          categories: uniqueList([...(content.taxonomy?.categories || []), ...DEFAULT_TAXONOMY.categories]),
+          tags: uniqueList([...(content.taxonomy?.tags || []), ...DEFAULT_TAXONOMY.tags]),
+          locations:
+            Array.isArray(content.taxonomy?.locations) && content.taxonomy.locations.length
+              ? content.taxonomy.locations.map(normalizeLocation)
+              : DEFAULT_TAXONOMY.locations.map(normalizeLocation),
+        };
+        const models = Array.isArray(content.models)
+          ? content.models.map((model) => ({ name: model.name || "", url: model.url || "", note: model.note || "" })).filter((model) => model.name)
+          : [];
+        const projects = Array.isArray(content.projects)
+          ? content.projects.map((project, index) => ({
+              id: project.id || `${Date.now()}-${index}`,
+              title: project.title || `Project ${index + 1}`,
+              subtitle: project.subtitle || "",
+              description: project.description || "",
+              category: project.category || taxonomy.categories[0],
+              tags: uniqueList(project.tags || []),
+              models: uniqueList(project.models || []),
+              location: normalizeLocation(project.location || taxonomy.locations[0]),
+              cover: project.cover || "",
+              media: Array.isArray(project.media)
+                ? project.media.map((media) => ({
+                    type: media.type || (isVideoMedia(media) ? "video" : "image"),
+                    src: media.src || "",
+                    mediaDataUrl: media.mediaDataUrl,
+                    alt: media.alt || media.caption || project.title || "",
+                    caption: media.caption || "",
+                    tags: uniqueList(media.tags || []),
+                    models: uniqueList(media.models || []),
+                    location: normalizeLocation(media.location || project.location || taxonomy.locations[0]),
+                  }))
+                : [],
+            }))
+          : [];
+
+        return {
+          ...content,
+          hero: {
+            eyebrow: "365 Daily Snap",
+            title: "있는 그대로, 자연스럽게 남기는 인물 사진",
+            description:
+              "서울·수도권을 중심으로 인물 스냅을 촬영합니다. 어색한 포즈보다 편안한 분위기를 먼저 생각하며, 개인 프로필, 데일리 스냅, 커플 촬영까지 자연스럽게 담아냅니다.",
+            ...(content.hero || {}),
+          },
+          portfolioIntro: {
+            title: "보고 싶은 분위기를 골라보세요.",
+            description: "시간대, 공간, 지역, 모델 태그까지 원하는 기준으로 사진을 모아볼 수 있습니다.",
+            ...(content.portfolioIntro || {}),
+          },
+          portfolioFilters:
+            Array.isArray(content.portfolioFilters) && content.portfolioFilters.length
+              ? content.portfolioFilters
+              : ["전체", "낮", "밤", "야외", "실내", "서울", "경기", "카페"],
+          taxonomy,
+          models,
+          projects,
+          portfolioItems: Array.isArray(content.portfolioItems) ? content.portfolioItems : [],
+        };
+      }
+
+      function renderStats() {
+        if (!state.content) return;
+        const mediaCount = state.content.projects.reduce((total, project) => total + project.media.length, 0);
+        $("#projectCount").textContent = state.content.projects.length;
+        $("#mediaCount").textContent = mediaCount;
+        $("#modelCount").textContent = state.content.models.length;
+        $("#inquiryCount").textContent = state.inquiries.length;
+        $("#saveButton").textContent = state.isDirty ? "변경사항 저장" : "저장됨";
+      }
+
+      function fillSelect(select, options, selectedValue, getLabel = (value) => value) {
+        select.innerHTML = options
+          .map((option) => {
+            const value = typeof option === "string" ? option : getLocationKey(option);
+            return `<option value="${escapeHtml(value)}" ${value === selectedValue ? "selected" : ""}>${escapeHtml(getLabel(option))}</option>`;
+          })
+          .join("");
+      }
+
+      function renderChips(container, options, selectedValues, attrs = {}) {
+        const selected = new Set(selectedValues || []);
+        container.innerHTML = options
+          .map((option) => {
+            const value = typeof option === "string" ? option : getLocationKey(option);
+            const label = typeof option === "string" ? option : getLocationLabel(option);
+            const extraAttrs = Object.entries(attrs).map(([key, attrValue]) => `${key}="${escapeHtml(attrValue)}"`).join(" ");
+            return `<button class="chip ${selected.has(value) ? "is-active" : ""}" type="button" data-value="${escapeHtml(value)}" ${extraAttrs}>${escapeHtml(label)}</button>`;
+          })
+          .join("");
+      }
+
+      function selectedLocationFromKey(key) {
+        return state.content.taxonomy.locations.find((location) => getLocationKey(location) === key) || state.content.taxonomy.locations[0];
+      }
+
+      function openLocationSearch(target) {
+        state.locationSearchTarget = target;
+        state.locationSearchResults = [];
+        $("#locationSearchInput").value = target?.query || "";
+        $("#locationSearchResults").innerHTML = "";
+        $("#locationSearchPreview").innerHTML = "";
+        $("#locationSearchStatus").textContent = "장소명을 입력하고 검색하세요.";
+        $("#locationSearchModal").classList.add("is-open");
+        $("#locationSearchModal").setAttribute("aria-hidden", "false");
+        setTimeout(() => $("#locationSearchInput").focus(), 0);
+      }
+
+      function closeLocationSearch() {
+        state.locationSearchTarget = null;
+        state.locationSearchResults = [];
+        $("#locationSearchModal").classList.remove("is-open");
+        $("#locationSearchModal").setAttribute("aria-hidden", "true");
+      }
+
+      function renderLocationSearchPreview(location) {
+        const mapUrl = getMapEmbedUrl(location);
+        $("#locationSearchPreview").innerHTML = mapUrl
+          ? `<iframe title="${escapeHtml(getLocationLabel(location))} 지도 미리보기" src="${escapeHtml(mapUrl)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`
+          : '<div class="empty-state">좌표가 있는 장소를 선택하면 지도 미리보기가 표시됩니다.</div>';
+      }
+
+      function renderLocationSearchResults() {
+        const container = $("#locationSearchResults");
+        if (!state.locationSearchResults.length) {
+          container.innerHTML = '<div class="empty-state">검색 결과가 없습니다. 장소명을 조금 더 구체적으로 입력해보세요.</div>';
+          return;
+        }
+
+        container.innerHTML = state.locationSearchResults
+          .map((result, index) => {
+            const location = locationFromSearchResult(result);
+            const label = getLocationLabel(location);
+            return `<button class="search-result" type="button" data-location-result="${index}">
+              <strong>${escapeHtml(label)}</strong>
+              <span class="hint">${escapeHtml(getSearchDisplayName(result) || label)}</span>
+              <span class="hint" style="display:block;margin-top:6px">${escapeHtml(location.lat)}, ${escapeHtml(location.lng)}</span>
+            </button>`;
+          })
+          .join("");
+
+        renderLocationSearchPreview(locationFromSearchResult(state.locationSearchResults[0]));
+      }
+
+      async function runLocationSearch() {
+        const query = $("#locationSearchInput").value.trim();
+
+        if (!query) {
+          $("#locationSearchStatus").textContent = "검색할 장소명을 입력해주세요.";
+          return;
+        }
+
+        $("#locationSearchStatus").textContent = "장소를 검색하는 중입니다.";
+        $("#locationSearchResults").innerHTML = "";
+
+        try {
+          const params = new URLSearchParams({
+            q: query,
+            limit: "10",
+          });
+          const response = await fetch(`https://photon.komoot.io/api/?${params.toString()}`, {
+            headers: { Accept: "application/json" },
+          });
+
+          if (!response.ok) {
+            throw new Error("장소 검색에 실패했습니다.");
+          }
+
+          const payload = await response.json();
+          state.locationSearchResults = (payload.features || []).filter((item) => {
+            const countryCode = String(item.properties?.countrycode || "").toUpperCase();
+            const coordinates = item.geometry?.coordinates || [];
+
+            return ["KR", "JP"].includes(countryCode) && Number.isFinite(Number(coordinates[0])) && Number.isFinite(Number(coordinates[1]));
+          });
+          $("#locationSearchStatus").textContent = `${state.locationSearchResults.length}개 장소를 찾았습니다. 맞는 장소를 선택하세요.`;
+          renderLocationSearchResults();
+        } catch (error) {
+          $("#locationSearchStatus").textContent = `${error.message} 잠시 후 다시 시도하거나 장소를 직접 추가해주세요.`;
+          $("#locationSearchResults").innerHTML = "";
+        }
+      }
+
+      function applyLocationToTarget(location) {
+        if (!state.locationSearchTarget) {
+          return;
+        }
+
+        const storedLocation = addOrReuseLocation(location);
+        const target = state.locationSearchTarget;
+
+        if (target.type === "create-project") {
+          renderCreatePickers();
+          $("#projectLocationSelect").value = getLocationKey(storedLocation);
+        }
+
+        if (target.type === "project") {
+          const project = state.content.projects[target.projectIndex];
+          if (project) project.location = storedLocation;
+        }
+
+        if (target.type === "media") {
+          const project = state.content.projects[target.projectIndex];
+          const media = project?.media?.[target.mediaIndex];
+          if (media) media.location = storedLocation;
+        }
+
+        markDirty();
+        closeLocationSearch();
+        render();
+      }
+
+      function renderCreatePickers() {
+        fillSelect($("#projectCategorySelect"), state.content.taxonomy.categories, $("#projectCategorySelect").value || state.content.taxonomy.categories[0]);
+        fillSelect($("#projectLocationSelect"), state.content.taxonomy.locations, $("#projectLocationSelect").value || getLocationKey(state.content.taxonomy.locations[0]), getLocationLabel);
+        renderChips($("#projectTagPicker"), state.content.taxonomy.tags, Array.from(state.draftProjectTags), { "data-create-tag": "true" });
+        renderChips($("#projectModelPicker"), state.content.models.map((model) => model.name), Array.from(state.draftProjectModels), { "data-create-model": "true" });
+      }
+
+      function renderOptions() {
+        renderChips($("#categoryList"), state.content.taxonomy.categories, [], { "data-option-kind": "category" });
+        renderChips($("#tagList"), state.content.taxonomy.tags, [], { "data-option-kind": "tag" });
+        renderChips($("#locationList"), state.content.taxonomy.locations, [], { "data-option-kind": "location" });
+        $("#modelList").innerHTML = state.content.models.length
+          ? state.content.models
+              .map(
+                (model) =>
+                  `<span class="chip">${escapeHtml(model.name)}${model.url ? ` · ${escapeHtml(model.url)}` : ""}</span>`,
+              )
+              .join("")
+          : '<span class="hint">아직 모델 태그가 없습니다.</span>';
+      }
+
+      function bindContentInputs() {
+        $("#heroEyebrow").value = state.content.hero.eyebrow || "";
+        $("#heroTitle").value = state.content.hero.title || "";
+        $("#heroDescription").value = state.content.hero.description || "";
+        $("#portfolioTitle").value = state.content.portfolioIntro.title || "";
+        $("#portfolioDescription").value = state.content.portfolioIntro.description || "";
+        $("#filtersInput").value = (state.content.portfolioFilters || []).join(", ");
+        $("#heroEyebrow").oninput = (event) => {
+          state.content.hero.eyebrow = event.target.value;
+          markDirty();
+        };
+        $("#heroTitle").oninput = (event) => {
+          state.content.hero.title = event.target.value;
+          markDirty();
+        };
+        $("#heroDescription").oninput = (event) => {
+          state.content.hero.description = event.target.value;
+          markDirty();
+        };
+        $("#portfolioTitle").oninput = (event) => {
+          state.content.portfolioIntro.title = event.target.value;
+          markDirty();
+        };
+        $("#portfolioDescription").oninput = (event) => {
+          state.content.portfolioIntro.description = event.target.value;
+          markDirty();
+        };
+        $("#filtersInput").oninput = (event) => {
+          state.content.portfolioFilters = splitList(event.target.value);
+          markDirty();
+        };
+      }
+
+      function renderMediaPreview(source, type, alt) {
+        if (!source) return '<div class="preview empty"><span>미리보기 없음</span></div>';
+        if (type === "video") {
+          return `<div class="preview"><video src="${escapeHtml(source)}" muted playsinline preload="metadata"></video><span class="media-badge">Video</span><span class="watermark">© 365 Daily Snap</span></div>`;
+        }
+        return `<div class="preview"><img src="${escapeHtml(source)}" alt="${escapeHtml(alt)}" draggable="false" /><span class="watermark">© 365 Daily Snap</span></div>`;
+      }
+
+      function renderMediaModels(projectIndex, mediaIndex, media) {
+        return `<div class="chip-row">${state.content.models
+          .map((model) => {
+            const active = (media.models || []).includes(model.name);
+            return `<button class="chip ${active ? "is-active" : ""}" type="button" data-media-model="${escapeHtml(model.name)}" data-project-index="${projectIndex}" data-media-index="${mediaIndex}">@${escapeHtml(model.name)}</button>`;
+          })
+          .join("")}</div>`;
+      }
+
+      function renderProjectList() {
+        const list = $("#projectList");
+        list.innerHTML = "";
+        if (!state.content.projects.length) {
+          list.innerHTML = '<div class="empty-state">아직 프로젝트가 없습니다. 왼쪽에서 프로젝트를 추가하세요.</div>';
+          return;
+        }
+        state.content.projects.forEach((project, projectIndex) => {
+          const row = document.createElement("article");
+          row.className = "item-card";
+          const firstMedia = project.media.find((item) => getMediaSource(item));
+          const cover = project.cover || getMediaSource(firstMedia || {});
+          const coverType = isVideoMedia({ src: cover }) ? "video" : "image";
+          const mediaCount = project.media.length;
+          row.innerHTML = `
+            ${renderMediaPreview(cover, coverType, project.title)}
+            <div class="project-editor">
+              <div class="project-toolbar">
+                <div>
+                  <p class="eyebrow">Project ${projectIndex + 1}</p>
+                  <h3>${escapeHtml(project.title || "제목 없는 프로젝트")}</h3>
+                  <p class="hint">${mediaCount}개 미디어 · ${escapeHtml(getLocationLabel(project.location))}</p>
+                </div>
+                <div class="actions project-actions">
+                  <button class="button secondary compact" data-project-action="move-up" data-project-index="${projectIndex}" type="button">위로</button>
+                  <button class="button secondary compact" data-project-action="move-down" data-project-index="${projectIndex}" type="button">아래로</button>
+                  <button class="button danger compact" data-project-action="delete" data-project-index="${projectIndex}" type="button">삭제</button>
+                </div>
+              </div>
+              <div class="grid two">
+                <label>제목 <input data-project-field="title" data-project-index="${projectIndex}" type="text" value="${escapeHtml(project.title)}" /></label>
+                <label>카테고리 <select data-project-field="category" data-project-index="${projectIndex}"></select></label>
+              </div>
+              <label>설명 <textarea data-project-field="description" data-project-index="${projectIndex}">${escapeHtml(project.description)}</textarea></label>
+              <div class="location-control">
+                <label>프로젝트 장소 <select data-project-location="${projectIndex}"></select></label>
+                <button class="button secondary" data-location-search="project" data-project-index="${projectIndex}" type="button">위치 검색</button>
+              </div>
+              <div><p class="eyebrow">프로젝트 태그</p><div class="chip-row" data-project-tags="${projectIndex}"></div></div>
+              <div><p class="eyebrow">프로젝트 모델</p><div class="chip-row" data-project-models="${projectIndex}"></div></div>
+              <div class="row-actions">
+                <label class="file-button secondary">사진/영상 추가 <input data-project-media-upload="${projectIndex}" type="file" accept="image/*,video/*" multiple /></label>
+              </div>
+              <div class="media-grid">${
+                mediaCount
+                  ? project.media
+                      .map((media, mediaIndex) => {
+                        const source = getMediaSource(media);
+                        const type = isVideoMedia(media) ? "video" : "image";
+                        const thumb =
+                          type === "video"
+                            ? `<div class="media-thumb"><video src="${escapeHtml(source)}" muted playsinline preload="metadata"></video><span class="media-badge">Video</span><span class="watermark">© 365</span></div>`
+                            : `<div class="media-thumb"><img src="${escapeHtml(source)}" alt="${escapeHtml(media.alt || project.title)}" draggable="false" /><span class="watermark">© 365</span></div>`;
+                        return `<div class="media-tile">
+                          <div class="media-tile-head">
+                            <p class="eyebrow">Media ${mediaIndex + 1}</p>
+                          </div>
+                          ${source ? thumb : '<div class="media-thumb preview empty"><span>미디어 없음</span></div>'}
+                          <div class="media-fields">
+                            <label>사진 설명 <input data-media-field="caption" data-project-index="${projectIndex}" data-media-index="${mediaIndex}" type="text" value="${escapeHtml(media.caption || "")}" /></label>
+                            <div class="location-control media-location">
+                              <label>촬영 위치 <select data-media-location="true" data-project-index="${projectIndex}" data-media-index="${mediaIndex}"></select></label>
+                              <button class="button secondary" data-location-search="media" data-project-index="${projectIndex}" data-media-index="${mediaIndex}" type="button">위치 검색</button>
+                            </div>
+                            <div>
+                              <p class="eyebrow">이 사진의 모델</p>
+                              ${renderMediaModels(projectIndex, mediaIndex, media)}
+                            </div>
+                            <div class="row-actions"><button class="button danger compact" data-project-action="delete-media" data-project-index="${projectIndex}" data-media-index="${mediaIndex}" type="button">미디어 삭제</button></div>
+                          </div>
+                        </div>`;
+                      })
+                      .join("")
+                  : '<div class="empty-state">이 프로젝트에는 아직 사진이나 영상이 없습니다. 위의 추가 버튼으로 여러 파일을 한 번에 올릴 수 있습니다.</div>'
+              }</div>
+            </div>
+          `;
+          list.append(row);
+          fillSelect(row.querySelector(`[data-project-field="category"]`), state.content.taxonomy.categories, project.category);
+          fillSelect(row.querySelector(`[data-project-location="${projectIndex}"]`), state.content.taxonomy.locations, getLocationKey(project.location), getLocationLabel);
+          row.querySelectorAll(`[data-media-location][data-project-index="${projectIndex}"]`).forEach((select) => {
+            const media = project.media[Number(select.dataset.mediaIndex)];
+            fillSelect(select, state.content.taxonomy.locations, getLocationKey(media.location || project.location), getLocationLabel);
+          });
+          renderChips(row.querySelector(`[data-project-tags="${projectIndex}"]`), state.content.taxonomy.tags, project.tags, { "data-project-tag": "true", "data-project-index": projectIndex });
+          renderChips(row.querySelector(`[data-project-models="${projectIndex}"]`), state.content.models.map((model) => model.name), project.models, { "data-project-model": "true", "data-project-index": projectIndex });
+        });
+      }
+
+      function renderInquiries() {
+        const list = $("#inquiryList");
+        list.innerHTML = "";
+        if (!state.inquiries.length) {
+          list.innerHTML = '<div class="empty-state">아직 접수된 문의가 없습니다.</div>';
+          renderStats();
+          return;
+        }
+        state.inquiries.forEach((inquiry) => {
+          const row = document.createElement("article");
+          row.className = `inquiry-card ${inquiry.status === "new" ? "is-new" : ""}`;
+          const created = inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleString("ko-KR") : "";
+          const contactDetails = inquiry.contacts
+            ? Object.entries(inquiry.contacts)
+                .filter(([, value]) => value)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(" / ")
+            : "";
+          const detailRows = [
+            ["가능 날짜", (inquiry.preferredDates || []).join(", ") || inquiry.preferredDate],
+            ["가능 시간", (inquiry.preferredTimeSlots || []).join(", ")],
+            ["선호 위치", (inquiry.preferredLocations || []).join(", ") || inquiry.area],
+            ["직접 입력 위치", inquiry.customLocation],
+            ["출발지/가까운 역", inquiry.departureArea],
+            ["원하는 분위기", (inquiry.mood || []).join(", ")],
+            ["분위기 메모", inquiry.moodNote],
+            ["인원", inquiry.people],
+            ["사용 용도", inquiry.usage],
+            ["공개 범위", inquiry.privacy],
+          ]
+            .filter(([, value]) => value)
+            .map(([label, value]) => `<p class="hint"><strong>${escapeHtml(label)}</strong> ${escapeHtml(value)}</p>`)
+            .join("");
+          const referenceImages = (inquiry.referenceImages || [])
+            .map((image) => `<a class="pill" href="${escapeHtml(image.src)}" target="_blank" rel="noreferrer">${escapeHtml(image.name || "참고 이미지")}</a>`)
+            .join("");
+          row.innerHTML = `
+            <div class="inquiry-head">
+              <div><p class="eyebrow">${inquiry.status === "new" ? "New inquiry" : "Inquiry"}</p><h3>${escapeHtml(inquiry.name || "이름 미입력")}</h3><p class="hint">${escapeHtml(created)}</p></div>
+              <div class="actions"><button class="button secondary" data-inquiry-action="read" data-id="${escapeHtml(inquiry.id)}" type="button">확인됨</button><button class="button danger" data-inquiry-action="delete" data-id="${escapeHtml(inquiry.id)}" type="button">삭제</button></div>
+            </div>
+            <div class="pill-row">
+              <span class="pill">${escapeHtml(inquiry.contactMethod || "연락 방법 미입력")}</span>
+              <span class="pill">${escapeHtml(inquiry.contact || "연락처 미입력")}</span>
+              <span class="pill">${escapeHtml(inquiry.shootType || "촬영 종류 미입력")}</span>
+              <span class="pill">${escapeHtml(inquiry.preferredDate || "날짜 미정")}</span>
+              <span class="pill">${escapeHtml(inquiry.area || "지역 미정")}</span>
+            </div>
+            <p class="lead" style="font-size:14px">${escapeHtml(inquiry.message || "문의 내용 없음")}</p>`;
+          list.append(row);
+        });
+        renderStats();
+      }
+
+      function render() {
+        bindContentInputs();
+        renderStats();
+        renderCreatePickers();
+        renderOptions();
+        renderProjectList();
+        renderInquiries();
+      }
+
+      async function loadContent() {
+        setStatus("콘텐츠를 불러오는 중입니다.");
+        try {
+          const response = await apiFetch(API_CONTENT_URL, { cache: "no-store" });
+          if (!response.ok) throw new Error("편집 서버에 연결하지 못했습니다.");
+          state.content = ensureContentShape(await response.json());
+          state.isDirty = false;
+          render();
+          setStatus("수정할 준비가 되었습니다.", "good");
+        } catch (error) {
+          const fallback = await fetch(`/portfolio/portfolio.json?updated=${Date.now()}`, { cache: "no-store" });
+          state.content = ensureContentShape(await fallback.json());
+          state.isDirty = false;
+          render();
+          setStatus("읽기 전용으로 열렸습니다. 저장하려면 관리자 토큰 또는 Netlify API 설정을 확인하세요.", "error");
+        }
+      }
+
+      async function loadInquiries() {
+        try {
+          const response = await apiFetch(API_INQUIRIES_URL, { cache: "no-store" });
+          state.inquiries = response.ok ? await response.json() : [];
+          renderInquiries();
+        } catch {
+          state.inquiries = [];
+          renderInquiries();
+        }
+      }
+
+      async function resizeImageToDataUrl(file) {
+        const sourceUrl = URL.createObjectURL(file);
+        const image = new Image();
+        await new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = reject;
+          image.src = sourceUrl;
+        });
+        const maxSize = 1800;
+        const ratio = Math.min(1, maxSize / Math.max(image.width, image.height));
+        const width = Math.round(image.width * ratio);
+        const height = Math.round(image.height * ratio);
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        context.fillStyle = "#f6f3ec";
+        context.fillRect(0, 0, width, height);
+        context.drawImage(image, 0, 0, width, height);
+        URL.revokeObjectURL(sourceUrl);
+        return canvas.toDataURL("image/jpeg", 0.84);
+      }
+
+      function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function uploadMediaDataUrl(dataUrl, file, type) {
+        try {
+          const response = await apiFetch(API_UPLOAD_MEDIA_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              dataUrl,
+              prefix: "portfolio/uploads",
+              nameParts: [type, fileNameToTitle(file.name)],
+            }),
+          });
+
+          if (!response.ok) {
+            return null;
+          }
+
+          return await response.json();
+        } catch {
+          return null;
+        }
+      }
+
+      async function fileToMedia(file) {
+        if (file.type.startsWith("image/")) {
+          const dataUrl = await resizeImageToDataUrl(file);
+          const uploaded = await uploadMediaDataUrl(dataUrl, file, "image");
+
+          if (uploaded?.src) {
+            return { type: uploaded.type || "image", src: uploaded.src, alt: fileNameToTitle(file.name), caption: "", tags: [], models: [] };
+          }
+
+          if (!IS_LOCAL_BROWSER) {
+            throw new Error("Netlify 업로드에 실패했습니다. 관리자 토큰을 확인하거나 사진을 더 작게 줄여 다시 올려주세요.");
+          }
+
+          return { type: "image", mediaDataUrl: dataUrl, alt: fileNameToTitle(file.name), caption: "", tags: [], models: [] };
+        }
+
+        if (!IS_LOCAL_BROWSER && file.size > NETLIFY_BINARY_LIMIT_BYTES) {
+          throw new Error("Netlify에서는 큰 영상 파일을 직접 올리기 어렵습니다. 4.5MB 이하의 짧은 클립을 사용하거나 Cloudinary/Supabase Storage 연동이 필요합니다.");
+        }
+
+        const dataUrl = await readFileAsDataUrl(file);
+        const uploaded = await uploadMediaDataUrl(dataUrl, file, "video");
+
+        if (uploaded?.src) {
+          return { type: uploaded.type || "video", src: uploaded.src, alt: fileNameToTitle(file.name), caption: "", tags: [], models: [] };
+        }
+
+        if (!IS_LOCAL_BROWSER) {
+          throw new Error("영상 업로드에 실패했습니다. 파일 크기와 관리자 토큰을 확인해주세요.");
+        }
+
+        return { type: "video", mediaDataUrl: dataUrl, alt: fileNameToTitle(file.name), caption: "", tags: [], models: [] };
+      }
+
+      async function addProjectMediaFiles(projectIndex, fileList) {
+        const files = Array.from(fileList || []).filter((file) => file.type.startsWith("image/") || file.type.startsWith("video/"));
+        const project = state.content.projects[projectIndex];
+        if (!project || !files.length) {
+          setStatus("사진 또는 영상 파일을 선택해주세요.", "error");
+          return;
+        }
+        state.isUploading = true;
+        $("#saveButton").disabled = true;
+        try {
+          for (let index = 0; index < files.length; index += 1) {
+            setStatus(`${index + 1}/${files.length}개 미디어를 준비하는 중입니다.`);
+            const nextMedia = await fileToMedia(files[index]);
+            if (nextMedia) {
+              project.media.push({ ...nextMedia, location: normalizeLocation(project.location) });
+            }
+          }
+          markDirty();
+          renderProjectList();
+          renderStats();
+          setStatus(`${files.length}개 미디어를 프로젝트에 추가했습니다.`, "good");
+        } catch (error) {
+          setStatus(`미디어를 처리하지 못했습니다. ${error.message}`, "error");
+        } finally {
+          state.isUploading = false;
+          $("#saveButton").disabled = false;
+        }
+      }
+
+      function addProject() {
+        const title = $("#projectTitleInput").value.trim() || "새 프로젝트";
+        const location = selectedLocationFromKey($("#projectLocationSelect").value);
+        state.content.projects.unshift({
+          id: `${Date.now()}-project`,
+          title,
+          subtitle: "",
+          description: $("#projectDescriptionInput").value.trim(),
+          category: $("#projectCategorySelect").value,
+          tags: Array.from(state.draftProjectTags),
+          models: Array.from(state.draftProjectModels),
+          location,
+          cover: "",
+          media: [],
+        });
+        $("#projectTitleInput").value = "";
+        $("#projectDescriptionInput").value = "";
+        state.draftProjectTags.clear();
+        state.draftProjectModels.clear();
+        markDirty();
+        render();
+      }
+
+      function toggleValue(list, value) {
+        const set = new Set(list || []);
+        if (set.has(value)) set.delete(value);
+        else set.add(value);
+        return Array.from(set);
+      }
+
+      function addOption(kind) {
+        if (kind === "category") {
+          const value = window.prompt("새 카테고리 이름을 입력하세요.");
+          if (value) state.content.taxonomy.categories = uniqueList([...state.content.taxonomy.categories, value]);
+        }
+        if (kind === "tag") {
+          const value = window.prompt("새 태그 이름을 입력하세요.");
+          if (value) state.content.taxonomy.tags = uniqueList([...state.content.taxonomy.tags, value]);
+        }
+        if (kind === "location") {
+          const value = window.prompt("새 장소를 '서울-마포구-연남동' 형식으로 입력하세요.");
+          if (value) {
+            const [city = "서울", district = "마포구", place = "장소 미정"] = value.split("-").map((item) => item.trim());
+            state.content.taxonomy.locations.push(normalizeLocation({ city, district, place }));
+          }
+        }
+        markDirty();
+        render();
+      }
+
+      function addModel() {
+        const name = $("#modelNameInput").value.trim();
+        if (!name) {
+          setStatus("모델 이름을 입력해주세요.", "error");
+          return;
+        }
+        const existing = state.content.models.find((model) => model.name === name);
+        const nextModel = { name, url: $("#modelUrlInput").value.trim(), note: $("#modelNoteInput").value.trim() };
+        if (existing) Object.assign(existing, nextModel);
+        else state.content.models.push(nextModel);
+        $("#modelNameInput").value = "";
+        $("#modelUrlInput").value = "";
+        $("#modelNoteInput").value = "";
+        markDirty();
+        render();
+      }
+
+      async function saveContent() {
+        if (state.isUploading) return;
+        setStatus("저장 중입니다.");
+        $("#saveButton").disabled = true;
+        try {
+          const response = await apiFetch(API_CONTENT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(state.content),
+          });
+          if (!response.ok) throw new Error("저장에 실패했습니다.");
+          state.content = ensureContentShape(await response.json());
+          state.isDirty = false;
+          render();
+          setStatus("저장됐습니다. 공개 사이트를 새로고침하면 반영됩니다.", "good");
+        } catch (error) {
+          setStatus(`${error.message} 관리자 토큰 또는 Netlify API 설정을 확인해주세요.`, "error");
+        } finally {
+          $("#saveButton").disabled = false;
+        }
+      }
+
+      async function updateInquiryStatus(id, status) {
+        const response = await apiFetch(API_INQUIRIES_URL, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, status }),
+        });
+        state.inquiries = await response.json();
+        renderInquiries();
+      }
+
+      async function deleteInquiry(id) {
+        const response = await apiFetch(`${API_INQUIRIES_URL}?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+        state.inquiries = await response.json();
+        renderInquiries();
+      }
+
+      document.querySelectorAll(".tab-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".tab-button").forEach((item) => item.classList.remove("is-active"));
+          document.querySelectorAll(".tab-panel").forEach((item) => item.classList.remove("is-active"));
+          button.classList.add("is-active");
+          $(`#panel-${button.dataset.tab}`).classList.add("is-active");
+        });
+      });
+
+      $("#reloadButton").addEventListener("click", () => {
+        loadContent();
+        loadInquiries();
+      });
+      $("#copyPublicLinkButton").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(window.location.origin);
+        setStatus("공개 사이트 링크를 복사했습니다.", "good");
+      });
+      $("#reloadInquiriesButton").addEventListener("click", loadInquiries);
+      $("#addProjectButton").addEventListener("click", addProject);
+      $("#searchCreateLocationButton").addEventListener("click", () => {
+        openLocationSearch({ type: "create-project", query: $("#projectTitleInput").value || $("#projectLocationSelect").value });
+      });
+      $("#addCategoryButton").addEventListener("click", () => addOption("category"));
+      $("#addTagButton").addEventListener("click", () => addOption("tag"));
+      $("#addLocationButton").addEventListener("click", () => addOption("location"));
+      $("#addModelButton").addEventListener("click", addModel);
+      $("#saveButton").addEventListener("click", saveContent);
+      $("#runLocationSearchButton").addEventListener("click", runLocationSearch);
+      $("#closeLocationSearchButton").addEventListener("click", closeLocationSearch);
+      $("#locationSearchInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          runLocationSearch();
+        }
+        if (event.key === "Escape") {
+          closeLocationSearch();
+        }
+      });
+      $("#locationSearchModal").addEventListener("click", (event) => {
+        if (event.target.id === "locationSearchModal") closeLocationSearch();
+        const resultButton = event.target.closest("[data-location-result]");
+        if (!resultButton) return;
+        const result = state.locationSearchResults[Number(resultButton.dataset.locationResult)];
+        if (result) applyLocationToTarget(locationFromSearchResult(result));
+      });
+
+      $("#projectTagPicker").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-create-tag]");
+        if (!button) return;
+        const value = button.dataset.value;
+        if (state.draftProjectTags.has(value)) state.draftProjectTags.delete(value);
+        else state.draftProjectTags.add(value);
+        renderCreatePickers();
+      });
+      $("#projectModelPicker").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-create-model]");
+        if (!button) return;
+        const value = button.dataset.value;
+        if (state.draftProjectModels.has(value)) state.draftProjectModels.delete(value);
+        else state.draftProjectModels.add(value);
+        renderCreatePickers();
+      });
+
+      $("#projectList").addEventListener("input", (event) => {
+        if (event.target.dataset.projectField) {
+          const project = state.content.projects[Number(event.target.dataset.projectIndex)];
+          project[event.target.dataset.projectField] = event.target.value;
+          markDirty();
+        }
+        if (event.target.dataset.mediaField) {
+          const project = state.content.projects[Number(event.target.dataset.projectIndex)];
+          const media = project.media[Number(event.target.dataset.mediaIndex)];
+          media[event.target.dataset.mediaField] = event.target.value;
+          markDirty();
+        }
+      });
+      $("#projectList").addEventListener("change", (event) => {
+        if (event.target.dataset.projectLocation) {
+          state.content.projects[Number(event.target.dataset.projectLocation)].location = selectedLocationFromKey(event.target.value);
+          markDirty();
+          renderProjectList();
+        }
+        if (event.target.dataset.mediaLocation) {
+          const project = state.content.projects[Number(event.target.dataset.projectIndex)];
+          const media = project?.media?.[Number(event.target.dataset.mediaIndex)];
+          if (media) {
+            media.location = selectedLocationFromKey(event.target.value);
+            markDirty();
+            renderProjectList();
+          }
+        }
+        if (event.target.dataset.projectMediaUpload) {
+          addProjectMediaFiles(Number(event.target.dataset.projectMediaUpload), event.target.files);
+        }
+      });
+      $("#projectList").addEventListener("click", (event) => {
+        const projectTag = event.target.closest("[data-project-tag]");
+        if (projectTag) {
+          const project = state.content.projects[Number(projectTag.dataset.projectIndex)];
+          project.tags = toggleValue(project.tags, projectTag.dataset.value);
+          markDirty();
+          renderProjectList();
+          return;
+        }
+        const projectModel = event.target.closest("[data-project-model]");
+        if (projectModel) {
+          const project = state.content.projects[Number(projectModel.dataset.projectIndex)];
+          project.models = toggleValue(project.models, projectModel.dataset.value);
+          markDirty();
+          renderProjectList();
+          return;
+        }
+        const mediaModel = event.target.closest("[data-media-model]");
+        if (mediaModel) {
+          const project = state.content.projects[Number(mediaModel.dataset.projectIndex)];
+          const media = project.media[Number(mediaModel.dataset.mediaIndex)];
+          media.models = toggleValue(media.models, mediaModel.dataset.mediaModel);
+          markDirty();
+          renderProjectList();
+          return;
+        }
+        const searchButton = event.target.closest("[data-location-search]");
+        if (searchButton) {
+          const projectIndex = Number(searchButton.dataset.projectIndex);
+          const project = state.content.projects[projectIndex];
+          if (!project) return;
+
+          if (searchButton.dataset.locationSearch === "media") {
+            const mediaIndex = Number(searchButton.dataset.mediaIndex);
+            const media = project.media[mediaIndex];
+            openLocationSearch({
+              type: "media",
+              projectIndex,
+              mediaIndex,
+              query: getLocationLabel(media.location || project.location),
+            });
+            return;
+          }
+
+          openLocationSearch({
+            type: "project",
+            projectIndex,
+            query: getLocationLabel(project.location),
+          });
+          return;
+        }
+        const actionButton = event.target.closest("[data-project-action]");
+        if (!actionButton) return;
+        const projectIndex = Number(actionButton.dataset.projectIndex);
+        const action = actionButton.dataset.projectAction;
+        const projects = state.content.projects;
+        if (action === "move-up" && projectIndex > 0) projects.splice(projectIndex - 1, 0, projects.splice(projectIndex, 1)[0]);
+        if (action === "move-down" && projectIndex < projects.length - 1) projects.splice(projectIndex + 1, 0, projects.splice(projectIndex, 1)[0]);
+        if (action === "delete" && window.confirm("이 프로젝트를 삭제할까요?")) projects.splice(projectIndex, 1);
+        if (action === "delete-media") projects[projectIndex].media.splice(Number(actionButton.dataset.mediaIndex), 1);
+        markDirty();
+        renderProjectList();
+        renderStats();
+      });
+
+      $("#inquiryList").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-inquiry-action]");
+        if (!button) return;
+        if (button.dataset.inquiryAction === "read") updateInquiryStatus(button.dataset.id, "read");
+        if (button.dataset.inquiryAction === "delete" && window.confirm("이 문의를 삭제할까요?")) deleteInquiry(button.dataset.id);
+      });
+
+      window.addEventListener("beforeunload", (event) => {
+        if (!state.isDirty) return;
+        event.preventDefault();
+        event.returnValue = "";
+      });
+
+      loadContent();
+      loadInquiries();
+    </script>
+  </body>
+</html>

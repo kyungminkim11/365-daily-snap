@@ -1,0 +1,28 @@
+{
+  "name": "365-daily-snap",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "vite": "vite",
+    "content": "node content-server.mjs",
+    "tunnel": "cloudflared tunnel --url http://localhost:5173",
+    "netlify:dev": "npx netlify dev",
+    "netlify:deploy": "npx netlify deploy --build",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^10.7.9",
+    "@vitejs/plugin-react": "^4.5.2",
+    "autoprefixer": "^10.4.21",
+    "framer-motion": "^11.18.2",
+    "lucide-react": "^0.468.0",
+    "postcss": "^8.5.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.17",
+    "vite": "^5.4.19"
+  }
+}

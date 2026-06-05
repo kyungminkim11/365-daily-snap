@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f5f1e8" />
+  <rect x="58" y="58" width="1084" height="514" fill="none" stroke="#1d1b18" stroke-opacity="0.18" />
+  <rect x="720" y="92" width="326" height="446" fill="#d8d0c3" />
+  <rect x="754" y="128" width="258" height="374" fill="none" stroke="#1d1b18" stroke-opacity="0.22" />
+  <circle cx="883" cy="315" r="72" fill="none" stroke="#1d1b18" stroke-opacity="0.35" stroke-width="3" />
+  <rect x="128" y="126" width="72" height="2" fill="#1d1b18" />
+  <text x="128" y="176" fill="#766f65" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="7">
+    SEOUL PORTRAIT SNAP
+  </text>
+  <text x="126" y="288" fill="#1d1b18" font-family="Arial, sans-serif" font-size="74" font-weight="600" letter-spacing="-3">
+    365 Daily Snap
+  </text>
+  <text x="130" y="356" fill="#34302a" font-family="Arial, sans-serif" font-size="38" font-weight="400">
+    일상 같은 순간을, 오래 남는 사진으로.
+  </text>
+  <text x="130" y="428" fill="#766f65" font-family="Arial, sans-serif" font-size="27">
+    서울 · 수도권 인물 스냅 / 커플 스냅 / 프로필 촬영
+  </text>
+  <text x="130" y="502" fill="#1d1b18" font-family="Arial, sans-serif" font-size="23" font-weight="700">
+    @365daily.snap
+  </text>
+</svg>
