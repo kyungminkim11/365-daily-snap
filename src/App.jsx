@@ -1170,32 +1170,63 @@ function App() {
   const [activeFilter, setActiveFilter] = useState("전체");
   const [selectedPortfolio, setSelectedPortfolio] = useState(null);
   const [selectedReview, setSelectedReview] = useState(null);
+
   const portfolioItems = useMemo(() => buildPortfolioItems(content), [content]);
+
   const filters = useMemo(() => {
     const itemTags = portfolioItems.flatMap((item) => item.tags || []);
     const preferredFilters = Array.isArray(content.portfolioFilters) ? content.portfolioFilters : [];
     return Array.from(new Set(["전체", ...preferredFilters, ...itemTags].filter(Boolean)));
   }, [content.portfolioFilters, portfolioItems]);
+
   const visiblePortfolioItems = useMemo(
-    () => (activeFilter === "전체" ? portfolioItems : portfolioItems.filter((item) => item.tags?.includes(activeFilter))),
+    () =>
+      activeFilter === "전체"
+        ? portfolioItems
+        : portfolioItems.filter((item) => item.tags?.includes(activeFilter)),
     [activeFilter, portfolioItems],
   );
 
   useEffect(() => {
     let isMounted = true;
 
-    fetch(`/portfolio/portfolio.json?updated=${Date.now()}`, { cache: "no-store" })
-      .then((response) => (response.ok ? response.json() : fallbackContent))
-      .then((data) => {
+    const loadContent = async () => {
+      try {
+        const response = await fetch(`/api/content?updated=${Date.now()}`, {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error("API content load failed");
+        }
+
+        const data = await response.json();
+
         if (isMounted) {
           setContent(normalizeContent(data));
         }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setContent(normalizeContent(fallbackContent));
+      } catch (error) {
+        console.warn("API 콘텐츠를 불러오지 못해 기본 JSON을 사용합니다.", error);
+
+        try {
+          const fallbackResponse = await fetch(`/portfolio/portfolio.json?updated=${Date.now()}`, {
+            cache: "no-store",
+          });
+
+          const fallbackData = fallbackResponse.ok ? await fallbackResponse.json() : fallbackContent;
+
+          if (isMounted) {
+            setContent(normalizeContent(fallbackData));
+          }
+        } catch {
+          if (isMounted) {
+            setContent(normalizeContent(fallbackContent));
+          }
         }
-      });
+      }
+    };
+
+    loadContent();
 
     return () => {
       isMounted = false;
@@ -1203,11 +1234,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const targetMap = { "/portfolio": "portfolio", "/projects": "portfolio", "/process": "process", "/guide": "guide", "/reviews": "reviews", "/collab": "collab", "/contact": "contact" };
+    const targetMap = {
+      "/portfolio": "portfolio",
+      "/projects": "portfolio",
+      "/process": "process",
+      "/guide": "guide",
+      "/reviews": "reviews",
+      "/collab": "collab",
+      "/contact": "contact",
+    };
+
     const target = targetMap[window.location.pathname];
 
     if (target) {
-      window.requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView({ behavior: "smooth" }));
+      window.requestAnimationFrame(() =>
+        document.getElementById(target)?.scrollIntoView({ behavior: "smooth" }),
+      );
     }
   }, []);
 
@@ -1217,7 +1259,11 @@ function App() {
     const url = `${window.location.origin}/reviews`;
 
     if (navigator.share) {
-      await navigator.share({ title: "365 Daily Snap 촬영 후기", text: "함께 촬영한 분들이 남긴 실제 후기입니다.", url });
+      await navigator.share({
+        title: "365 Daily Snap 촬영 후기",
+        text: "함께 촬영한 분들이 남긴 실제 후기입니다.",
+        url,
+      });
       return;
     }
 
@@ -1225,22 +1271,50 @@ function App() {
   };
 
   return (
-    <div className="site" onContextMenu={(event) => event.target.closest("[data-protected-media='true']") && event.preventDefault()}>
+    <div
+      className="site"
+      onContextMenu={(event) =>
+        event.target.closest("[data-protected-media='true']") && event.preventDefault()
+      }
+    >
       <header className="site-header">
         <a href="/" className="brand" onClick={() => setMenuOpen(false)}>
           365 Daily Snap
           <span>Portrait Photography</span>
         </a>
+
         <nav className={menuOpen ? "is-open" : ""} aria-label="주요 메뉴">
-          <a href="#portfolio" onClick={() => setMenuOpen(false)}>Portfolio</a>
-          <a href="#process" onClick={() => setMenuOpen(false)}>Process</a>
-          <a href="#guide" onClick={() => setMenuOpen(false)}>Guide</a>
-          <a href="#reviews" onClick={() => setMenuOpen(false)}>Reviews</a>
-          <a href="#collab" onClick={() => setMenuOpen(false)}>Collaboration</a>
-          <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
+          <a href="#portfolio" onClick={() => setMenuOpen(false)}>
+            Portfolio
+          </a>
+          <a href="#process" onClick={() => setMenuOpen(false)}>
+            Process
+          </a>
+          <a href="#guide" onClick={() => setMenuOpen(false)}>
+            Guide
+          </a>
+          <a href="#reviews" onClick={() => setMenuOpen(false)}>
+            Reviews
+          </a>
+          <a href="#collab" onClick={() => setMenuOpen(false)}>
+            Collaboration
+          </a>
+          <a href="#contact" onClick={() => setMenuOpen(false)}>
+            Contact
+          </a>
         </nav>
-        <a href="#collab" className="header-cta">협업 문의</a>
-        <button type="button" className="menu-button" onClick={() => setMenuOpen((value) => !value)} aria-label="모바일 메뉴 열기" aria-expanded={menuOpen}>
+
+        <a href="#collab" className="header-cta">
+          협업 문의
+        </a>
+
+        <button
+          type="button"
+          className="menu-button"
+          onClick={() => setMenuOpen((value) => !value)}
+          aria-label="모바일 메뉴 열기"
+          aria-expanded={menuOpen}
+        >
           {menuOpen ? <X className="icon" /> : <Menu className="icon" />}
         </button>
       </header>
@@ -1251,20 +1325,27 @@ function App() {
             <p className="eyebrow">{content.hero.eyebrow}</p>
             <h1>{content.hero.title}</h1>
             <p>{content.hero.description}</p>
+
             <div className="hero-actions">
               <a href="#portfolio" className="primary-button">
                 포트폴리오 보기
                 <ArrowRight className="icon" />
               </a>
-              <a href="#reviews" className="secondary-button">실제 후기 보기</a>
-              <a href="#collab" className="secondary-button">협업 문의하기</a>
+              <a href="#reviews" className="secondary-button">
+                실제 후기 보기
+              </a>
+              <a href="#collab" className="secondary-button">
+                협업 문의하기
+              </a>
             </div>
+
             <div className="hero-stats">
               <span>Seoul</span>
               <span>{portfolioItems.length} Photos</span>
               <span>{content.testimonials.length} Reviews</span>
             </div>
           </motion.div>
+
           <div className="hero-gallery">
             <PhotoFrame item={heroItems[0]} className="hero-main" loading="eager" />
             <div>
@@ -1275,18 +1356,34 @@ function App() {
         </section>
 
         <section id="portfolio" className="section">
-          <SectionHeading eyebrow="Portfolio" title={content.portfolioIntro.title} description={content.portfolioIntro.description} />
+          <SectionHeading
+            eyebrow="Portfolio"
+            title={content.portfolioIntro.title}
+            description={content.portfolioIntro.description}
+          />
+
           <div className="filter-row" aria-label="포트폴리오 필터">
             {filters.slice(0, 18).map((filter) => (
-              <button key={filter} type="button" className={activeFilter === filter ? "is-active" : ""} onClick={() => setActiveFilter(filter)}>
+              <button
+                key={filter}
+                type="button"
+                className={activeFilter === filter ? "is-active" : ""}
+                onClick={() => setActiveFilter(filter)}
+              >
                 {filter}
               </button>
             ))}
           </div>
+
           <div className="portfolio-grid">
             {visiblePortfolioItems.slice(0, 18).map((item) => (
               <article className="portfolio-card" key={item.key}>
-                <button type="button" className="portfolio-card-button" onClick={() => setSelectedPortfolio(item)} aria-label={`${item.title} 크게 보기`}>
+                <button
+                  type="button"
+                  className="portfolio-card-button"
+                  onClick={() => setSelectedPortfolio(item)}
+                  aria-label={`${item.title} 크게 보기`}
+                >
                   <PhotoFrame item={item} />
                   <div>
                     <span>{item.category}</span>
@@ -1306,12 +1403,17 @@ function App() {
 
         <section id="process" className="section process-section">
           <div className="process-heading">
-            <SectionHeading eyebrow="Process" title={content.shootingProcess.title} description={content.shootingProcess.description} />
+            <SectionHeading
+              eyebrow="Process"
+              title={content.shootingProcess.title}
+              description={content.shootingProcess.description}
+            />
             <a href="#collab" className="secondary-button">
               {content.shootingProcess.ctaLabel}
               <ArrowRight className="icon" />
             </a>
           </div>
+
           <div className="process-grid" aria-label="촬영 프로세스 단계">
             {content.shootingProcess.steps.map((step, index) => (
               <ProcessCard key={`${step.number}-${step.title}`} step={step} index={index} />
@@ -1326,15 +1428,20 @@ function App() {
               title="촬영 전 준비 안내"
               description="처음 촬영하는 분도 부담 없이 준비할 수 있도록 꼭 필요한 내용만 정리했습니다."
             />
+
             <div className="prep-note">
               <strong>문의할 때 함께 보내면 좋아요</strong>
-              <p>희망 날짜, 장소, 촬영 목적, 참고 이미지, 공개 가능 범위를 알려주시면 상담이 훨씬 빨라집니다.</p>
+              <p>
+                희망 날짜, 장소, 촬영 목적, 참고 이미지, 공개 가능 범위를 알려주시면 상담이 훨씬
+                빨라집니다.
+              </p>
               <a href="#collab" className="text-button">
                 준비 내용으로 문의하기
                 <ArrowRight className="icon" />
               </a>
             </div>
           </div>
+
           <div className="prep-grid">
             {PREP_GUIDE_ITEMS.map((item) => (
               <PrepGuideCard key={item.title} item={item} />
@@ -1344,15 +1451,25 @@ function App() {
 
         <section id="reviews" className="section reviews-section">
           <div className="reviews-heading">
-            <SectionHeading eyebrow="Reviews" title={content.testimonialsIntro.title} description={content.testimonialsIntro.description} />
+            <SectionHeading
+              eyebrow="Reviews"
+              title={content.testimonialsIntro.title}
+              description={content.testimonialsIntro.description}
+            />
+
             <button type="button" onClick={shareReviews} className="secondary-button">
               후기 공유
               <Share2 className="icon" />
             </button>
           </div>
+
           <div className="review-grid">
             {content.testimonials.map((review) => (
-              <ReviewCard key={`${review.name}-${review.date}`} review={review} onOpen={setSelectedReview} />
+              <ReviewCard
+                key={`${review.name}-${review.date}`}
+                review={review}
+                onOpen={setSelectedReview}
+              />
             ))}
           </div>
         </section>
@@ -1362,21 +1479,24 @@ function App() {
             <p className="eyebrow">Model Collaboration</p>
             <h2>모델 협업 촬영 문의</h2>
             <p>
-              365 Daily Snap은 인물 중심의 포트폴리오 협업 촬영을 진행합니다. 촬영 목적과 콘셉트를 먼저 정리하고,
-              현장에서는 자연스러운 표정과 흐름을 함께 만들어갑니다.
+              365 Daily Snap은 인물 중심의 포트폴리오 협업 촬영을 진행합니다. 촬영 목적과 콘셉트를
+              먼저 정리하고, 현장에서는 자연스러운 표정과 흐름을 함께 만들어갑니다.
             </p>
+
             <div className="availability-note">
               <p className="eyebrow">Schedule</p>
               <h3>촬영 일정 안내</h3>
               <p>
-                365 Daily Snap은 사전 조율된 일정에 맞춰 촬영을 진행합니다. 주말과 공휴일, 평일 저녁 시간대 촬영을
-                중심으로 운영하며, 평일 낮 촬영은 가능한 일정에 한해 별도 조율합니다.
+                365 Daily Snap은 사전 조율된 일정에 맞춰 촬영을 진행합니다. 주말과 공휴일, 평일
+                저녁 시간대 촬영을 중심으로 운영하며, 평일 낮 촬영은 가능한 일정에 한해 별도
+                조율합니다.
               </p>
               <p>
-                서울과 수도권을 중심으로 촬영하며, 일산·고양 지역도 편하게 문의하실 수 있습니다. 그 외 지역이나
-                시간대는 일정에 따라 조율 가능하니 희망 날짜와 장소를 함께 보내주세요.
+                서울과 수도권을 중심으로 촬영하며, 일산·고양 지역도 편하게 문의하실 수 있습니다. 그
+                외 지역이나 시간대는 일정에 따라 조율 가능하니 희망 날짜와 장소를 함께 보내주세요.
               </p>
             </div>
+
             <div className="contact-actions">
               <a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer" className="primary-button">
                 <MessageCircle className="icon" />
@@ -1388,6 +1508,7 @@ function App() {
               </a>
             </div>
           </div>
+
           <ImprovedInquiryForm />
         </section>
 
@@ -1395,6 +1516,7 @@ function App() {
           <Camera className="contact-mark" />
           <h2>사진이 필요한 순간을 보내주세요.</h2>
           <p>촬영 목적, 희망 날짜, 장소를 남겨주시면 확인 후 답변드립니다.</p>
+
           <div className="contact-actions center">
             <a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer" className="primary-button">
               {CONTACT.kakaoOpenChatLabel}
