@@ -67,16 +67,28 @@ export function parseJsonBody(event) {
   return JSON.parse(rawBody);
 }
 
+function getBlobStoreOptions() {
+  const siteID = process.env.NETLIFY_BLOBS_SITE_ID || process.env.SITE_ID || process.env.NETLIFY_SITE_ID;
+  const token = process.env.NETLIFY_BLOBS_TOKEN || process.env.NETLIFY_AUTH_TOKEN || process.env.NETLIFY_API_TOKEN;
+
+  return siteID && token ? { siteID, token } : undefined;
+}
+
+function getBlobStore(name) {
+  const options = getBlobStoreOptions();
+  return options ? getStore(name, options) : getStore(name);
+}
+
 function getContentStore() {
-  return getStore("portfolio-content");
+  return getBlobStore("portfolio-content");
 }
 
 function getInquiryStore() {
-  return getStore("portfolio-inquiries");
+  return getBlobStore("portfolio-inquiries");
 }
 
 export function getMediaStore() {
-  return getStore("portfolio-media");
+  return getBlobStore("portfolio-media");
 }
 
 async function readStaticContent() {

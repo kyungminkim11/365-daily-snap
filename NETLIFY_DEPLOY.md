@@ -32,6 +32,18 @@ Publish directory: dist
 NETLIFY_ADMIN_TOKEN=내가_정한_긴_관리자_비밀번호
 ```
 
+관리자 저장 기능이 `The environment has not been configured to use Netlify Blobs` 오류를 내면 아래 값도 추가합니다.
+
+```text
+NETLIFY_BLOBS_TOKEN=Netlify Personal Access Token
+```
+
+필요한 경우 Project ID도 함께 추가합니다. Netlify의 `Project configuration` -> `General` -> `Project information`에서 확인할 수 있습니다.
+
+```text
+NETLIFY_BLOBS_SITE_ID=Netlify Project ID
+```
+
 6. Deploy를 실행합니다.
 7. 배포가 끝나면 아래 주소를 엽니다.
 
