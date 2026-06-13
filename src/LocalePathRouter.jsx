@@ -37,7 +37,7 @@ export default function LocalePathRouter() {
       document.documentElement.dataset.siteLanguage = language;
 
       if (currentPath !== nextPath) {
-        window.history.pushState({}, "", nextPath);
+        window.location.assign(nextPath);
       }
     };
 
@@ -49,6 +49,7 @@ export default function LocalePathRouter() {
 
       const language = SHORT_LABEL_TO_LANGUAGE[button.textContent.trim().toUpperCase()];
       if (language) {
+        event.preventDefault();
         syncPath(language);
       }
     };
