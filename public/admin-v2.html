@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>365 Daily Snap Admin Plus</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f6f3ec;
+        --ink: #1d1b18;
+        --muted: #766f65;
+        --line: rgba(29, 27, 24, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, Pretendard, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .admin-frame-shell {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        width: 100%;
+        height: 100%;
+      }
+
+      .admin-plus-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(246, 243, 236, 0.94);
+        padding: 10px clamp(12px, 3vw, 20px);
+        backdrop-filter: blur(14px);
+      }
+
+      .admin-plus-brand {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .admin-plus-brand strong {
+        overflow: hidden;
+        font-size: 14px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .admin-plus-brand span {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .admin-plus-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .admin-plus-actions a,
+      .admin-plus-actions button {
+        display: inline-flex;
+        min-height: 34px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 253, 248, 0.65);
+        color: var(--ink);
+        padding: 7px 11px;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 760;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .admin-plus-actions a.primary {
+        border-color: var(--ink);
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      .admin-frame {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: var(--paper);
+      }
+
+      .admin-load-message {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        z-index: 1;
+        transform: translate(-50%, -50%);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 680px) {
+        .admin-plus-bar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .admin-plus-actions {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .admin-plus-actions a,
+        .admin-plus-actions button {
+          width: 100%;
+          padding-inline: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="admin-frame-shell">
+      <header class="admin-plus-bar">
+        <div class="admin-plus-brand">
+          <strong>365 Daily Snap Admin Plus</strong>
+          <span>workflow enhanced manager</span>
+        </div>
+        <nav class="admin-plus-actions" aria-label="관리자 빠른 링크">
+          <a class="primary" href="/ko" target="_blank" rel="noreferrer">KO</a>
+          <a href="/ja" target="_blank" rel="noreferrer">JP</a>
+          <a href="/en" target="_blank" rel="noreferrer">EN</a>
+          <a href="/admin.html" target="_blank" rel="noreferrer">기존 관리자</a>
+          <button type="button" id="reloadFrameButton">새로고침</button>
+        </nav>
+      </header>
+      <p class="admin-load-message" id="loadMessage">관리자 페이지를 불러오는 중입니다.</p>
+      <iframe class="admin-frame" id="adminFrame" src="/admin.html" title="365 Daily Snap 관리자"></iframe>
+    </div>
+
+    <script>
+      const frame = document.getElementById("adminFrame");
+      const message = document.getElementById("loadMessage");
+      const reloadButton = document.getElementById("reloadFrameButton");
+
+      function injectAsset(doc, tagName, attributes) {
+        const existing = doc.querySelector(`[data-admin-plus-asset="${attributes.href || attributes.src}"]`);
+        if (existing) return;
+
+        const element = doc.createElement(tagName);
+        Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+        element.setAttribute("data-admin-plus-asset", attributes.href || attributes.src);
+        doc.head.appendChild(element);
+      }
+
+      function enhanceFrame() {
+        try {
+          const doc = frame.contentDocument;
+          if (!doc) return;
+
+          injectAsset(doc, "link", { rel: "stylesheet", href: "/admin-enhance.css" });
+          injectAsset(doc, "script", { src: "/admin-enhance.js", defer: "true" });
+          message.hidden = true;
+        } catch (error) {
+          message.textContent = "관리자 개선 레이어를 불러오지 못했습니다. 기존 관리자 페이지를 사용해주세요.";
+        }
+      }
+
+      frame.addEventListener("load", enhanceFrame);
+      reloadButton.addEventListener("click", () => {
+        message.hidden = false;
+        frame.contentWindow?.location.reload();
+      });
+    </script>
+  </body>
+</html>
