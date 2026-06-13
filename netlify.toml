@@ -16,6 +16,12 @@
   publish = "dist"
 
 [[redirects]]
+  from = "/"
+  to = "/ko"
+  status = 302
+  force = false
+
+[[redirects]]
   from = "/api/content"
   to = "/.netlify/functions/content"
   status = 200
@@ -36,6 +42,51 @@
   status = 200
 
 [[redirects]]
+  from = "/ko/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/ja/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/en/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/ko"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/ja"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/en"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/portfolio/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
