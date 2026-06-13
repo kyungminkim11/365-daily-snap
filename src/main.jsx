@@ -6,6 +6,7 @@ import LocalePathRouter from "./LocalePathRouter.jsx";
 import MultiLanguage from "./MultiLanguage.jsx";
 import GrowthSections from "./GrowthSections.jsx";
 import PerformanceHints from "./PerformanceHints.jsx";
+import MotionExperience from "./MotionExperience.jsx";
 import "./index.css";
 import "./ux-refresh.css";
 import "./responsive-fix.css";
@@ -16,6 +17,7 @@ import "./growth-sections.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <LocalePathRouter />
+    <MotionExperience />
     <App />
     <GrowthSections />
     <InstagramQuickLink />
