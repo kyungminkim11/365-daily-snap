@@ -4,6 +4,7 @@ import App from "./App.jsx";
 import InstagramQuickLink from "./InstagramQuickLink.jsx";
 import LocalePathRouter from "./LocalePathRouter.jsx";
 import MultiLanguage from "./MultiLanguage.jsx";
+import BookingConversionBoost from "./BookingConversionBoost.jsx";
 import GrowthSections from "./GrowthSections.jsx";
 import PerformanceHints from "./PerformanceHints.jsx";
 import MotionExperience from "./MotionExperience.jsx";
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <LocalePathRouter />
     <MotionExperience />
     <App />
+    <BookingConversionBoost />
     <GrowthSections />
     <InstagramQuickLink />
     <MultiLanguage />
