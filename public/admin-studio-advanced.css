@@ -1,0 +1,95 @@
+.project-editor-box,
+.backup-box,
+.compress-tools {
+  border: 1px solid rgba(29, 27, 24, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.36);
+  padding: 14px;
+  margin-top: 14px;
+}
+
+.project-editor-box h3,
+.backup-box h3,
+.compress-tools h3 {
+  margin-bottom: 10px;
+}
+
+.backup-box p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.compact-actions {
+  align-items: center;
+}
+
+.file-restore-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.file-restore-button input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.media-size-line {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.media-card[data-status="queued"] .media-size-line {
+  color: #326b42;
+}
+
+.status-card span:last-child {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(29, 27, 24, 0.08);
+  padding: 6px 9px;
+}
+
+.media-card.is-private {
+  opacity: 0.72;
+}
+
+.media-card.is-draft::before,
+.media-card.is-private::before,
+.media-card.is-featured::before {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 3;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.92);
+  color: var(--ink);
+  padding: 7px 9px;
+  font-size: 11px;
+  font-weight: 850;
+  box-shadow: 0 8px 20px rgba(29, 27, 24, 0.1);
+}
+
+.media-card.is-draft::before {
+  content: "임시";
+}
+
+.media-card.is-private::before {
+  content: "비공개";
+}
+
+.media-card.is-featured::before {
+  content: "대표";
+}
+
+@media (max-width: 720px) {
+  .compact-actions {
+    grid-template-columns: 1fr;
+  }
+}
