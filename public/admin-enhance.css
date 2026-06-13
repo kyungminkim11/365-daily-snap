@@ -1,0 +1,415 @@
+/* Admin UX enhancement layer. Loaded after the original inline admin CSS. */
+:root {
+  --admin-accent: #a56a43;
+  --admin-accent-soft: rgba(165, 106, 67, 0.12);
+  --admin-panel-strong: rgba(255, 253, 248, 0.92);
+  --admin-radius-sm: 10px;
+  --admin-radius-md: 16px;
+  --admin-radius-lg: 22px;
+}
+
+html {
+  scroll-padding-top: 128px;
+}
+
+body {
+  background:
+    radial-gradient(circle at 8% 3%, rgba(255, 255, 255, 0.72), transparent 28rem),
+    radial-gradient(circle at 92% 12%, rgba(165, 106, 67, 0.1), transparent 30rem),
+    var(--paper);
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button,
+.file-button,
+.tab-button,
+.chip,
+input,
+textarea,
+select,
+.panel-card,
+.item-card,
+.inquiry-card,
+.quick-strip,
+.notice,
+.search-dialog,
+.map-preview,
+.preview,
+.media-thumb,
+.media-tile,
+.empty-state {
+  border-radius: var(--admin-radius-md) !important;
+}
+
+.button,
+.file-button {
+  min-height: 44px;
+  border-color: transparent;
+  box-shadow: 0 10px 26px rgba(29, 27, 24, 0.08);
+}
+
+.button.secondary,
+.file-button.secondary {
+  background: rgba(255, 253, 248, 0.55);
+  box-shadow: none;
+}
+
+.button:hover,
+.file-button:hover {
+  transform: translateY(-1px);
+}
+
+.topbar {
+  box-shadow: 0 12px 34px rgba(29, 27, 24, 0.06);
+}
+
+.topbar-inner {
+  min-height: 72px;
+}
+
+.brand {
+  font-size: 18px;
+}
+
+.hero {
+  align-items: stretch;
+  padding-top: 34px;
+}
+
+.hero > div:first-child,
+.stats,
+.quick-strip,
+.notice,
+.panel-card,
+.item-card,
+.inquiry-card {
+  box-shadow: 0 18px 56px rgba(29, 27, 24, 0.055);
+}
+
+.hero > div:first-child {
+  display: grid;
+  align-content: center;
+  border: 1px solid rgba(29, 27, 24, 0.08);
+  border-radius: var(--admin-radius-lg);
+  background: rgba(255, 253, 248, 0.48);
+  padding: clamp(20px, 3vw, 30px);
+}
+
+.stats {
+  overflow: hidden;
+  border-color: rgba(29, 27, 24, 0.1);
+  border-radius: var(--admin-radius-lg);
+  background: var(--admin-panel-strong);
+}
+
+.stat {
+  min-height: 110px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent);
+}
+
+.stat strong {
+  color: var(--ink);
+}
+
+.notice {
+  display: grid;
+  gap: 4px;
+  border-color: rgba(165, 106, 67, 0.22);
+  background: var(--admin-accent-soft);
+  color: var(--charcoal);
+}
+
+.notice::before {
+  content: "관리 체크포인트";
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.quick-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  border: 0;
+  background: transparent;
+}
+
+.quick-step {
+  border: 1px solid rgba(29, 27, 24, 0.1);
+  border-radius: var(--admin-radius-md);
+  background: var(--admin-panel-strong);
+}
+
+.quick-step span {
+  width: fit-content;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 5px 8px;
+}
+
+.tabs {
+  top: 72px;
+  margin-inline: calc((100vw - min(1280px, calc(100vw - 32px))) / -2);
+  padding-inline: max(16px, calc((100vw - 1280px) / 2 + 16px));
+}
+
+.tab-button,
+.chip {
+  min-height: 38px;
+}
+
+.tab-button.is-active,
+.chip.is-active {
+  border-color: transparent;
+  box-shadow: 0 10px 24px rgba(29, 27, 24, 0.12);
+}
+
+.panel-card,
+.item-card,
+.inquiry-card {
+  border-color: rgba(29, 27, 24, 0.1);
+  background: rgba(255, 253, 248, 0.78);
+}
+
+.panel-head {
+  gap: 10px;
+}
+
+.panel-head h2 {
+  text-wrap: balance;
+}
+
+input,
+textarea,
+select {
+  min-height: 44px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+textarea {
+  min-height: 104px;
+}
+
+.item-card {
+  grid-template-columns: minmax(230px, 0.28fr) minmax(0, 1fr);
+  padding: 16px;
+}
+
+.preview,
+.media-thumb {
+  border-color: rgba(29, 27, 24, 0.1);
+}
+
+.project-toolbar {
+  position: sticky;
+  top: 126px;
+  z-index: 5;
+  border: 1px solid rgba(29, 27, 24, 0.08);
+  border-radius: var(--admin-radius-md);
+  background: rgba(255, 253, 248, 0.9);
+  padding: 12px;
+  backdrop-filter: blur(14px);
+}
+
+.media-grid {
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+
+.media-tile {
+  border-color: rgba(29, 27, 24, 0.1);
+}
+
+.savebar {
+  box-shadow: 0 -14px 36px rgba(29, 27, 24, 0.08);
+}
+
+.savebar-inner {
+  min-height: 54px;
+}
+
+.status {
+  font-weight: 620;
+}
+
+.admin-boost-panel {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+  border: 1px solid rgba(29, 27, 24, 0.1);
+  border-radius: var(--admin-radius-lg);
+  background: rgba(255, 253, 248, 0.78);
+  padding: clamp(14px, 2vw, 18px);
+  box-shadow: 0 18px 56px rgba(29, 27, 24, 0.055);
+}
+
+.admin-boost-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.admin-boost-head h2 {
+  margin: 4px 0 0;
+  font-size: clamp(22px, 3vw, 32px);
+}
+
+.admin-boost-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-boost-card {
+  border: 1px solid rgba(29, 27, 24, 0.1);
+  border-radius: var(--admin-radius-md);
+  background: rgba(255, 255, 255, 0.42);
+  padding: 13px;
+}
+
+.admin-boost-card strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.admin-boost-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.admin-boost-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-floating-tools {
+  position: fixed;
+  right: 16px;
+  bottom: 82px;
+  z-index: 45;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-floating-tools .button {
+  min-height: 38px;
+  border-radius: 999px !important;
+  padding-inline: 12px;
+  font-size: 12px;
+}
+
+.admin-search-box {
+  width: min(100%, 420px);
+}
+
+.admin-search-box input {
+  border-radius: 999px !important;
+  padding-inline: 16px;
+}
+
+.admin-hidden-by-search {
+  display: none !important;
+}
+
+.admin-page-watermark {
+  position: fixed;
+  left: 16px;
+  bottom: 82px;
+  z-index: 39;
+  border: 1px solid rgba(29, 27, 24, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.9);
+  color: var(--muted);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 760;
+  box-shadow: 0 10px 30px rgba(29, 27, 24, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+@media (max-width: 980px) {
+  .tabs {
+    margin-inline: -16px;
+    padding-inline: 16px;
+  }
+
+  .project-toolbar {
+    position: static;
+  }
+
+  .admin-boost-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  html {
+    scroll-padding-top: 16px;
+  }
+
+  body {
+    padding-bottom: 178px;
+  }
+
+  .topbar .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .hero > div:first-child {
+    padding: 18px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-strip,
+  .admin-boost-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    position: sticky;
+    top: 0;
+    z-index: 55;
+  }
+
+  .media-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-boost-head {
+    display: grid;
+  }
+
+  .admin-search-box {
+    width: 100%;
+  }
+
+  .admin-floating-tools {
+    right: 12px;
+    bottom: 104px;
+  }
+
+  .admin-floating-tools .button {
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0 10px;
+  }
+
+  .admin-page-watermark {
+    display: none;
+  }
+}
