@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/admin-studio.css" />
+    <title>365 Daily Snap Studio Admin</title>
+  </head>
+  <body>
+    <div class="studio-shell">
+      <header class="studio-topbar">
+        <div>
+          <p class="eyebrow">365 Daily Snap Admin</p>
+          <h1>사진 업로드 스튜디오</h1>
+        </div>
+        <nav class="top-actions" aria-label="빠른 링크">
+          <a href="/ko" target="_blank" rel="noreferrer">KO 미리보기</a>
+          <a href="/ja" target="_blank" rel="noreferrer">JP</a>
+          <a href="/en" target="_blank" rel="noreferrer">EN</a>
+          <a href="/admin.html" target="_blank" rel="noreferrer">기존 관리자</a>
+        </nav>
+      </header>
+
+      <section class="studio-hero">
+        <div>
+          <p class="eyebrow">Upload first workflow</p>
+          <h2>여러 장 올리고, 한 번에 정리하고, 바로 저장하세요.</h2>
+          <p>
+            프로젝트 선택 → 사진 드롭 → 공통 태그 적용 → 대표 사진 선택 → 저장 순서로 작업합니다.
+            촬영 끝나고 노트북이나 폰에서 바로 정리하기 쉽게 만들었습니다.
+          </p>
+        </div>
+        <aside class="status-card">
+          <strong id="saveState">불러오기 전</strong>
+          <span id="projectCount">0 프로젝트</span>
+          <span id="mediaCount">0 사진/영상</span>
+          <span id="selectedProjectInfo">프로젝트를 선택하세요</span>
+        </aside>
+      </section>
+
+      <main class="studio-grid">
+        <section class="panel setup-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">1. 기본 설정</p>
+              <h2>작업할 프로젝트</h2>
+            </div>
+            <button class="ghost-button" id="reloadButton" type="button">새로고침</button>
+          </div>
+
+          <label class="field">
+            관리자 키
+            <input id="adminKey" type="password" autocomplete="current-password" placeholder="기존 관리자 토큰 입력" />
+          </label>
+
+          <label class="field">
+            프로젝트 선택
+            <select id="projectSelect"></select>
+          </label>
+
+          <div class="new-project-box">
+            <h3>새 프로젝트 빠르게 만들기</h3>
+            <div class="field-grid two">
+              <label class="field">제목 <input id="newTitle" placeholder="예: 도쿄 시부야 야간 스냅" /></label>
+              <label class="field">부제 <input id="newSubtitle" placeholder="예: Tokyo / Shibuya" /></label>
+            </div>
+            <label class="field">설명 <textarea id="newDescription" placeholder="촬영 분위기, 장소, 모델, 사용 목적 등을 간단히 적어주세요."></textarea></label>
+            <div class="field-grid two">
+              <label class="field">카테고리 <select id="categorySelect"></select></label>
+              <label class="field">장소 <select id="locationSelect"></select></label>
+            </div>
+            <button class="primary-button" id="createProjectButton" type="button">새 프로젝트 만들기</button>
+          </div>
+        </section>
+
+        <section class="panel upload-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">2. 여러 사진 올리기</p>
+              <h2>드래그하거나 한 번에 선택</h2>
+            </div>
+            <button class="ghost-button" id="clearQueueButton" type="button">대기 목록 비우기</button>
+          </div>
+
+          <label class="drop-zone" id="dropZone">
+            <input id="fileInput" type="file" accept="image/*,video/*" multiple />
+            <strong>사진/영상을 여기에 끌어다 놓기</strong>
+            <span>또는 눌러서 여러 파일 선택 · 업로드 전 미리보기 가능</span>
+          </label>
+
+          <div class="batch-tools">
+            <div>
+              <p class="eyebrow">Batch edit</p>
+              <h3>새로 올릴 사진에 공통 적용</h3>
+            </div>
+            <div class="field-grid two">
+              <label class="field">공통 캡션 <input id="batchCaption" placeholder="예: 시부야 거리 스냅" /></label>
+              <label class="field">공통 alt <input id="batchAlt" placeholder="예: Tokyo portrait snap" /></label>
+            </div>
+            <label class="field">공통 태그</label>
+            <div class="chip-grid" id="tagPicker"></div>
+            <label class="field">모델 태그</label>
+            <div class="chip-grid" id="modelPicker"></div>
+            <div class="field-grid two">
+              <label class="field">공통 장소 <select id="batchLocationSelect"></select></label>
+              <label class="field">파일명 묶음 이름 <input id="uploadNamePrefix" placeholder="예: tokyo-shibuya-night" /></label>
+            </div>
+          </div>
+
+          <div class="action-row sticky-actions">
+            <button class="primary-button" id="uploadButton" type="button">대기 사진 업로드</button>
+            <button class="secondary-button" id="saveButton" type="button">전체 저장</button>
+          </div>
+        </section>
+      </main>
+
+      <section class="panel full-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">3. 사진 수정</p>
+            <h2>순서, 대표 사진, 캡션을 바로 수정</h2>
+          </div>
+          <div class="view-tools">
+            <input id="mediaSearch" type="search" placeholder="사진 검색: 캡션, 태그, 모델" />
+            <button class="ghost-button" id="selectAllButton" type="button">전체 선택</button>
+            <button class="ghost-button" id="applyBatchButton" type="button">선택 항목에 공통값 적용</button>
+          </div>
+        </div>
+        <div class="upload-progress" id="uploadProgress" hidden>
+          <span id="uploadProgressText">업로드 준비 중</span>
+          <div><i id="uploadProgressBar"></i></div>
+        </div>
+        <div class="media-grid" id="mediaGrid"></div>
+        <div class="empty-state" id="emptyState">프로젝트를 선택하거나 사진을 업로드하면 여기에 표시됩니다.</div>
+      </section>
+    </div>
+
+    <template id="mediaCardTemplate">
+      <article class="media-card">
+        <label class="select-box"><input type="checkbox" data-select-media /> 선택</label>
+        <div class="media-preview"></div>
+        <div class="media-fields">
+          <div class="media-toolbar">
+            <button type="button" data-action="cover">대표</button>
+            <button type="button" data-action="up">위로</button>
+            <button type="button" data-action="down">아래</button>
+            <button type="button" data-action="delete">삭제</button>
+          </div>
+          <label>캡션 <input data-field="caption" /></label>
+          <label>Alt <input data-field="alt" /></label>
+          <label>태그 <input data-field="tags" placeholder="쉼표로 구분" /></label>
+          <label>모델 <input data-field="models" placeholder="쉼표로 구분" /></label>
+        </div>
+      </article>
+    </template>
+
+    <script src="/admin-studio.js" type="module"></script>
+  </body>
+</html>
