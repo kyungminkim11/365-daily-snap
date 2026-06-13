@@ -1,0 +1,394 @@
+/* Final responsive guardrails for small screens.
+   This file intentionally loads last and overrides earlier visual polish safely. */
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .collab-section,
+  .prep-heading,
+  .portfolio-modal {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero {
+    min-height: auto !important;
+    align-items: start !important;
+  }
+
+  .hero h1,
+  .section-heading h2,
+  .collab-section h2,
+  .contact-section h2 {
+    max-width: 100% !important;
+    word-break: keep-all;
+    overflow-wrap: normal;
+    text-wrap: balance;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --radius-lg: 1.15rem;
+    --radius-md: 0.95rem;
+    --radius-sm: 0.7rem;
+  }
+
+  html {
+    scroll-padding-top: 4.8rem !important;
+  }
+
+  body {
+    min-width: 0 !important;
+  }
+
+  .site {
+    min-width: 0;
+  }
+
+  .site-header {
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    gap: 0.45rem !important;
+    width: 100%;
+    padding: 0.72rem 0.85rem !important;
+  }
+
+  .brand {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 0.96rem !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .header-cta {
+    display: inline-flex !important;
+    min-height: 2.45rem !important;
+    padding: 0.54rem 0.72rem !important;
+    font-size: 0.78rem !important;
+    white-space: nowrap;
+  }
+
+  .menu-button {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+    flex: none;
+  }
+
+  .site-header nav {
+    left: 0.7rem !important;
+    right: 0.7rem !important;
+    width: auto;
+  }
+
+  .hero,
+  .section,
+  .site-footer {
+    width: 100% !important;
+    padding-inline: clamp(1rem, 4.5vw, 1.25rem) !important;
+  }
+
+  .hero {
+    display: grid !important;
+    gap: 1.6rem !important;
+    padding-top: clamp(1.5rem, 5vw, 2rem) !important;
+    padding-bottom: clamp(3rem, 10vw, 4.5rem) !important;
+  }
+
+  .hero-copy {
+    width: 100%;
+    max-width: none !important;
+  }
+
+  .hero-copy::before {
+    display: inline-flex !important;
+    width: auto !important;
+    max-width: min(100%, 17rem) !important;
+    margin-bottom: 0.9rem !important;
+    border-radius: 1rem !important;
+    padding: 0.62rem 0.72rem !important;
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    word-break: keep-all;
+    overflow-wrap: normal;
+  }
+
+  .hero h1 {
+    max-width: 100% !important;
+    margin-top: 0.8rem !important;
+    font-size: clamp(2.7rem, 12.5vw, 3.65rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.07em !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    text-wrap: balance;
+  }
+
+  .hero-copy > p:not(.eyebrow) {
+    max-width: 100% !important;
+    margin-top: 1.05rem !important;
+    font-size: 1rem !important;
+    line-height: 1.78 !important;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-actions {
+    position: static !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100%;
+    margin-top: 1.35rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .hero-actions .primary-button,
+  .hero-actions .secondary-button {
+    width: 100%;
+    min-height: 3rem !important;
+  }
+
+  .hero-actions .secondary-button:nth-of-type(2) {
+    display: inline-flex !important;
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100%;
+    max-width: 100% !important;
+    margin-top: 1.35rem !important;
+    border-radius: 1rem !important;
+    text-align: center !important;
+  }
+
+  .hero-stats span {
+    min-height: 2.7rem !important;
+    justify-content: center !important;
+    padding: 0.75rem 0.35rem !important;
+    font-size: clamp(0.58rem, 2.6vw, 0.7rem) !important;
+    line-height: 1.25;
+    letter-spacing: 0.08em;
+  }
+
+  .hero-stats span + span {
+    border-top: 0 !important;
+    border-left: 1px solid var(--line) !important;
+  }
+
+  .hero-gallery {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+    width: 100%;
+  }
+
+  .hero-gallery::before {
+    inset: 8% 3% -3% 10% !important;
+    border-radius: 1.35rem !important;
+  }
+
+  .hero-gallery > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+
+  .hero-main,
+  .hero-gallery > div .photo-frame {
+    width: 100%;
+    min-height: auto !important;
+    aspect-ratio: 4 / 5 !important;
+  }
+
+  .photo-frame,
+  .portfolio-card-button,
+  .process-card,
+  .prep-card,
+  .review-card,
+  .inquiry-form,
+  .form-section,
+  .availability-note,
+  .prep-note {
+    max-width: 100%;
+  }
+
+  .section {
+    padding-block: clamp(3.2rem, 11vw, 4.3rem) !important;
+  }
+
+  .section-heading {
+    max-width: 100% !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .section-heading h2,
+  .collab-section h2,
+  .contact-section h2 {
+    font-size: clamp(2rem, 9vw, 2.75rem) !important;
+    line-height: 1.12 !important;
+    letter-spacing: -0.06em !important;
+  }
+
+  .section-heading > p,
+  .collab-section > div > p,
+  .contact-section > p {
+    max-width: 100% !important;
+    font-size: 0.98rem !important;
+    line-height: 1.75 !important;
+  }
+
+  .filter-row {
+    top: 3.85rem !important;
+    width: calc(100% + 2rem);
+    margin-inline: -1rem !important;
+    padding: 0.65rem 1rem !important;
+  }
+
+  .filter-row button,
+  .chip-group button,
+  .selected-chip-row button {
+    min-height: 2.45rem !important;
+    padding-inline: 0.72rem !important;
+    font-size: 0.82rem !important;
+  }
+
+  .portfolio-grid,
+  .process-grid,
+  .prep-grid,
+  .review-grid,
+  .contact-field-grid,
+  .inquiry-form,
+  .reference-preview-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .portfolio-grid {
+    gap: 1rem !important;
+  }
+
+  .portfolio-card .photo-frame {
+    aspect-ratio: 4 / 5 !important;
+  }
+
+  .portfolio-card h3 {
+    font-size: 1.05rem !important;
+  }
+
+  .portfolio-card span,
+  .portfolio-card .location-line {
+    font-size: 0.8rem !important;
+  }
+
+  .process-heading,
+  .reviews-heading {
+    display: grid !important;
+    gap: 1rem !important;
+  }
+
+  .process-heading .secondary-button,
+  .reviews-heading .secondary-button,
+  .contact-actions .primary-button,
+  .contact-actions .secondary-button,
+  .inquiry-form button.primary-button {
+    width: 100% !important;
+  }
+
+  .process-card::after {
+    display: none !important;
+  }
+
+  .collab-section {
+    gap: 1.5rem !important;
+  }
+
+  .contact-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100%;
+  }
+
+  .inquiry-form {
+    padding: 0.85rem !important;
+  }
+
+  .form-section {
+    padding: 0.9rem !important;
+  }
+
+  .date-picker-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .portfolio-modal {
+    width: calc(100vw - 1rem) !important;
+    max-height: calc(100dvh - 1rem) !important;
+  }
+
+  .portfolio-modal-media-shell {
+    height: min(52dvh, 28rem) !important;
+  }
+
+  .modal-backdrop {
+    padding: 0.5rem !important;
+  }
+
+  .site-footer {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .chatbot {
+    right: 0.75rem !important;
+    left: auto !important;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .chatbot.is-open {
+    left: 0.75rem !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .site-header {
+    padding-inline: 0.7rem !important;
+  }
+
+  .header-cta {
+    padding-inline: 0.62rem !important;
+    font-size: 0.74rem !important;
+  }
+
+  .hero,
+  .section,
+  .site-footer {
+    padding-inline: 0.9rem !important;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.42rem, 12vw, 3rem) !important;
+  }
+
+  .hero-copy::before {
+    max-width: 15.5rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  .hero-stats span {
+    font-size: 0.56rem !important;
+    letter-spacing: 0.06em;
+  }
+}
