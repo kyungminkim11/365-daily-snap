@@ -1,0 +1,11 @@
+/* Keep visible copy controlled by React/content data, not CSS pseudo text. */
+.hero-copy::before {
+  content: none !important;
+  display: none !important;
+}
+
+.hero h1 {
+  max-width: 100% !important;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
