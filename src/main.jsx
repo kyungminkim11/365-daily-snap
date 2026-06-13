@@ -5,6 +5,7 @@ import InstagramQuickLink from "./InstagramQuickLink.jsx";
 import "./index.css";
 import "./ux-refresh.css";
 import "./responsive-fix.css";
+import "./content-source-fix.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
