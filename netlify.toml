@@ -15,6 +15,22 @@
   port = 8888
   publish = "dist"
 
+[[edge_functions]]
+  path = "/admin"
+  function = "admin-protect"
+
+[[edge_functions]]
+  path = "/admin.html"
+  function = "admin-protect"
+
+[[edge_functions]]
+  path = "/admin-v2.html"
+  function = "admin-protect"
+
+[[edge_functions]]
+  path = "/manager"
+  function = "admin-protect"
+
 [[redirects]]
   from = "/"
   to = "/ko"
