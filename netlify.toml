@@ -22,6 +22,16 @@
   force = false
 
 [[redirects]]
+  from = "/admin"
+  to = "/admin-v2.html"
+  status = 200
+
+[[redirects]]
+  from = "/manager"
+  to = "/admin-v2.html"
+  status = 200
+
+[[redirects]]
   from = "/api/content"
   to = "/.netlify/functions/content"
   status = 200
@@ -90,3 +100,9 @@
   for = "/*.svg"
   [headers.values]
     Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
