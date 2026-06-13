@@ -1,3 +1,5 @@
+import "./instagram-access.css";
+
 const INSTAGRAM = {
   handle: "@365daily.snap",
   url: "https://www.instagram.com/365daily.snap/",
