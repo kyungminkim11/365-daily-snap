@@ -4,6 +4,7 @@ import App from "./App.jsx";
 import InstagramQuickLink from "./InstagramQuickLink.jsx";
 import LocalePathRouter from "./LocalePathRouter.jsx";
 import MultiLanguage from "./MultiLanguage.jsx";
+import LocaleNoHangulGuard from "./LocaleNoHangulGuard.jsx";
 import BookingConversionBoost from "./BookingConversionBoost.jsx";
 import GrowthSections from "./GrowthSections.jsx";
 import PerformanceHints from "./PerformanceHints.jsx";
@@ -24,6 +25,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <GrowthSections />
     <InstagramQuickLink />
     <MultiLanguage />
+    <LocaleNoHangulGuard />
     <PerformanceHints />
   </React.StrictMode>,
 );
