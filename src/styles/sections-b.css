@@ -1,0 +1,35 @@
+.process-grid p { margin: 0; color: var(--muted); line-height: 1.75; }
+.review-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.review-card { display: flex; min-height: 23rem; flex-direction: column; border: 1px solid var(--line); background: rgba(255,255,255,.24); padding: clamp(1.5rem, 2.5vw, 2.2rem); }
+.quote-mark { height: 3.5rem; font-family: Georgia,serif; font-size: 4.7rem; line-height: 1; }
+.review-card > p { margin: 1rem 0; color: var(--charcoal); font-size: 1.02rem; line-height: 1.85; }
+.review-card footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-top: auto; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+.review-card footer div { display: grid; gap: .3rem; }
+.review-card footer span { color: var(--muted); font-size: .78rem; }
+.review-card footer button { display: inline-flex; align-items: center; gap: .35rem; border: 0; border-bottom: 1px solid currentColor; background: transparent; padding: 0 0 .15rem; font-size: .77rem; }
+.about-grid { display: grid; grid-template-columns: minmax(18rem,.75fr) minmax(0,1.25fr); align-items: center; gap: clamp(3rem, 7vw, 8rem); }
+.about-visual { position: relative; display: grid; min-height: 32rem; place-items: center; background: var(--ink); color: var(--paper); }
+.about-monogram { font-family: Georgia,serif; font-size: clamp(7rem, 14vw, 13rem); letter-spacing: -.12em; line-height: .62; }
+.about-visual > svg { position: absolute; right: 1.5rem; bottom: 1.5rem; width: 2rem; height: 2rem; }
+.about-facts { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: 2rem 0; }
+.about-facts span { display: flex; align-items: center; gap: .45rem; border-top: 1px solid var(--line); padding-top: .8rem; font-size: .9rem; }
+.about-facts svg { width: .9rem; height: .9rem; }
+.faq-list { border-top: 1px solid var(--line); }
+.faq-list article { border-bottom: 1px solid var(--line); }
+.faq-list article > button { display: grid; width: 100%; grid-template-columns: 3rem 1fr auto; align-items: center; gap: 1rem; border: 0; background: transparent; padding: 1.5rem 0; text-align: left; }
+.faq-list article > button span { color: var(--muted); font-size: .72rem; letter-spacing: .12em; }
+.faq-list article > button b { font-size: clamp(1rem, 1.5vw, 1.2rem); }
+.faq-list article > p { max-width: 60rem; margin: -.3rem 0 1.7rem 4rem; color: var(--muted); line-height: 1.8; }
+.contact-section { border-top: 1px solid var(--line); background: var(--ink); color: var(--paper); }
+.contact-grid { display: grid; grid-template-columns: minmax(0,.75fr) minmax(0,1.25fr); align-items: start; gap: clamp(2.5rem, 6vw, 6rem); }
+.contact-grid > div > h2 { color: var(--paper); }
+.contact-grid > div > p { color: rgba(246,242,233,.7); }
+.contact-grid .eyebrow { color: rgba(246,242,233,.54); }
+.contact-direct { display: grid; max-width: 28rem; gap: .7rem; margin-top: 2rem; }
+.contact-direct a { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .8rem; border: 1px solid rgba(246,242,233,.2); padding: 1rem; }
+.contact-direct a:hover { background: rgba(255,255,255,.06); }
+.contact-direct span { display: grid; gap: .15rem; }
+.contact-direct small { color: rgba(246,242,233,.55); }
+.inquiry-panel { background: var(--paper); color: var(--ink); padding: clamp(1.2rem, 2.5vw, 2rem); }
+.inquiry-mode { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); padding: .25rem; }
+.inquiry-mode button { border: 0; background: transparent; padding: .8rem; color: var(--muted); font-weight: 760; }

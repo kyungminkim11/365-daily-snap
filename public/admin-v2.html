@@ -5,234 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>365 Daily Snap Static Admin</title>
+    <title>365 Daily Snap Admin</title>
     <style>
-      :root {
-        color-scheme: light;
-        --paper: #f6f3ec;
-        --panel: #fffdf8;
-        --ink: #1d1b18;
-        --muted: #766f65;
-        --line: rgba(29, 27, 24, 0.14);
-        --warm: #ebe4d8;
-        --good: #326b42;
-        --danger: #9d3e31;
-        font-family: Inter, Pretendard, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-      * { box-sizing: border-box; }
-      body { margin: 0; background: var(--paper); color: var(--ink); word-break: keep-all; }
-      a { color: inherit; }
-      .shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
-      header { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--line); background: rgba(246, 243, 236, 0.94); backdrop-filter: blur(16px); }
-      .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }
-      .brand strong { display: block; font-size: 15px; letter-spacing: -0.02em; }
-      .brand span, .eyebrow { color: var(--muted); font-size: 11px; font-weight: 760; letter-spacing: 0.12em; text-transform: uppercase; }
-      .actions { display: flex; flex-wrap: wrap; gap: 8px; }
-      button, .button, input, textarea { font: inherit; }
-      button, .button { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); padding: 8px 13px; font-size: 13px; font-weight: 720; text-decoration: none; cursor: pointer; }
-      button.secondary, .button.secondary { border-color: var(--line); background: rgba(255, 253, 248, 0.7); color: var(--ink); }
-      button.danger { border-color: rgba(157, 62, 49, 0.35); background: transparent; color: var(--danger); }
-      main { padding: 30px 0 80px; }
-      .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.6fr); gap: 22px; align-items: stretch; }
-      h1 { max-width: 760px; margin: 8px 0 12px; font-size: clamp(32px, 5vw, 56px); line-height: 1.04; letter-spacing: -0.05em; font-weight: 560; }
-      h2 { margin: 0 0 10px; font-size: clamp(23px, 3vw, 34px); letter-spacing: -0.04em; font-weight: 560; }
-      p { line-height: 1.75; }
-      .lead { max-width: 760px; color: var(--muted); }
-      .card { border: 1px solid var(--line); border-radius: 14px; background: rgba(255, 253, 248, 0.78); padding: 18px; box-shadow: 0 12px 36px rgba(29, 27, 24, 0.06); }
-      .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--line); }
-      .stat { min-height: 96px; background: rgba(255, 253, 248, 0.86); padding: 16px; }
-      .stat strong { display: block; margin-top: 8px; font-size: 34px; font-weight: 520; letter-spacing: -0.05em; }
-      .grid { display: grid; gap: 14px; margin-top: 18px; }
-      .grid.two { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); align-items: start; }
-      .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 22px 0; }
-      .step { border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 253, 248, 0.56); padding: 15px; }
-      .step strong { display: block; margin: 8px 0 4px; }
-      textarea { width: 100%; min-height: 520px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.62); color: var(--ink); padding: 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.55; resize: vertical; }
-      input[type='file'] { display: none; }
-      .file-label { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 253, 248, 0.7); padding: 8px 13px; font-size: 13px; font-weight: 720; cursor: pointer; }
-      .status { margin: 0; color: var(--muted); font-size: 13px; }
-      .status.good { color: var(--good); }
-      .status.bad { color: var(--danger); }
-      code { border: 1px solid var(--line); border-radius: 6px; background: var(--warm); padding: 2px 6px; }
-      ol { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.85; }
-      .preview-list { display: grid; gap: 10px; max-height: 420px; overflow: auto; }
-      .project { border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.4); padding: 12px; }
-      .project strong { display: block; margin-bottom: 4px; }
-      .project span { color: var(--muted); font-size: 13px; }
-      @media (max-width: 860px) { .top, .hero, .grid.two { grid-template-columns: 1fr; flex-direction: column; align-items: stretch; } .steps { grid-template-columns: 1fr; } .actions { width: 100%; } button, .button, .file-label { width: 100%; } }
+      :root{color-scheme:light;--paper:#f6f3ec;--panel:#fffdf8;--ink:#1d1b18;--muted:#766f65;--line:rgba(29,27,24,.14);--warm:#ebe4d8;--good:#326b42;--danger:#9d3e31;font-family:Inter,Pretendard,system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);word-break:keep-all}a{color:inherit}button,.button,input,textarea,select{font:inherit}button,.button{display:inline-flex;min-height:38px;align-items:center;justify-content:center;border:1px solid var(--ink);border-radius:999px;background:var(--ink);color:var(--paper);padding:8px 13px;font-size:13px;font-weight:720;text-decoration:none;cursor:pointer}button.secondary,.button.secondary{border-color:var(--line);background:rgba(255,253,248,.75);color:var(--ink)}button.danger{border-color:rgba(157,62,49,.35);background:transparent;color:var(--danger)}button:disabled{opacity:.5;cursor:not-allowed}.shell{width:min(1180px,calc(100% - 32px));margin:0 auto}header{position:sticky;top:0;z-index:10;border-bottom:1px solid var(--line);background:rgba(246,243,236,.94);backdrop-filter:blur(16px)}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0}.brand strong{display:block;font-size:15px;letter-spacing:-.02em}.brand span,.eyebrow{color:var(--muted);font-size:11px;font-weight:760;letter-spacing:.12em;text-transform:uppercase}.actions{display:flex;flex-wrap:wrap;gap:8px}main{padding:30px 0 80px}.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.6fr);gap:22px;align-items:stretch}h1{max-width:760px;margin:8px 0 12px;font-size:clamp(32px,5vw,56px);line-height:1.04;letter-spacing:-.05em;font-weight:560}h2{margin:0 0 10px;font-size:clamp(23px,3vw,34px);letter-spacing:-.04em;font-weight:560}h3{margin:0;font-size:17px}.lead,p{line-height:1.75}.lead,.muted{color:var(--muted)}.card{border:1px solid var(--line);border-radius:14px;background:rgba(255,253,248,.78);padding:18px;box-shadow:0 12px 36px rgba(29,27,24,.06)}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:var(--line)}.stat{min-height:96px;background:rgba(255,253,248,.86);padding:16px}.stat strong{display:block;margin-top:8px;font-size:34px;font-weight:520;letter-spacing:-.05em}.grid{display:grid;gap:14px;margin-top:18px}.grid.two{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:start}.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}.step{border:1px solid var(--line);border-radius:12px;background:rgba(255,253,248,.56);padding:15px}.step strong{display:block;margin:8px 0 4px}textarea{width:100%;min-height:520px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.62);color:var(--ink);padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.55;resize:vertical}input,select{width:100%;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.72);padding:10px;color:var(--ink)}input[type=file]{display:none}.file-label{display:inline-flex;min-height:38px;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:999px;background:rgba(255,253,248,.7);padding:8px 13px;font-size:13px;font-weight:720;cursor:pointer}.status{margin:0;color:var(--muted);font-size:13px}.status.good{color:var(--good)}.status.bad{color:var(--danger)}code{border:1px solid var(--line);border-radius:6px;background:var(--warm);padding:2px 6px}.preview-list{display:grid;gap:10px;max-height:420px;overflow:auto}.project{border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.4);padding:12px}.project strong{display:block;margin-bottom:4px}.project span{color:var(--muted);font-size:13px}.section-block{margin-top:22px}.login-row{display:grid;grid-template-columns:1fr auto;gap:8px;max-width:640px}.inquiry-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:14px 0}.inquiry-list{display:grid;gap:10px}.inquiry{border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.48);padding:14px}.inquiry-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.inquiry-head div{display:grid;gap:4px}.inquiry-head span,.inquiry-meta{color:var(--muted);font-size:12px}.inquiry-meta{display:flex;flex-wrap:wrap;gap:6px 12px;margin:10px 0}.inquiry-message{white-space:pre-wrap}.inquiry-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.inquiry-actions select{width:auto;min-width:130px}.empty{border:1px dashed var(--line);border-radius:12px;padding:28px;text-align:center;color:var(--muted)}ol{margin:0;padding-left:20px;color:var(--muted);line-height:1.85}@media(max-width:860px){.top,.hero,.grid.two{grid-template-columns:1fr;flex-direction:column;align-items:stretch}.steps{grid-template-columns:1fr}.actions{width:100%}button,.button,.file-label{width:100%}.login-row{grid-template-columns:1fr}.inquiry-head{display:grid}.inquiry-actions select{width:100%}}
     </style>
   </head>
   <body>
-    <header>
-      <div class="shell top">
-        <div class="brand">
-          <strong>365 Daily Snap Static Admin</strong>
-          <span>serverless-safe manager</span>
-        </div>
-        <nav class="actions" aria-label="관리자 빠른 링크">
-          <a class="button" href="/ko" target="_blank" rel="noreferrer">공개 사이트</a>
-          <a class="button secondary" href="https://github.com/kyungminkim11/365-daily-snap/tree/main/public/portfolio" target="_blank" rel="noreferrer">GitHub 폴더</a>
-          <button class="secondary" id="reloadButton" type="button">JSON 다시 불러오기</button>
-        </nav>
-      </div>
-    </header>
-
+    <header><div class="shell top"><div class="brand"><strong>365 Daily Snap Admin</strong><span>static content + secure inquiries</span></div><nav class="actions"><a class="button" href="/ko" target="_blank" rel="noreferrer">공개 사이트</a><a class="button secondary" href="https://github.com/kyungminkim11/365-daily-snap/tree/main/public/portfolio" target="_blank" rel="noreferrer">GitHub 폴더</a><button class="secondary" id="reloadButton" type="button">JSON 다시 불러오기</button></nav></div></header>
     <main class="shell">
-      <section class="hero">
-        <div>
-          <p class="eyebrow">Static workflow</p>
-          <h1>관리자 페이지는 유지하고, 공개 사이트는 정적으로 운영합니다.</h1>
-          <p class="lead">
-            이 화면은 Netlify Functions나 Blobs를 사용하지 않습니다. 현재 <code>/portfolio/portfolio.json</code>을 불러와
-            확인·수정·다운로드할 수 있고, 최종 반영은 GitHub에 파일을 교체하는 방식입니다.
-          </p>
-        </div>
-        <div class="stats" aria-label="콘텐츠 현황">
-          <div class="stat"><p class="eyebrow">Projects</p><strong id="projectCount">0</strong></div>
-          <div class="stat"><p class="eyebrow">Media</p><strong id="mediaCount">0</strong></div>
-          <div class="stat"><p class="eyebrow">Models</p><strong id="modelCount">0</strong></div>
-          <div class="stat"><p class="eyebrow">Mode</p><strong>Static</strong></div>
-        </div>
-      </section>
-
-      <section class="steps" aria-label="운영 순서">
-        <article class="step"><p class="eyebrow">01</p><strong>사진 압축</strong><p>사진은 WebP/JPG로 줄여 <code>public/portfolio/uploads</code>에 추가합니다.</p></article>
-        <article class="step"><p class="eyebrow">02</p><strong>JSON 수정</strong><p>아래 JSON에서 프로젝트, 사진 경로, 태그, 문구를 수정합니다.</p></article>
-        <article class="step"><p class="eyebrow">03</p><strong>GitHub 반영</strong><p>다운로드한 <code>portfolio.json</code>을 GitHub의 같은 경로에 교체합니다.</p></article>
-      </section>
-
-      <section class="grid two">
-        <aside class="card">
-          <p class="eyebrow">Current content</p>
-          <h2>현재 데이터 요약</h2>
-          <p class="status" id="status">콘텐츠를 불러오는 중입니다.</p>
-          <div class="actions" style="margin: 14px 0">
-            <button id="validateButton" type="button">JSON 검사</button>
-            <button class="secondary" id="downloadButton" type="button">portfolio.json 다운로드</button>
-            <label class="file-label" for="importInput">JSON 가져오기</label>
-            <input id="importInput" type="file" accept="application/json,.json" />
-          </div>
-          <div class="preview-list" id="previewList"></div>
-        </aside>
-
-        <section class="card">
-          <p class="eyebrow">Editor</p>
-          <h2>portfolio.json 편집</h2>
-          <textarea id="jsonEditor" spellcheck="false" aria-label="portfolio.json 편집기"></textarea>
-        </section>
-      </section>
-
-      <section class="card" style="margin-top: 18px">
-        <p class="eyebrow">Important</p>
-        <h2>이 방식의 핵심</h2>
-        <ol>
-          <li>방문자 페이지는 API를 호출하지 않고 정적 JSON과 정적 이미지만 사용합니다.</li>
-          <li>문의는 홈페이지 내 버튼을 통해 Instagram DM 또는 카카오 오픈채팅으로 받는 운영을 권장합니다.</li>
-          <li>관리자 페이지에서 바로 서버 저장은 하지 않습니다. 그래서 Netlify 무료 사용량을 거의 태우지 않습니다.</li>
-        </ol>
-      </section>
+      <section class="hero"><div><p class="eyebrow">Admin workspace</p><h1>포트폴리오 콘텐츠와 촬영 문의를 한 화면에서 관리합니다.</h1><p class="lead">공개 사이트는 GitHub Pages에 정적으로 배포하고, 촬영 문의만 Supabase에 안전하게 저장합니다.</p></div><div class="stats"><div class="stat"><p class="eyebrow">Projects</p><strong id="projectCount">0</strong></div><div class="stat"><p class="eyebrow">Media</p><strong id="mediaCount">0</strong></div><div class="stat"><p class="eyebrow">Models</p><strong id="modelCount">0</strong></div><div class="stat"><p class="eyebrow">New inquiries</p><strong id="inquiryCount">-</strong></div></div></section>
+      <section class="steps"><article class="step"><p class="eyebrow">01</p><strong>사진 추가</strong><p>압축된 WebP/JPG를 <code>public/portfolio/uploads</code>에 추가합니다.</p></article><article class="step"><p class="eyebrow">02</p><strong>JSON 수정</strong><p>프로젝트, 사진 경로, 태그와 문구를 수정합니다.</p></article><article class="step"><p class="eyebrow">03</p><strong>GitHub 반영</strong><p>다운로드한 <code>portfolio.json</code>을 같은 경로에 교체합니다.</p></article></section>
+      <section class="grid two"><aside class="card"><p class="eyebrow">Current content</p><h2>현재 데이터 요약</h2><p class="status" id="status">콘텐츠를 불러오는 중입니다.</p><div class="actions" style="margin:14px 0"><button id="validateButton" type="button">JSON 검사</button><button class="secondary" id="downloadButton" type="button">portfolio.json 다운로드</button><label class="file-label" for="importInput">JSON 가져오기</label><input id="importInput" type="file" accept="application/json,.json" /></div><div class="preview-list" id="previewList"></div></aside><section class="card"><p class="eyebrow">Editor</p><h2>portfolio.json 편집</h2><textarea id="jsonEditor" spellcheck="false" aria-label="portfolio.json 편집기"></textarea></section></section>
+      <section class="card section-block" id="inquiriesSection"><p class="eyebrow">Secure inbox</p><h2>촬영 문의 관리</h2><div id="authPanel"><p class="muted">허용된 관리자 이메일로 로그인 링크를 받아주세요.</p><div class="login-row"><input id="adminEmail" type="email" value="lavalabs.ceo@gmail.com" aria-label="관리자 이메일" /><button id="sendMagicLink" type="button">로그인 링크 받기</button></div><p class="status" id="authStatus"></p></div><div id="inquiryPanel" hidden><div class="inquiry-toolbar"><div><strong id="signedInEmail"></strong><p class="status" id="inquiryStatus">문의를 불러오는 중입니다.</p></div><div class="actions"><button class="secondary" id="refreshInquiries" type="button">새로고침</button><button class="secondary" id="signOut" type="button">로그아웃</button></div></div><div class="inquiry-list" id="inquiryList"></div></div></section>
+      <section class="card section-block"><p class="eyebrow">Operation note</p><h2>운영 방식</h2><ol><li>포트폴리오와 이미지는 GitHub에서 관리해 호스팅 사용량을 최소화합니다.</li><li>문의는 Supabase에 저장되며 관리자 로그인 후 이 화면에서 상태를 변경할 수 있습니다.</li><li>관리자 계정은 <code>lavalabs.ceo@gmail.com</code> 또는 <code>info@lavalabs.co.kr</code>만 허용됩니다.</li></ol></section>
     </main>
-
     <script>
-      const PORTFOLIO_URL = "/portfolio/portfolio.json";
-      const editor = document.getElementById("jsonEditor");
-      const statusEl = document.getElementById("status");
-      const previewList = document.getElementById("previewList");
-
-      function setStatus(message, type = "") {
-        statusEl.textContent = message;
-        statusEl.className = `status ${type}`.trim();
-      }
-
-      function parseEditor() {
-        return JSON.parse(editor.value || "{}");
-      }
-
-      function updateStats(content) {
-        const projects = Array.isArray(content.projects) ? content.projects : [];
-        const mediaCount = projects.reduce((sum, project) => sum + (Array.isArray(project.media) ? project.media.length : 0), 0);
-        const models = Array.isArray(content.models) ? content.models : [];
-        document.getElementById("projectCount").textContent = projects.length;
-        document.getElementById("mediaCount").textContent = mediaCount;
-        document.getElementById("modelCount").textContent = models.length;
-        previewList.innerHTML = projects.length
-          ? projects.map((project) => `
-              <article class="project">
-                <strong>${escapeHtml(project.title || "제목 없음")}</strong>
-                <span>${escapeHtml(project.category || "카테고리 없음")} · ${(project.media || []).length} media · ${escapeHtml(project.status || "published")}</span>
-              </article>
-            `).join("")
-          : `<p class="status">등록된 프로젝트가 없습니다.</p>`;
-      }
-
-      function escapeHtml(value) {
-        return String(value ?? "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      async function loadContent() {
-        setStatus("정적 portfolio.json을 불러오는 중입니다.");
-        const response = await fetch(`${PORTFOLIO_URL}?t=${Date.now()}`, { cache: "no-store" });
-        if (!response.ok) throw new Error("portfolio.json을 불러오지 못했습니다.");
-        const content = await response.json();
-        editor.value = JSON.stringify(content, null, 2);
-        updateStats(content);
-        setStatus("정적 JSON 로드 완료. 수정 후 다운로드해서 GitHub에 교체하세요.", "good");
-      }
-
-      function validateContent() {
-        try {
-          const content = parseEditor();
-          updateStats(content);
-          setStatus("JSON 형식이 정상입니다.", "good");
-        } catch (error) {
-          setStatus(`JSON 오류: ${error.message}`, "bad");
-        }
-      }
-
-      function downloadContent() {
-        try {
-          const content = parseEditor();
-          const blob = new Blob([JSON.stringify(content, null, 2) + "\n"], { type: "application/json" });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "portfolio.json";
-          link.click();
-          URL.revokeObjectURL(url);
-          setStatus("portfolio.json을 다운로드했습니다. GitHub에 업로드하면 반영됩니다.", "good");
-        } catch (error) {
-          setStatus(`다운로드 전 JSON을 확인해주세요: ${error.message}`, "bad");
-        }
-      }
-
-      function importContent(file) {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            const content = JSON.parse(reader.result);
-            editor.value = JSON.stringify(content, null, 2);
-            updateStats(content);
-            setStatus("JSON 파일을 불러왔습니다.", "good");
-          } catch (error) {
-            setStatus(`가져오기 실패: ${error.message}`, "bad");
-          }
-        };
-        reader.readAsText(file);
-      }
-
-      document.getElementById("reloadButton").addEventListener("click", () => loadContent().catch((error) => setStatus(error.message, "bad")));
-      document.getElementById("validateButton").addEventListener("click", validateContent);
-      document.getElementById("downloadButton").addEventListener("click", downloadContent);
-      document.getElementById("importInput").addEventListener("change", (event) => importContent(event.target.files?.[0]));
-      editor.addEventListener("input", () => setStatus("수정 중입니다. 저장하려면 JSON 검사 후 다운로드하세요."));
-
-      loadContent().catch((error) => setStatus(error.message, "bad"));
+      const PORTFOLIO_URL='/portfolio/portfolio.json';const editor=document.getElementById('jsonEditor');const statusEl=document.getElementById('status');const previewList=document.getElementById('previewList');
+      function setStatus(message,type=''){statusEl.textContent=message;statusEl.className=`status ${type}`.trim()}function parseEditor(){return JSON.parse(editor.value||'{}')}function escapeHtml(value){return String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+      function updateStats(content){const projects=Array.isArray(content.projects)?content.projects:[];const mediaCount=projects.reduce((sum,project)=>sum+(Array.isArray(project.media)?project.media.length:0),0);const models=Array.isArray(content.models)?content.models:[];document.getElementById('projectCount').textContent=projects.length;document.getElementById('mediaCount').textContent=mediaCount;document.getElementById('modelCount').textContent=models.length;previewList.innerHTML=projects.length?projects.map(project=>`<article class="project"><strong>${escapeHtml(project.title||'제목 없음')}</strong><span>${escapeHtml(project.category||'카테고리 없음')} · ${(project.media||[]).length} media · ${escapeHtml(project.status||'published')}</span></article>`).join(''):'<p class="status">등록된 프로젝트가 없습니다.</p>'}
+      async function loadContent(){setStatus('정적 portfolio.json을 불러오는 중입니다.');const response=await fetch(PORTFOLIO_URL,{cache:'no-cache'});if(!response.ok)throw new Error('portfolio.json을 불러오지 못했습니다.');const content=await response.json();editor.value=JSON.stringify(content,null,2);updateStats(content);setStatus('정적 JSON 로드 완료. 수정 후 다운로드해서 GitHub에 교체하세요.','good')}
+      function validateContent(){try{const content=parseEditor();if(!Array.isArray(content.projects))throw new Error('projects 배열이 필요합니다.');updateStats(content);setStatus('JSON 형식이 정상입니다.','good')}catch(error){setStatus(`JSON 오류: ${error.message}`,'bad')}}
+      function downloadContent(){try{const content=parseEditor();const blob=new Blob([JSON.stringify(content,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='portfolio.json';link.click();URL.revokeObjectURL(url);setStatus('portfolio.json을 다운로드했습니다. GitHub에 업로드하면 반영됩니다.','good')}catch(error){setStatus(`다운로드 전 JSON을 확인해주세요: ${error.message}`,'bad')}}
+      function importContent(file){if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const content=JSON.parse(reader.result);editor.value=JSON.stringify(content,null,2);updateStats(content);setStatus('JSON 파일을 불러왔습니다.','good')}catch(error){setStatus(`가져오기 실패: ${error.message}`,'bad')}};reader.readAsText(file)}
+      document.getElementById('reloadButton').addEventListener('click',()=>loadContent().catch(error=>setStatus(error.message,'bad')));document.getElementById('validateButton').addEventListener('click',validateContent);document.getElementById('downloadButton').addEventListener('click',downloadContent);document.getElementById('importInput').addEventListener('change',event=>importContent(event.target.files?.[0]));editor.addEventListener('input',()=>setStatus('수정 중입니다. 저장하려면 JSON 검사 후 다운로드하세요.'));loadContent().catch(error=>setStatus(error.message,'bad'));
+    </script>
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+      const SUPABASE_URL='https://jnciddblcndmthmmvqrz.supabase.co';
+      const SUPABASE_KEY='sb_publishable_UUzSE7O9wqI0WN9cKG9OAQ_VleRkL4I';
+      const supabase=createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,detectSessionInUrl:true}});
+      const authPanel=document.getElementById('authPanel');const inquiryPanel=document.getElementById('inquiryPanel');const authStatus=document.getElementById('authStatus');const inquiryStatus=document.getElementById('inquiryStatus');const inquiryList=document.getElementById('inquiryList');
+      const allowed=['lavalabs.ceo@gmail.com','info@lavalabs.co.kr'];
+      const esc=(value)=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+      const formatDate=(value)=>new Intl.DateTimeFormat('ko-KR',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value));
+      async function sendMagicLink(){const email=document.getElementById('adminEmail').value.trim().toLowerCase();if(!allowed.includes(email)){authStatus.textContent='허용된 관리자 이메일만 사용할 수 있습니다.';authStatus.className='status bad';return}authStatus.textContent='로그인 링크를 보내는 중입니다.';const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:`${location.origin}/admin-v2.html`}});if(error){authStatus.textContent=`전송 실패: ${error.message}`;authStatus.className='status bad';return}authStatus.textContent='이메일로 로그인 링크를 보냈습니다.';authStatus.className='status good'}
+      async function loadInquiries(){inquiryStatus.textContent='문의를 불러오는 중입니다.';const {data,error}=await supabase.from('inquiries').select('*').order('created_at',{ascending:false});if(error){inquiryStatus.textContent=`불러오기 실패: ${error.message}`;inquiryStatus.className='status bad';return}const newCount=data.filter(item=>item.status==='new').length;document.getElementById('inquiryCount').textContent=newCount;inquiryStatus.textContent=`전체 ${data.length}건 · 신규 ${newCount}건`;inquiryStatus.className='status good';inquiryList.innerHTML=data.length?data.map(item=>`<article class="inquiry" data-id="${esc(item.id)}"><div class="inquiry-head"><div><h3>${esc(item.name)} · ${esc(item.inquiry_type||'촬영 문의')}</h3><span>${formatDate(item.created_at)}</span></div><strong>${esc(item.status||'new')}</strong></div><div class="inquiry-meta"><span>${esc(item.contact_method||'연락 방법 미지정')}: ${esc(item.contact)}</span><span>희망일: ${esc(item.preferred_date||'-')}</span><span>지역: ${esc(item.region||'-')}</span><span>인원: ${esc(item.people||'-')}</span><span>공개: ${esc(item.privacy||'-')}</span></div>${item.mood?`<p><strong>분위기</strong><br>${esc(item.mood)}</p>`:''}${item.purpose?`<p><strong>목적</strong><br>${esc(item.purpose)}</p>`:''}${item.message?`<p class="inquiry-message"><strong>추가 요청</strong><br>${esc(item.message)}</p>`:''}${Array.isArray(item.reference_images)&&item.reference_images.length?`<p>${item.reference_images.map((url,index)=>`<a href="${esc(url)}" target="_blank" rel="noreferrer">참고 이미지 ${index+1}</a>`).join(' · ')}</p>`:''}<div class="inquiry-actions"><select aria-label="문의 상태"><option value="new" ${item.status==='new'?'selected':''}>신규</option><option value="contacted" ${item.status==='contacted'?'selected':''}>연락 완료</option><option value="confirmed" ${item.status==='confirmed'?'selected':''}>촬영 확정</option><option value="closed" ${item.status==='closed'?'selected':''}>종료</option></select><button type="button" data-action="save">상태 저장</button><button type="button" class="danger" data-action="delete">삭제</button></div></article>`).join(''):'<div class="empty">접수된 문의가 없습니다.</div>'}
+      async function updateStatus(id,status){const {error}=await supabase.from('inquiries').update({status}).eq('id',id);if(error)alert(`상태 변경 실패: ${error.message}`);else loadInquiries()}
+      async function deleteInquiry(id){if(!confirm('이 문의를 삭제할까요?'))return;const {error}=await supabase.from('inquiries').delete().eq('id',id);if(error)alert(`삭제 실패: ${error.message}`);else loadInquiries()}
+      inquiryList.addEventListener('click',event=>{const button=event.target.closest('button[data-action]');if(!button)return;const card=button.closest('.inquiry');const id=card.dataset.id;if(button.dataset.action==='save')updateStatus(id,card.querySelector('select').value);if(button.dataset.action==='delete')deleteInquiry(id)});
+      async function renderSession(){const {data:{session}}=await supabase.auth.getSession();const email=session?.user?.email?.toLowerCase();if(!session||!allowed.includes(email)){authPanel.hidden=false;inquiryPanel.hidden=true;document.getElementById('inquiryCount').textContent='-';return}authPanel.hidden=true;inquiryPanel.hidden=false;document.getElementById('signedInEmail').textContent=email;loadInquiries()}
+      document.getElementById('sendMagicLink').addEventListener('click',sendMagicLink);document.getElementById('refreshInquiries').addEventListener('click',loadInquiries);document.getElementById('signOut').addEventListener('click',async()=>{await supabase.auth.signOut();renderSession()});supabase.auth.onAuthStateChange(()=>renderSession());renderSession();
     </script>
   </body>
 </html>

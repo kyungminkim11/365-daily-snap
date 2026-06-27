@@ -1,0 +1,30 @@
+.site-footer b { color: var(--ink); font-size: 1rem; }
+.site-footer p { margin: .35rem 0 0; }
+.footer-business { display: flex; flex-wrap: wrap; gap: .25rem 1rem; }
+.site-footer button { width: max-content; border: 0; border-bottom: 1px solid currentColor; background: transparent; padding: 0 0 .12rem; color: var(--muted); }
+.mobile-contact-bar { display: none; }
+.modal-backdrop { position: fixed; z-index: 300; inset: 0; display: grid; place-items: center; background: rgba(16,15,14,.78); padding: clamp(.6rem, 2vw, 1.5rem); backdrop-filter: blur(8px); }
+.project-modal { position: relative; display: grid; width: min(100%, 1260px); max-height: calc(100vh - 2rem); grid-template-columns: minmax(0,1.35fr) minmax(20rem,.65fr); overflow: hidden; background: var(--paper); box-shadow: var(--shadow); }
+.modal-close { position: absolute; z-index: 5; top: .8rem; right: .8rem; display: grid; width: 2.8rem; height: 2.8rem; place-items: center; border: 1px solid rgba(255,255,255,.25); background: rgba(20,19,17,.65); color: white; backdrop-filter: blur(10px); }
+.project-modal-stage { position: relative; display: grid; min-height: 0; background: #151412; place-items: center; }
+.project-modal-main { width: 100%; height: min(90vh, 850px); object-fit: contain; }
+.project-modal-info { overflow-y: auto; padding: clamp(1.5rem, 3vw, 2.5rem); }
+.project-modal-info h2 { margin: .65rem 0 0; font-size: clamp(1.8rem, 3vw, 3.2rem); letter-spacing: -.05em; line-height: 1.05; }
+.modal-description { color: var(--muted); line-height: 1.75; }
+.project-meta { display: grid; gap: .65rem; margin-top: 1.4rem; border-block: 1px solid var(--line); padding-block: 1rem; color: var(--muted); font-size: .8rem; }
+.project-meta span { display: flex; align-items: center; gap: .4rem; }
+.project-thumbs { display: grid; grid-template-columns: repeat(4,1fr); gap: .4rem; margin-top: 1.3rem; }
+.project-thumbs button { overflow: hidden; border: 2px solid transparent; background: var(--paper-2); padding: 0; aspect-ratio: 1; }
+.project-thumbs button.active { border-color: var(--ink); }
+.project-thumbs img, .project-thumbs video { width: 100%; height: 100%; object-fit: cover; }
+.modal-actions { display: grid; gap: .6rem; margin-top: 1.5rem; }
+.review-modal { position: relative; max-width: min(94vw, 680px); max-height: 92vh; overflow: auto; background: var(--paper); padding: 1rem; }
+.review-modal img { max-height: calc(92vh - 2rem); object-fit: contain; }
+.privacy-modal { position: relative; width: min(100%, 620px); background: var(--paper); padding: clamp(1.5rem, 4vw, 3rem); }
+.privacy-modal > svg { width: 2.4rem; height: 2.4rem; }
+.privacy-modal h2 { font-size: 2rem; }
+.privacy-modal p, .privacy-modal dd { color: var(--muted); line-height: 1.75; }
+.privacy-modal dl { display: grid; grid-template-columns: 8rem 1fr; gap: .7rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+.privacy-modal dt { font-weight: 760; }
+.privacy-modal dd { margin: 0; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
