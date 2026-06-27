@@ -25,7 +25,17 @@ jobs:
         with:
           node-version: 22
       - name: Upload source and deploy production
-        run: >-
-          npx -y @netlify/mcp@latest
-          --site-id 4a92aaba-3923-4163-85b1-bfb9941ed36a
-          --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..grzy7aysf_8Tuqyi.hgZwASLCCfF1q6va21P8Lx3ZGYR3Hu-wn90CR2O2D3tjhLtiz49GeuwRdXFVo12rNJY5y_qxueSs0jZrfd5U1GjFimDzRlWWc2W6JoQhWTeYRELDFYULAmeleCAAqixTyg0vTiZ_QkDaW230--XCg-_AN7XReKoF6qo1pjMUytnRCVN1nu1MENCpU8AzLgqRnCo52Snp-t5_XrxfgKnIDPIHGbe0N0nEU0p-OMpu78gFe_KKITEcDfbGNisFA5dXd8mp5atxQ4lONbjcEOgSyPSB7MejeMDJ21Irxzk1S4jOcCb39UnlgUum40aDZovBvpUIgnXd7vi4_HMTCiKFqyaa4oXntwVH6EQOXlWvaqV69nf6M_mSxu8SI0CR5wWFgSglbnFq.ugIEsTkFjjvCDdQMMdId_Q"
+        shell: bash
+        run: |
+          set -o pipefail
+          npx -y @netlify/mcp@latest \
+            --site-id 4a92aaba-3923-4163-85b1-bfb9941ed36a \
+            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..MEHdkKn668U-oF7G.w8CqdGfayzYGkW5H1h0E6aaMmZ5zKRlG_UBRl93R4ncoqUfLo4dd0jBZXqSkALkyCQTBc97e6TqavZ38S4ClWoG6EO7kThXSAEP_EdTQIXnkWuPr4in30llSh5SCPl0xN5wztCyLgwM7bzEikzF0Q-PrEoGEnthB54-3B8YoQFhfsAquFJknuIkbn7PTuDOKVhxAaSP5ajHDzMMiuTojW538nvi7EzH5B7MvnhTA4grN_XJjImm3Vi4Pkunm2CHRTNPT3jX6vtT_1G1zgwubjKIYxvgVj0K_Qy2h4_tvqUNvU0MIW02y8zDjyGypDJnCHHxsGNM9AorPHWghplqBOLevvynTFMPqRI_yv1zKuKEJdYAxMEXi5qEOyrzV96i2NYCUBuiq.NtGq7DS4tsRuMTkFSXDrdw" \
+            2>&1 | tee deploy.log
+      - name: Preserve deployment log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-deploy-log
+          path: deploy.log
+          if-no-files-found: ignore
