@@ -1,4 +1,4 @@
-name: Deploy production to Netlify
+name: Inspect failed Netlify deployment
 
 on:
   pull_request:
@@ -8,37 +8,18 @@ on:
 
 permissions:
   contents: read
-
-concurrency:
-  group: netlify-production
-  cancel-in-progress: true
+  actions: read
 
 jobs:
-  deploy:
+  inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - name: Consume one-time deployment credential
-        shell: bash
+      - name: Download failed deployment log
         env:
-          SUPABASE_URL: https://jnciddblcndmthmmvqrz.supabase.co
-          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuY2lkZGJsY25kbXRobW12cXJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjI4MzUsImV4cCI6MjA5NzA5ODgzNX0.X7KFyKtc-lqKTgbqJodZ6zr6qcxjm23gnsyUJYOFpAg
-          DEPLOY_LOOKUP_KEY: xiSKjslrmuYS1tSXVdCYqRxk-1Ebugs6QZcfA4RbuMgaOsaeIQB5cf91-8zZ5BIx
-        run: |
-          TOKEN="$(curl --fail --silent --show-error "$SUPABASE_URL/rest/v1/rpc/consume_deploy_token" \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
-            -H "Content-Type: application/json" \
-            --data "{\"p_key\":\"$DEPLOY_LOOKUP_KEY\"}" | jq -r '.')"
-          test -n "$TOKEN" && test "$TOKEN" != "null"
-          echo "::add-mask::$TOKEN"
-          echo "NETLIFY_AUTH_TOKEN=$TOKEN" >> "$GITHUB_ENV"
-      - name: Build and deploy latest source
-        shell: bash
-        run: npx -y netlify-cli@latest deploy --build --prod --site 4a92aaba-3923-4163-85b1-bfb9941ed36a --auth "$NETLIFY_AUTH_TOKEN"
+          GH_TOKEN: ${{ github.token }}
+        run: gh run view 28300908481 --repo "$GITHUB_REPOSITORY" --log-failed > previous-failure.log
+      - name: Upload focused failure log
+        uses: actions/upload-artifact@v4
+        with:
+          name: focused-netlify-failure
+          path: previous-failure.log
