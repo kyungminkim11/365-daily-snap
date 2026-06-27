@@ -1,4 +1,4 @@
-name: Inspect GitHub Pages deployment
+name: Inspect GitHub Pages failure
 
 on:
   pull_request:
@@ -14,12 +14,12 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: List GitHub Pages workflow runs
+      - name: Download Pages failure log
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy-pages.yml --limit 20 --json databaseId,status,conclusion,headSha,event,createdAt,url > pages-runs.json
-      - name: Upload Pages run list
+        run: gh run view 28300675930 --repo "$GITHUB_REPOSITORY" --log-failed > pages-failure.log
+      - name: Upload focused Pages failure
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages-runs
-          path: pages-runs.json
+          name: focused-pages-failure
+          path: pages-failure.log
