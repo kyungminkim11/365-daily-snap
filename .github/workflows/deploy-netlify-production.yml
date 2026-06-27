@@ -1,4 +1,4 @@
-name: Inspect failed Netlify deployment
+name: Inspect GitHub Pages deployment
 
 on:
   pull_request:
@@ -14,12 +14,12 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Download failed deployment log
+      - name: List GitHub Pages workflow runs
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run view 28300908481 --repo "$GITHUB_REPOSITORY" --log-failed > previous-failure.log
-      - name: Upload focused failure log
+        run: gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy-pages.yml --limit 20 --json databaseId,status,conclusion,headSha,event,createdAt,url > pages-runs.json
+      - name: Upload Pages run list
         uses: actions/upload-artifact@v4
         with:
-          name: focused-netlify-failure
-          path: previous-failure.log
+          name: github-pages-runs
+          path: pages-runs.json
