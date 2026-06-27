@@ -5,59 +5,234 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>365 Daily Snap Admin Plus</title>
+    <title>365 Daily Snap Static Admin</title>
     <style>
       :root {
         color-scheme: light;
         --paper: #f6f3ec;
+        --panel: #fffdf8;
         --ink: #1d1b18;
         --muted: #766f65;
-        --line: rgba(29, 27, 24, 0.12);
+        --line: rgba(29, 27, 24, 0.14);
+        --warm: #ebe4d8;
+        --good: #326b42;
+        --danger: #9d3e31;
+        font-family: Inter, Pretendard, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
       * { box-sizing: border-box; }
-      html, body { width: 100%; height: 100%; margin: 0; background: var(--paper); color: var(--ink); font-family: Inter, Pretendard, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-      .admin-frame-shell { display: grid; grid-template-rows: auto 1fr; width: 100%; height: 100%; }
-      .admin-plus-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); background: rgba(246, 243, 236, 0.94); padding: 10px clamp(12px, 3vw, 20px); backdrop-filter: blur(14px); }
-      .admin-plus-brand { display: grid; gap: 2px; min-width: 0; }
-      .admin-plus-brand strong { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
-      .admin-plus-brand span { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-      .admin-plus-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-      .admin-plus-actions a, .admin-plus-actions button { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 253, 248, 0.65); color: var(--ink); padding: 7px 11px; font: inherit; font-size: 12px; font-weight: 760; text-decoration: none; cursor: pointer; }
-      .admin-plus-actions a.primary { border-color: var(--ink); background: var(--ink); color: var(--paper); }
-      .admin-frame { display: block; width: 100%; height: 100%; border: 0; background: var(--paper); }
-      .admin-load-message { position: fixed; left: 50%; top: 50%; z-index: 1; transform: translate(-50%, -50%); color: var(--muted); font-size: 14px; }
-      @media (max-width: 680px) { .admin-plus-bar { align-items: stretch; flex-direction: column; } .admin-plus-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); } .admin-plus-actions a, .admin-plus-actions button { width: 100%; padding-inline: 8px; } }
+      body { margin: 0; background: var(--paper); color: var(--ink); word-break: keep-all; }
+      a { color: inherit; }
+      .shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+      header { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--line); background: rgba(246, 243, 236, 0.94); backdrop-filter: blur(16px); }
+      .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }
+      .brand strong { display: block; font-size: 15px; letter-spacing: -0.02em; }
+      .brand span, .eyebrow { color: var(--muted); font-size: 11px; font-weight: 760; letter-spacing: 0.12em; text-transform: uppercase; }
+      .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+      button, .button, input, textarea { font: inherit; }
+      button, .button { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--paper); padding: 8px 13px; font-size: 13px; font-weight: 720; text-decoration: none; cursor: pointer; }
+      button.secondary, .button.secondary { border-color: var(--line); background: rgba(255, 253, 248, 0.7); color: var(--ink); }
+      button.danger { border-color: rgba(157, 62, 49, 0.35); background: transparent; color: var(--danger); }
+      main { padding: 30px 0 80px; }
+      .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 0.6fr); gap: 22px; align-items: stretch; }
+      h1 { max-width: 760px; margin: 8px 0 12px; font-size: clamp(32px, 5vw, 56px); line-height: 1.04; letter-spacing: -0.05em; font-weight: 560; }
+      h2 { margin: 0 0 10px; font-size: clamp(23px, 3vw, 34px); letter-spacing: -0.04em; font-weight: 560; }
+      p { line-height: 1.75; }
+      .lead { max-width: 760px; color: var(--muted); }
+      .card { border: 1px solid var(--line); border-radius: 14px; background: rgba(255, 253, 248, 0.78); padding: 18px; box-shadow: 0 12px 36px rgba(29, 27, 24, 0.06); }
+      .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--line); }
+      .stat { min-height: 96px; background: rgba(255, 253, 248, 0.86); padding: 16px; }
+      .stat strong { display: block; margin-top: 8px; font-size: 34px; font-weight: 520; letter-spacing: -0.05em; }
+      .grid { display: grid; gap: 14px; margin-top: 18px; }
+      .grid.two { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); align-items: start; }
+      .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 22px 0; }
+      .step { border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 253, 248, 0.56); padding: 15px; }
+      .step strong { display: block; margin: 8px 0 4px; }
+      textarea { width: 100%; min-height: 520px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.62); color: var(--ink); padding: 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.55; resize: vertical; }
+      input[type='file'] { display: none; }
+      .file-label { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 253, 248, 0.7); padding: 8px 13px; font-size: 13px; font-weight: 720; cursor: pointer; }
+      .status { margin: 0; color: var(--muted); font-size: 13px; }
+      .status.good { color: var(--good); }
+      .status.bad { color: var(--danger); }
+      code { border: 1px solid var(--line); border-radius: 6px; background: var(--warm); padding: 2px 6px; }
+      ol { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.85; }
+      .preview-list { display: grid; gap: 10px; max-height: 420px; overflow: auto; }
+      .project { border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.4); padding: 12px; }
+      .project strong { display: block; margin-bottom: 4px; }
+      .project span { color: var(--muted); font-size: 13px; }
+      @media (max-width: 860px) { .top, .hero, .grid.two { grid-template-columns: 1fr; flex-direction: column; align-items: stretch; } .steps { grid-template-columns: 1fr; } .actions { width: 100%; } button, .button, .file-label { width: 100%; } }
     </style>
   </head>
   <body>
-    <div class="admin-frame-shell">
-      <header class="admin-plus-bar">
-        <div class="admin-plus-brand">
-          <strong>365 Daily Snap Admin Plus</strong>
-          <span>photo-first workflow manager</span>
+    <header>
+      <div class="shell top">
+        <div class="brand">
+          <strong>365 Daily Snap Static Admin</strong>
+          <span>serverless-safe manager</span>
         </div>
-        <nav class="admin-plus-actions" aria-label="관리자 빠른 링크">
-          <a class="primary" href="/ko" target="_blank" rel="noreferrer">KO</a>
-          <a href="/ja" target="_blank" rel="noreferrer">JP</a>
-          <a href="/en" target="_blank" rel="noreferrer">EN</a>
-          <a href="/admin-studio.html" target="_blank" rel="noreferrer">사진 스튜디오</a>
-          <a href="/admin.html" target="_blank" rel="noreferrer">기존 관리자</a>
-          <button type="button" id="reloadFrameButton">새로고침</button>
+        <nav class="actions" aria-label="관리자 빠른 링크">
+          <a class="button" href="/ko" target="_blank" rel="noreferrer">공개 사이트</a>
+          <a class="button secondary" href="https://github.com/kyungminkim11/365-daily-snap/tree/main/public/portfolio" target="_blank" rel="noreferrer">GitHub 폴더</a>
+          <button class="secondary" id="reloadButton" type="button">JSON 다시 불러오기</button>
         </nav>
-      </header>
-      <p class="admin-load-message" id="loadMessage">사진 업로드 스튜디오를 불러오는 중입니다.</p>
-      <iframe class="admin-frame" id="adminFrame" src="/admin-studio.html" title="365 Daily Snap 사진 업로드 스튜디오"></iframe>
-    </div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Static workflow</p>
+          <h1>관리자 페이지는 유지하고, 공개 사이트는 정적으로 운영합니다.</h1>
+          <p class="lead">
+            이 화면은 Netlify Functions나 Blobs를 사용하지 않습니다. 현재 <code>/portfolio/portfolio.json</code>을 불러와
+            확인·수정·다운로드할 수 있고, 최종 반영은 GitHub에 파일을 교체하는 방식입니다.
+          </p>
+        </div>
+        <div class="stats" aria-label="콘텐츠 현황">
+          <div class="stat"><p class="eyebrow">Projects</p><strong id="projectCount">0</strong></div>
+          <div class="stat"><p class="eyebrow">Media</p><strong id="mediaCount">0</strong></div>
+          <div class="stat"><p class="eyebrow">Models</p><strong id="modelCount">0</strong></div>
+          <div class="stat"><p class="eyebrow">Mode</p><strong>Static</strong></div>
+        </div>
+      </section>
+
+      <section class="steps" aria-label="운영 순서">
+        <article class="step"><p class="eyebrow">01</p><strong>사진 압축</strong><p>사진은 WebP/JPG로 줄여 <code>public/portfolio/uploads</code>에 추가합니다.</p></article>
+        <article class="step"><p class="eyebrow">02</p><strong>JSON 수정</strong><p>아래 JSON에서 프로젝트, 사진 경로, 태그, 문구를 수정합니다.</p></article>
+        <article class="step"><p class="eyebrow">03</p><strong>GitHub 반영</strong><p>다운로드한 <code>portfolio.json</code>을 GitHub의 같은 경로에 교체합니다.</p></article>
+      </section>
+
+      <section class="grid two">
+        <aside class="card">
+          <p class="eyebrow">Current content</p>
+          <h2>현재 데이터 요약</h2>
+          <p class="status" id="status">콘텐츠를 불러오는 중입니다.</p>
+          <div class="actions" style="margin: 14px 0">
+            <button id="validateButton" type="button">JSON 검사</button>
+            <button class="secondary" id="downloadButton" type="button">portfolio.json 다운로드</button>
+            <label class="file-label" for="importInput">JSON 가져오기</label>
+            <input id="importInput" type="file" accept="application/json,.json" />
+          </div>
+          <div class="preview-list" id="previewList"></div>
+        </aside>
+
+        <section class="card">
+          <p class="eyebrow">Editor</p>
+          <h2>portfolio.json 편집</h2>
+          <textarea id="jsonEditor" spellcheck="false" aria-label="portfolio.json 편집기"></textarea>
+        </section>
+      </section>
+
+      <section class="card" style="margin-top: 18px">
+        <p class="eyebrow">Important</p>
+        <h2>이 방식의 핵심</h2>
+        <ol>
+          <li>방문자 페이지는 API를 호출하지 않고 정적 JSON과 정적 이미지만 사용합니다.</li>
+          <li>문의는 홈페이지 내 버튼을 통해 Instagram DM 또는 카카오 오픈채팅으로 받는 운영을 권장합니다.</li>
+          <li>관리자 페이지에서 바로 서버 저장은 하지 않습니다. 그래서 Netlify 무료 사용량을 거의 태우지 않습니다.</li>
+        </ol>
+      </section>
+    </main>
 
     <script>
-      const frame = document.getElementById("adminFrame");
-      const message = document.getElementById("loadMessage");
-      const reloadButton = document.getElementById("reloadFrameButton");
-      frame.addEventListener("load", () => { message.hidden = true; });
-      reloadButton.addEventListener("click", () => {
-        message.hidden = false;
-        frame.contentWindow?.location.reload();
-      });
+      const PORTFOLIO_URL = "/portfolio/portfolio.json";
+      const editor = document.getElementById("jsonEditor");
+      const statusEl = document.getElementById("status");
+      const previewList = document.getElementById("previewList");
+
+      function setStatus(message, type = "") {
+        statusEl.textContent = message;
+        statusEl.className = `status ${type}`.trim();
+      }
+
+      function parseEditor() {
+        return JSON.parse(editor.value || "{}");
+      }
+
+      function updateStats(content) {
+        const projects = Array.isArray(content.projects) ? content.projects : [];
+        const mediaCount = projects.reduce((sum, project) => sum + (Array.isArray(project.media) ? project.media.length : 0), 0);
+        const models = Array.isArray(content.models) ? content.models : [];
+        document.getElementById("projectCount").textContent = projects.length;
+        document.getElementById("mediaCount").textContent = mediaCount;
+        document.getElementById("modelCount").textContent = models.length;
+        previewList.innerHTML = projects.length
+          ? projects.map((project) => `
+              <article class="project">
+                <strong>${escapeHtml(project.title || "제목 없음")}</strong>
+                <span>${escapeHtml(project.category || "카테고리 없음")} · ${(project.media || []).length} media · ${escapeHtml(project.status || "published")}</span>
+              </article>
+            `).join("")
+          : `<p class="status">등록된 프로젝트가 없습니다.</p>`;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      async function loadContent() {
+        setStatus("정적 portfolio.json을 불러오는 중입니다.");
+        const response = await fetch(`${PORTFOLIO_URL}?t=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) throw new Error("portfolio.json을 불러오지 못했습니다.");
+        const content = await response.json();
+        editor.value = JSON.stringify(content, null, 2);
+        updateStats(content);
+        setStatus("정적 JSON 로드 완료. 수정 후 다운로드해서 GitHub에 교체하세요.", "good");
+      }
+
+      function validateContent() {
+        try {
+          const content = parseEditor();
+          updateStats(content);
+          setStatus("JSON 형식이 정상입니다.", "good");
+        } catch (error) {
+          setStatus(`JSON 오류: ${error.message}`, "bad");
+        }
+      }
+
+      function downloadContent() {
+        try {
+          const content = parseEditor();
+          const blob = new Blob([JSON.stringify(content, null, 2) + "\n"], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "portfolio.json";
+          link.click();
+          URL.revokeObjectURL(url);
+          setStatus("portfolio.json을 다운로드했습니다. GitHub에 업로드하면 반영됩니다.", "good");
+        } catch (error) {
+          setStatus(`다운로드 전 JSON을 확인해주세요: ${error.message}`, "bad");
+        }
+      }
+
+      function importContent(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const content = JSON.parse(reader.result);
+            editor.value = JSON.stringify(content, null, 2);
+            updateStats(content);
+            setStatus("JSON 파일을 불러왔습니다.", "good");
+          } catch (error) {
+            setStatus(`가져오기 실패: ${error.message}`, "bad");
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      document.getElementById("reloadButton").addEventListener("click", () => loadContent().catch((error) => setStatus(error.message, "bad")));
+      document.getElementById("validateButton").addEventListener("click", validateContent);
+      document.getElementById("downloadButton").addEventListener("click", downloadContent);
+      document.getElementById("importInput").addEventListener("change", (event) => importContent(event.target.files?.[0]));
+      editor.addEventListener("input", () => setStatus("수정 중입니다. 저장하려면 JSON 검사 후 다운로드하세요."));
+
+      loadContent().catch((error) => setStatus(error.message, "bad"));
     </script>
   </body>
 </html>
