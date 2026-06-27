@@ -12,6 +12,10 @@ function isProtectedPath(pathname) {
   return PROTECTED_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 }
 
+function isPublicInquiryRequest(request, pathname) {
+  return pathname === "/api/inquiries" && ["POST", "OPTIONS"].includes(request.method.toUpperCase());
+}
+
 function safeEqual(left = "", right = "") {
   if (!left || !right || left.length !== right.length) return false;
   let result = 0;
@@ -54,7 +58,9 @@ function unauthorized() {
 
 export default async (request, context) => {
   const url = new URL(request.url);
-  if (!isProtectedPath(url.pathname)) return context.next();
+  if (!isProtectedPath(url.pathname) || isPublicInquiryRequest(request, url.pathname)) {
+    return context.next();
+  }
 
   const adminKey = Netlify.env.get("NETLIFY_ADMIN_TOKEN") || "";
   if (!adminKey) {
