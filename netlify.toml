@@ -1,0 +1,91 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Compatibility route: the app used to request /api/content.
+# Serve the static portfolio JSON instead of waking Netlify Functions.
+[[redirects]]
+  from = "/api/content"
+  to = "/portfolio/portfolio.json"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/"
+  to = "/ko"
+  status = 302
+  force = false
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin-v2.html"
+  status = 200
+
+[[redirects]]
+  from = "/manager"
+  to = "/admin-v2.html"
+  status = 200
+
+[[redirects]]
+  from = "/ko/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/ja/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/en/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/ko"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/ja"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/en"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/portfolio/uploads/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/portfolio/*.json"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
