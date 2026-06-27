@@ -24,6 +24,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Resolve Netlify proxy host
+        shell: bash
+        run: getent ahostsv4 netlify-mcp.netlify.app | tee dns.txt
       - name: Upload source and deploy production
         shell: bash
         run: |
@@ -32,10 +35,12 @@ jobs:
             --site-id 4a92aaba-3923-4163-85b1-bfb9941ed36a \
             --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..MEHdkKn668U-oF7G.w8CqdGfayzYGkW5H1h0E6aaMmZ5zKRlG_UBRl93R4ncoqUfLo4dd0jBZXqSkALkyCQTBc97e6TqavZ38S4ClWoG6EO7kThXSAEP_EdTQIXnkWuPr4in30llSh5SCPl0xN5wztCyLgwM7bzEikzF0Q-PrEoGEnthB54-3B8YoQFhfsAquFJknuIkbn7PTuDOKVhxAaSP5ajHDzMMiuTojW538nvi7EzH5B7MvnhTA4grN_XJjImm3Vi4Pkunm2CHRTNPT3jX6vtT_1G1zgwubjKIYxvgVj0K_Qy2h4_tvqUNvU0MIW02y8zDjyGypDJnCHHxsGNM9AorPHWghplqBOLevvynTFMPqRI_yv1zKuKEJdYAxMEXi5qEOyrzV96i2NYCUBuiq.NtGq7DS4tsRuMTkFSXDrdw" \
             2>&1 | tee deploy.log
-      - name: Preserve deployment log
+      - name: Preserve deployment diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: netlify-deploy-log
-          path: deploy.log
+          name: netlify-deploy-diagnostics
+          path: |
+            deploy.log
+            dns.txt
           if-no-files-found: ignore
