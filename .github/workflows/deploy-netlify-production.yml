@@ -1,8 +1,6 @@
 name: Deploy production to Netlify
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened]
@@ -24,23 +22,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Resolve Netlify proxy host
+          cache: npm
+      - run: npm ci
+      - name: Consume one-time deployment credential
         shell: bash
-        run: getent ahostsv4 netlify-mcp.netlify.app | tee dns.txt
-      - name: Upload source and deploy production
-        shell: bash
+        env:
+          SUPABASE_URL: https://jnciddblcndmthmmvqrz.supabase.co
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuY2lkZGJsY25kbXRobW12cXJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjI4MzUsImV4cCI6MjA5NzA5ODgzNX0.X7KFyKtc-lqKTgbqJodZ6zr6qcxjm23gnsyUJYOFpAg
+          DEPLOY_LOOKUP_KEY: xiSKjslrmuYS1tSXVdCYqRxk-1Ebugs6QZcfA4RbuMgaOsaeIQB5cf91-8zZ5BIx
         run: |
-          set -o pipefail
-          npx -y @netlify/mcp@latest \
-            --site-id 4a92aaba-3923-4163-85b1-bfb9941ed36a \
-            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..MEHdkKn668U-oF7G.w8CqdGfayzYGkW5H1h0E6aaMmZ5zKRlG_UBRl93R4ncoqUfLo4dd0jBZXqSkALkyCQTBc97e6TqavZ38S4ClWoG6EO7kThXSAEP_EdTQIXnkWuPr4in30llSh5SCPl0xN5wztCyLgwM7bzEikzF0Q-PrEoGEnthB54-3B8YoQFhfsAquFJknuIkbn7PTuDOKVhxAaSP5ajHDzMMiuTojW538nvi7EzH5B7MvnhTA4grN_XJjImm3Vi4Pkunm2CHRTNPT3jX6vtT_1G1zgwubjKIYxvgVj0K_Qy2h4_tvqUNvU0MIW02y8zDjyGypDJnCHHxsGNM9AorPHWghplqBOLevvynTFMPqRI_yv1zKuKEJdYAxMEXi5qEOyrzV96i2NYCUBuiq.NtGq7DS4tsRuMTkFSXDrdw" \
-            2>&1 | tee deploy.log
-      - name: Preserve deployment diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: netlify-deploy-diagnostics
-          path: |
-            deploy.log
-            dns.txt
-          if-no-files-found: ignore
+          TOKEN="$(curl --fail --silent --show-error "$SUPABASE_URL/rest/v1/rpc/consume_deploy_token" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            --data "{\"p_key\":\"$DEPLOY_LOOKUP_KEY\"}" | jq -r '.')"
+          test -n "$TOKEN" && test "$TOKEN" != "null"
+          echo "::add-mask::$TOKEN"
+          echo "NETLIFY_AUTH_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+      - name: Build and deploy latest source
+        shell: bash
+        run: npx -y netlify-cli@latest deploy --build --prod --site 4a92aaba-3923-4163-85b1-bfb9941ed36a --auth "$NETLIFY_AUTH_TOKEN"
