@@ -1,7 +1,7 @@
 {
   "name": "365-daily-snap",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev.mjs",
@@ -10,7 +10,7 @@
     "tunnel": "cloudflared tunnel --url http://localhost:5173",
     "netlify:dev": "npx netlify dev",
     "netlify:deploy": "npx netlify deploy --build",
-    "build": "vite build",
+    "build": "vite build && node scripts/postbuild.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
