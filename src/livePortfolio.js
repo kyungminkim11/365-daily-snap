@@ -14,6 +14,11 @@ function normalizeLocation(location) {
   return hasValue ? location : HIDDEN_LOCATION;
 }
 
+function tagsWithSourceLink(tags, url) {
+  const cleanTags = Array.isArray(tags) ? tags.filter((tag) => !String(tag).startsWith("__instagram:")) : [];
+  return url ? [...cleanTags, `__instagram:${url}`] : cleanTags;
+}
+
 function normalizeMedia(media, fallbackTitle) {
   if (!Array.isArray(media)) return [];
   return media
@@ -34,6 +39,7 @@ function normalizeMedia(media, fallbackTitle) {
 function manualRowToProject(row) {
   const title = String(row.title || "촬영 기록").trim();
   const media = normalizeMedia(row.media, title);
+  const instagramUrl = String(row.permalink || "").trim();
   return {
     id: `cms-${row.id}`,
     source: row.source || "manual",
@@ -42,12 +48,12 @@ function manualRowToProject(row) {
     subtitle: row.source === "instagram" ? "@365daily.snap" : "365 Daily Snap",
     description: String(row.description || row.source_caption || "").trim(),
     category: String(row.category || "인물 사진").trim(),
-    tags: Array.isArray(row.tags) ? row.tags : [],
+    tags: tagsWithSourceLink(row.tags, instagramUrl),
     models: Array.isArray(row.models) ? row.models : [],
     location: normalizeLocation(row.location),
     cover: media[0]?.src || "",
     media,
-    instagramUrl: String(row.permalink || "").trim(),
+    instagramUrl,
     sourcePublishedAt: row.source_published_at || row.created_at || "",
     isFeatured: Boolean(row.is_featured),
     sortOrder: Number(row.sort_order || 1000),
@@ -100,6 +106,7 @@ async function loadInstagramProjects() {
   if (!Array.isArray(feed?.projects)) return [];
   return feed.projects.map((project) => ({
     ...project,
+    tags: tagsWithSourceLink(project.tags, String(project.instagramUrl || "").trim()),
     location: normalizeLocation(project.location),
     media: normalizeMedia(project.media, project.title),
   })).filter((project) => project.media.length);
