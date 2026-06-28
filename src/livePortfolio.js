@@ -1,6 +1,7 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 const HIDDEN_LOCATION = { city: "협의", district: "미정", place: "확인 필요", mapX: 50, mapY: 50 };
+const INSTAGRAM_CARD_SIZE = 3;
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, options);
@@ -22,17 +23,20 @@ function tagsWithSourceLink(tags, url) {
 function normalizeMedia(media, fallbackTitle) {
   if (!Array.isArray(media)) return [];
   return media
-    .map((item) => ({
-      type: item?.type === "video" ? "video" : "image",
-      src: String(item?.src || item?.image || "").trim(),
-      alt: String(item?.alt || fallbackTitle || "365 Daily Snap").trim(),
-      caption: String(item?.caption || "").trim(),
-      tags: Array.isArray(item?.tags) ? item.tags : [],
-      models: Array.isArray(item?.models) ? item.models : [],
-      location: normalizeLocation(item?.location),
-      instagramUrl: String(item?.instagramUrl || "").trim(),
-      externalId: String(item?.externalId || "").trim(),
-    }))
+    .map((item) => {
+      const instagramUrl = String(item?.instagramUrl || "").trim();
+      return {
+        type: item?.type === "video" ? "video" : "image",
+        src: String(item?.src || item?.image || "").trim(),
+        alt: String(item?.alt || fallbackTitle || "365 Daily Snap").trim(),
+        caption: String(item?.caption || "").trim(),
+        tags: tagsWithSourceLink(item?.tags, instagramUrl),
+        models: Array.isArray(item?.models) ? item.models : [],
+        location: normalizeLocation(item?.location),
+        instagramUrl,
+        externalId: String(item?.externalId || "").trim(),
+      };
+    })
     .filter((item) => item.src);
 }
 
@@ -58,6 +62,63 @@ function manualRowToProject(row) {
     isFeatured: Boolean(row.is_featured),
     sortOrder: Number(row.sort_order || 1000),
   };
+}
+
+function unique(values = []) {
+  return Array.from(new Set(values.map((value) => String(value || "").trim()).filter(Boolean)));
+}
+
+function sceneLabel(tags = []) {
+  const labels = [
+    ["웨딩무드", "웨딩 무드"],
+    ["한복", "한복 스냅"],
+    ["반려동물", "반려동물 스냅"],
+    ["동물스냅", "동물 스냅"],
+    ["바다", "바다 인물 스냅"],
+    ["카페", "카페 포트레이트"],
+    ["네온", "야간 네온 스냅"],
+    ["밤", "야간 인물 스냅"],
+    ["플라워", "플라워 포트레이트"],
+    ["거리", "거리 인물 스냅"],
+    ["프로필", "프로필 포트레이트"],
+  ];
+  return labels.find(([tag]) => tags.includes(tag))?.[1] || "인물 스냅";
+}
+
+function buildScreenshotGridProjects(staticProjects = []) {
+  const archive = staticProjects.find((project) => /archive|아카이브/i.test(`${project?.title || ""} ${project?.category || ""}`));
+  if (!archive) return [];
+  const archiveMedia = normalizeMedia(archive.media, archive.title);
+  const projects = [];
+
+  for (let start = 0; start < archiveMedia.length; start += INSTAGRAM_CARD_SIZE) {
+    const media = archiveMedia.slice(start, start + INSTAGRAM_CARD_SIZE);
+    if (!media.length) continue;
+    const models = unique(media.flatMap((item) => item.models || []));
+    const visibleTags = unique(media.flatMap((item) => item.tags || []).filter((tag) => !String(tag).startsWith("__instagram:")));
+    const label = sceneLabel(visibleTags);
+    const owner = models[0] ? `@${String(models[0]).replace(/^@/, "")} · ` : "";
+    const number = String(Math.floor(start / INSTAGRAM_CARD_SIZE) + 1).padStart(2, "0");
+    const firstLinkTag = media.flatMap((item) => item.tags || []).find((tag) => String(tag).startsWith("__instagram:"));
+
+    projects.push({
+      id: `instagram-grid-${number}`,
+      source: "instagram-snapshot",
+      title: `${owner}${label}`,
+      subtitle: "@365daily.snap",
+      description: "현재 Instagram 메인 그리드 순서에 맞춰 묶은 촬영 시리즈입니다.",
+      category: "Instagram",
+      tags: firstLinkTag ? [...visibleTags, firstLinkTag] : visibleTags,
+      models,
+      location: media.find((item) => item.location)?.location || HIDDEN_LOCATION,
+      cover: media[0].src,
+      media,
+      instagramUrl: firstLinkTag ? String(firstLinkTag).slice("__instagram:".length) : "",
+      sortOrder: start,
+    });
+  }
+
+  return projects;
 }
 
 async function loadManualProjects() {
@@ -120,9 +181,12 @@ export async function loadMergedPortfolio(fallbackContent) {
   ]);
 
   const base = staticResult.status === "fulfilled" ? staticResult.value : fallbackContent;
-  const instagramProjects = instagramResult.status === "fulfilled" ? instagramResult.value : [];
+  const syncedInstagramProjects = instagramResult.status === "fulfilled" ? instagramResult.value : [];
   const manualProjects = manualResult.status === "fulfilled" ? manualResult.value : [];
   const staticProjects = Array.isArray(base.projects) ? base.projects : [];
+  const instagramProjects = syncedInstagramProjects.length
+    ? syncedInstagramProjects
+    : buildScreenshotGridProjects(staticProjects);
   const cleanedStaticProjects = instagramProjects.length
     ? staticProjects.filter((project) => !/archive|아카이브/i.test(`${project?.title || ""} ${project?.category || ""}`))
     : staticProjects;
