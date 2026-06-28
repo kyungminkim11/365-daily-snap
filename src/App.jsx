@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CalendarDays, Camera, Check, ChevronDown, ChevronUp, Clock3, ExternalLink, Globe2, Instagram, MapPin, Menu, MessageCircle, ShieldCheck, X } from "lucide-react";
 import { fallbackContent, normalizeContent } from "./siteContent";
+import { loadMergedPortfolio } from "./livePortfolio";
 import { COPY } from "./siteCopy";
 import { BUSINESS, CONTACT, cleanLocation, createProjectGroups, setMeta, useLanguage } from "./siteUtils";
 import { InquiryForm, Media, ProjectModal, ReviewModal, SectionHeading } from "./siteComponents";
@@ -19,8 +20,7 @@ function App() {
 
   useEffect(() => {
     let mounted = true;
-    fetch("/portfolio/portfolio.json")
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error("content")))
+    loadMergedPortfolio(fallbackContent)
       .then((data) => mounted && setContent(normalizeContent(data)))
       .catch(() => mounted && setContent(normalizeContent(fallbackContent)));
     return () => { mounted = false; };
