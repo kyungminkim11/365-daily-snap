@@ -19,3 +19,11 @@ jobs:
       - run: npm ci
       - run: node --check scripts/sync-instagram.mjs
       - run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://jnciddblcndmthmmvqrz.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuY2lkZGJsY25kbXRobW12cXJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjI4MzUsImV4cCI6MjA5NzA5ODgzNX0.X7KFyKtc-lqKTgbqJodZ6zr6qcxjm23gnsyUJYOFpAg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: github-pages-dist
+          path: dist
+          if-no-files-found: error
