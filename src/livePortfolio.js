@@ -1,10 +1,17 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+const HIDDEN_LOCATION = { city: "협의", district: "미정", place: "확인 필요", mapX: 50, mapY: 50 };
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, options);
   if (!response.ok) throw new Error(`Request failed: ${response.status}`);
   return response.json();
+}
+
+function normalizeLocation(location) {
+  if (!location || typeof location !== "object") return HIDDEN_LOCATION;
+  const hasValue = [location.city, location.district, location.place].some((value) => String(value || "").trim());
+  return hasValue ? location : HIDDEN_LOCATION;
 }
 
 function normalizeMedia(media, fallbackTitle) {
@@ -17,7 +24,7 @@ function normalizeMedia(media, fallbackTitle) {
       caption: String(item?.caption || "").trim(),
       tags: Array.isArray(item?.tags) ? item.tags : [],
       models: Array.isArray(item?.models) ? item.models : [],
-      location: item?.location && typeof item.location === "object" ? item.location : {},
+      location: normalizeLocation(item?.location),
       instagramUrl: String(item?.instagramUrl || "").trim(),
       externalId: String(item?.externalId || "").trim(),
     }))
@@ -37,7 +44,7 @@ function manualRowToProject(row) {
     category: String(row.category || "인물 사진").trim(),
     tags: Array.isArray(row.tags) ? row.tags : [],
     models: Array.isArray(row.models) ? row.models : [],
-    location: row.location && typeof row.location === "object" ? row.location : {},
+    location: normalizeLocation(row.location),
     cover: media[0]?.src || "",
     media,
     instagramUrl: String(row.permalink || "").trim(),
@@ -90,7 +97,12 @@ async function loadStaticContent() {
 
 async function loadInstagramProjects() {
   const feed = await fetchJson("/portfolio/instagram-feed.json", { cache: "no-cache" });
-  return Array.isArray(feed?.projects) ? feed.projects : [];
+  if (!Array.isArray(feed?.projects)) return [];
+  return feed.projects.map((project) => ({
+    ...project,
+    location: normalizeLocation(project.location),
+    media: normalizeMedia(project.media, project.title),
+  })).filter((project) => project.media.length);
 }
 
 export async function loadMergedPortfolio(fallbackContent) {
