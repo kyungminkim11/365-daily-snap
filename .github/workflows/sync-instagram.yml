@@ -1,0 +1,42 @@
+name: Sync Instagram Portfolio
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-portfolio-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Sync current Instagram posts
+        run: node scripts/sync-instagram.mjs
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_ACCOUNT_ID: ${{ vars.INSTAGRAM_ACCOUNT_ID }}
+          INSTAGRAM_API_BASE_URL: ${{ vars.INSTAGRAM_API_BASE_URL }}
+          INSTAGRAM_SYNC_LIMIT: ${{ vars.INSTAGRAM_SYNC_LIMIT || '60' }}
+      - name: Commit changed portfolio files
+        run: |
+          if git diff --quiet -- public/portfolio/instagram-feed.json public/portfolio/uploads/instagram-live; then
+            echo "No Instagram portfolio changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/portfolio/instagram-feed.json public/portfolio/uploads/instagram-live
+          git commit -m "chore: sync Instagram portfolio"
+          git push
