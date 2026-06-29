@@ -3,6 +3,113 @@
   user-select: none;
 }
 
+.photo-motion-rail {
+  overflow: hidden;
+  border-block: 1px solid var(--line);
+  background: rgba(255, 255, 255, .18);
+  padding: clamp(1rem, 2vw, 1.35rem) 0;
+}
+
+.photo-motion-header {
+  width: min(100%, 1440px);
+  margin: 0 auto .85rem;
+  padding-inline: clamp(1.25rem, 4vw, 4rem);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--muted);
+  font-size: .76rem;
+}
+
+.photo-motion-header span {
+  color: var(--charcoal);
+  font-weight: 820;
+  letter-spacing: .16em;
+}
+
+.photo-motion-header p {
+  max-width: 34rem;
+  margin: 0;
+  text-align: right;
+  line-height: 1.6;
+}
+
+.photo-motion-window {
+  position: relative;
+  width: 100%;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.photo-motion-track {
+  display: flex;
+  width: max-content;
+  gap: clamp(.65rem, 1.4vw, 1.15rem);
+  animation: photoRailToRight 44s linear infinite;
+  will-change: transform;
+}
+
+.photo-motion-window:hover .photo-motion-track,
+.photo-motion-window:focus-within .photo-motion-track {
+  animation-play-state: paused;
+}
+
+.photo-motion-card {
+  position: relative;
+  flex: 0 0 clamp(9rem, 18vw, 18rem);
+  overflow: hidden;
+  border: 1px solid rgba(29, 27, 24, .12);
+  background: var(--paper-2);
+  padding: 0;
+  aspect-ratio: 4 / 5;
+  cursor: pointer;
+}
+
+.photo-motion-card.card-1,
+.photo-motion-card.card-4 {
+  flex-basis: clamp(10rem, 22vw, 21rem);
+  aspect-ratio: 16 / 10;
+}
+
+.photo-motion-card img,
+.photo-motion-card video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform .45s ease, filter .45s ease;
+}
+
+.photo-motion-card:hover img,
+.photo-motion-card:hover video,
+.photo-motion-card:focus-visible img,
+.photo-motion-card:focus-visible video {
+  filter: brightness(.92);
+  transform: scale(1.06);
+}
+
+.photo-motion-card span {
+  position: absolute;
+  left: .55rem;
+  bottom: .55rem;
+  background: rgba(20, 19, 17, .45);
+  color: rgba(255, 255, 255, .92);
+  padding: .28rem .42rem;
+  font-size: .62rem;
+  font-weight: 780;
+  letter-spacing: .04em;
+  backdrop-filter: blur(8px);
+}
+
+@keyframes photoRailToRight {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 .hero-photo,
 .detail-cover,
 .detail-media-grid button,
@@ -564,6 +671,29 @@
 }
 
 @media (max-width: 760px) {
+  .photo-motion-header {
+    display: grid;
+    gap: .35rem;
+  }
+
+  .photo-motion-header p {
+    text-align: left;
+    font-size: .72rem;
+  }
+
+  .photo-motion-track {
+    animation-duration: 34s;
+  }
+
+  .photo-motion-card {
+    flex-basis: 10rem;
+  }
+
+  .photo-motion-card.card-1,
+  .photo-motion-card.card-4 {
+    flex-basis: 12.5rem;
+  }
+
   .portfolio-toolbar {
     position: sticky;
     z-index: 20;
@@ -699,5 +829,21 @@
   .summary-actions .button,
   .summary-actions a {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-motion-window {
+    overflow-x: auto;
+  }
+
+  .photo-motion-track {
+    animation: none;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .photo-motion-card img,
+  .photo-motion-card video {
+    transition: none;
   }
 }

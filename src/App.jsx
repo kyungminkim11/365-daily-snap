@@ -297,6 +297,91 @@ function buildPortfolioFilters(projects, allLabel) {
   return [{ label: allLabel, query: "__all__", count: projects.length }, ...filters];
 }
 
+const MOTION_RAIL_COPY = {
+  ko: {
+    label: "최근 촬영 사진 미리보기",
+    eyebrow: "RECENT FRAMES",
+    text: "촬영했던 장면들이 천천히 흐릅니다. 마음에 드는 컷을 누르면 해당 프로젝트로 이동합니다.",
+  },
+  en: {
+    label: "Recent photo preview",
+    eyebrow: "RECENT FRAMES",
+    text: "Recent frames move slowly across the page. Tap a frame to open its project.",
+  },
+  ja: {
+    label: "最近の写真プレビュー",
+    eyebrow: "RECENT FRAMES",
+    text: "最近の撮影カットがゆっくり流れます。気になる写真を押すと作品を開けます。",
+  },
+};
+
+function isStillImage(src = "") {
+  return !/\.(mp4|webm|mov|m4v)(\?|$)/i.test(src);
+}
+
+function buildMotionFrames(projects = []) {
+  const seed = Math.floor(Date.now() / 60000);
+  const frames = projects
+    .flatMap((project) =>
+      (project.media || []).slice(0, 5).map((media, index) => {
+        const category = project.category && !/instagram/i.test(project.category)
+          ? project.category
+          : project.tags?.[0] || project.title || "Portrait";
+        return {
+          id: `${project.id}-${index}-${media.src}`,
+          src: media.src,
+          alt: media.alt || media.caption || project.title,
+          title: project.title,
+          category,
+          project,
+        };
+      })
+    )
+    .filter((item) => item.src && isStillImage(item.src));
+
+  return frames
+    .map((item, index) => {
+      const score = Math.sin((index + 1) * 999 + seed) * 10000;
+      return { item, score: score - Math.floor(score) };
+    })
+    .sort((a, b) => a.score - b.score)
+    .map(({ item }) => item)
+    .slice(0, 14);
+}
+
+function PhotoMotionRail({ projects, language, onOpenProject }) {
+  const frames = useMemo(() => buildMotionFrames(projects), [projects]);
+  const motionCopy = MOTION_RAIL_COPY[language] || MOTION_RAIL_COPY.ko;
+  if (!frames.length) return null;
+
+  const track = [...frames, ...frames];
+
+  return (
+    <section className="photo-motion-rail" aria-label={motionCopy.label}>
+      <div className="photo-motion-header">
+        <span>{motionCopy.eyebrow}</span>
+        <p>{motionCopy.text}</p>
+      </div>
+      <div className="photo-motion-window">
+        <div className="photo-motion-track">
+          {track.map((frame, index) => (
+            <button
+              className={`photo-motion-card card-${index % 5}`}
+              key={`${frame.id}-${index}`}
+              type="button"
+              onClick={() => onOpenProject(frame.project)}
+              aria-label={`${frame.category} - ${frame.title}`}
+            >
+              <Media src={frame.src} alt={frame.alt} eager={index < frames.length} />
+              <span>{frame.category}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function trackEvent(name, props = {}) {
   window.dispatchEvent(new CustomEvent("snap:analytics", { detail: { name, props } }));
   if (typeof window.plausible === "function") window.plausible(name, { props });
@@ -585,6 +670,8 @@ function App() {
           <div className="hero-photo-stack">{heroMedia.slice(1, 3).map((item, index) => <button className="hero-photo" type="button" key={item.src} onClick={() => heroProject && openProjectPage(heroProject)}><Media src={item.src} alt={item.alt || heroProject.title} eager={index === 0} /><span className="watermark">© 365 Daily Snap</span></button>)}</div>
         </div>
       </section>
+
+      <PhotoMotionRail projects={projects} language={language} onOpenProject={openProjectPage} />
 
       <section id="work" className="section section-wrap">
         <SectionHeading eyebrow={copy.workEyebrow} title={copy.workTitle} description={copy.workDescription} />
