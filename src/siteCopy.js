@@ -51,7 +51,7 @@ export const COPY = {
     reviewOriginal: "후기 원본 보기",
     moreReviews: "후기 더 보기",
     aboutEyebrow: "ABOUT PHOTOGRAPHER",
-    aboutTitle: "안녕하세요. 365 Daily Snap의 김경민입니다.",
+    aboutTitle: "안녕하세요. 365 Daily Snap입니다.",
     aboutText: "정해진 포즈를 반복하기보다 대화와 움직임 속에서 자연스러운 표정을 담습니다. 사진이 익숙하지 않은 분도 부담 없이 촬영할 수 있도록 포즈와 시선을 단계별로 안내합니다.",
     aboutFacts: ["서울·수도권 중심", "평일 저녁·주말 촬영", "개인·커플·프로필", "도쿄 선택 일정"],
     faqEyebrow: "FAQ",

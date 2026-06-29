@@ -8,8 +8,8 @@ export const CONTACT = {
 };
 
 export const BUSINESS = {
-  name: "라바랩스(LavaLabs)",
-  representative: "김경민",
+  name: "365 Daily Snap",
+  representative: "365 Daily Snap",
   registration: "455-23-01867",
   onlineSales: "2025-고양일산서-1352",
   address: "경기도 고양시 일산서구 일현로 47, 2층 204호 1308호실",

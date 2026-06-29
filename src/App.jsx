@@ -755,11 +755,11 @@ function App() {
         <SeoLandingPage page={seoPage} projects={projects} copy={copy} extra={extra} onContact={() => scrollTo("contact")} onOpenProject={openProjectPage} />
       ) : renderHome()}
 
-      <footer className="site-footer section-wrap"><div><b>365 Daily Snap</b><p>{copy.footerLine}</p></div><div className="footer-business"><span>{BUSINESS.name} · {language === "ko" ? "대표" : "Representative"} {BUSINESS.representative}</span><span>{BUSINESS.registration} · {BUSINESS.onlineSales}</span><span>{BUSINESS.email}</span></div><button type="button" onClick={() => setPrivacyOpen(true)}>{copy.privacy}</button><p>© 2026 365 Daily Snap. All rights reserved.</p></footer>
+      <footer className="site-footer section-wrap"><div><b>365 Daily Snap</b><p>{copy.footerLine}</p></div><div className="footer-business"><span>{BUSINESS.name}</span><span>{BUSINESS.registration} · {BUSINESS.onlineSales}</span><span>{BUSINESS.email}</span></div><button type="button" onClick={() => setPrivacyOpen(true)}>{copy.privacy}</button><p>© 2026 365 Daily Snap. All rights reserved.</p></footer>
       <div className="mobile-contact-bar"><button type="button" onClick={() => scrollTo("contact")}><CalendarDays />{copy.heroSecondary}</button><a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer"><MessageCircle />Kakao</a></div>
       <ProjectModal project={projectModal} copy={copy} onClose={() => setProjectModal(null)} />
       <ReviewModal review={reviewModal} copy={copy} onClose={() => setReviewModal(null)} />
-      {privacyOpen && <div className="modal-backdrop" onMouseDown={() => setPrivacyOpen(false)} role="presentation"><section className="privacy-modal" role="dialog" aria-modal="true" onMouseDown={(e) => e.stopPropagation()}><button className="modal-close" type="button" onClick={() => setPrivacyOpen(false)}><X /></button><ShieldCheck /><h2>{copy.privacy}</h2><p>{copy.consentDetail}</p><dl><dt>Controller</dt><dd>{BUSINESS.name} · {BUSINESS.representative}</dd><dt>Contact</dt><dd>{BUSINESS.email}</dd><dt>Business address</dt><dd>{BUSINESS.address}</dd></dl></section></div>}
+      {privacyOpen && <div className="modal-backdrop" onMouseDown={() => setPrivacyOpen(false)} role="presentation"><section className="privacy-modal" role="dialog" aria-modal="true" onMouseDown={(e) => e.stopPropagation()}><button className="modal-close" type="button" onClick={() => setPrivacyOpen(false)}><X /></button><ShieldCheck /><h2>{copy.privacy}</h2><p>{copy.consentDetail}</p><dl><dt>Controller</dt><dd>{BUSINESS.name}</dd><dt>Contact</dt><dd>{BUSINESS.email}</dd><dt>Business address</dt><dd>{BUSINESS.address}</dd></dl></section></div>}
     </div>
   );
 }
