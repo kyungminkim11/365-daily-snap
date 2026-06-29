@@ -12,7 +12,22 @@ function ensureParent(fileUrl) {
 
 await writeFile(indexUrl, appHtml, "utf8");
 
-for (const route of ["ko", "ja", "en"]) {
+const staticRoutes = [
+  "ko",
+  "ja",
+  "en",
+  "ko/seoul-portrait",
+  "ko/ilsan-profile",
+  "ko/couple-snap",
+  "en/seoul-portrait",
+  "en/ilsan-profile",
+  "en/couple-snap",
+  "ja/seoul-portrait",
+  "ja/ilsan-profile",
+  "ja/couple-snap",
+];
+
+for (const route of staticRoutes) {
   const routeIndex = new URL(`${route}/index.html`, distDir);
   await ensureParent(routeIndex);
   await writeFile(routeIndex, appHtml, "utf8");
