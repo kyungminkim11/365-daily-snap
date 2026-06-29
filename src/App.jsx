@@ -47,6 +47,14 @@ const EXTRA_COPY = {
     localTitle: "지역과 목적에 맞춰 보기",
     localDescription: "검색으로 들어온 방문자도 원하는 촬영 유형을 바로 확인할 수 있도록 주요 안내를 분리했습니다.",
     seoCta: "해당 촬영 문의하기",
+    filterAll: "전체",
+    filterTitle: "필터",
+    filterResult: "개의 프로젝트",
+    filterEmpty: "선택한 조건에 맞는 작업이 없습니다.",
+    filterClear: "필터 초기화",
+    portfolioCtaTitle: "원하는 분위기를 찾았다면",
+    portfolioCtaText: "문의할 때 프로젝트 이름이나 링크를 함께 보내주세요. 장소, 시간대, 공개 범위까지 더 빠르게 정리할 수 있습니다.",
+    portfolioCtaButton: "이 분위기로 문의하기",
     prepItems: [
       ["의상", "촬영 장소와 계절에 맞춰 1~2벌을 추천합니다. 과한 패턴보다 얼굴이 잘 보이는 색이 안정적입니다."],
       ["메이크업", "평소보다 조금 또렷한 정도면 충분합니다. 피부 표현은 보정 과정에서 자연스럽게 정리합니다."],
@@ -75,6 +83,14 @@ const EXTRA_COPY = {
     localTitle: "Browse by area and purpose",
     localDescription: "Quick entry points for visitors searching by location or session type.",
     seoCta: "Inquire about this session",
+    filterAll: "All",
+    filterTitle: "Filter",
+    filterResult: "projects",
+    filterEmpty: "No projects match this filter.",
+    filterClear: "Clear filter",
+    portfolioCtaTitle: "Found a mood you like?",
+    portfolioCtaText: "Send the project name or link with your inquiry so location, timing and publishing preferences can be planned faster.",
+    portfolioCtaButton: "Ask about this mood",
     prepItems: [
       ["Outfit", "One or two looks are enough. Simple colors usually keep attention on your face."],
       ["Makeup", "A slightly clearer version of your usual look works well. Retouching stays natural."],
@@ -103,6 +119,14 @@ const EXTRA_COPY = {
     localTitle: "地域と目的で見る",
     localDescription: "場所や撮影目的から探す方のために、主要な案内を分けました。",
     seoCta: "この撮影を相談する",
+    filterAll: "すべて",
+    filterTitle: "絞り込み",
+    filterResult: "件のプロジェクト",
+    filterEmpty: "条件に合う作品がありません。",
+    filterClear: "絞り込みを解除",
+    portfolioCtaTitle: "気になる雰囲気が見つかったら",
+    portfolioCtaText: "お問い合わせ時にプロジェクト名やリンクを送ると、場所・時間帯・公開範囲を早く整理できます。",
+    portfolioCtaButton: "この雰囲気で相談する",
     prepItems: [
       ["衣装", "場所と季節に合わせて1〜2着をおすすめします。顔が引き立つ色が安定します。"],
       ["メイク", "普段より少しはっきりした程度で十分です。補正は自然に整えます。"],
@@ -220,6 +244,57 @@ function mapUrl(location) {
   const label = cleanLocation(location);
   if (!label) return "";
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(label)}`;
+}
+
+function normalizeSearchText(value) {
+  return String(value || "").toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function projectSearchText(project = {}) {
+  const mediaText = (project.media || []).flatMap((media) => [
+    media.caption,
+    media.alt,
+    cleanLocation(media.location),
+    ...(media.tags || []),
+  ]);
+  const modelText = (project.models || []).map((model) => (typeof model === "object" ? `${model.name || ""} ${model.url || ""}` : model));
+  return normalizeSearchText([
+    project.title,
+    project.category,
+    project.description,
+    cleanLocation(project.location),
+    ...(project.tags || []),
+    ...mediaText,
+    ...modelText,
+  ].join(" "));
+}
+
+function buildPortfolioFilters(projects, allLabel) {
+  const preferred = ["인물", "프로필", "커플", "포트폴리오", "카페", "야외", "실내", "낮", "밤", "서울", "일산"];
+  const discovered = new Map();
+  const addFilter = (label) => {
+    const clean = String(label || "").replace(/^#/, "").trim();
+    if (!clean || clean.length > 12 || /^__/.test(clean)) return;
+    const key = normalizeSearchText(clean);
+    if (["instagram", "daily snap", "365"].includes(key)) return;
+    if (!key || discovered.has(key)) return;
+    const count = projects.filter((project) => projectSearchText(project).includes(key)).length;
+    if (!count || (count === projects.length && projects.length > 4)) return;
+    if (count > 0) discovered.set(key, { label: clean, query: key, count });
+  };
+
+  preferred.forEach(addFilter);
+  projects.forEach((project) => {
+    addFilter(project.category);
+    addFilter(cleanLocation(project.location).split(" · ")[0]);
+    (project.tags || []).slice(0, 8).forEach(addFilter);
+    (project.media || []).flatMap((media) => media.tags || []).slice(0, 12).forEach(addFilter);
+  });
+
+  const filters = Array.from(discovered.values())
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "ko"))
+    .slice(0, 12);
+  return [{ label: allLabel, query: "__all__", count: projects.length }, ...filters];
 }
 
 function trackEvent(name, props = {}) {
@@ -391,6 +466,7 @@ function App() {
   const [routeSnapshot, setRouteSnapshot] = useState(() => currentPath());
   const [menuOpen, setMenuOpen] = useState(false);
   const [galleryMode, setGalleryMode] = useState("editorial");
+  const [activePortfolioFilter, setActivePortfolioFilter] = useState("__all__");
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [projectModal, setProjectModal] = useState(null);
@@ -415,7 +491,12 @@ function App() {
   }, []);
 
   const projects = useMemo(() => createProjectGroups(content), [content]);
-  const visibleProjects = showAllProjects ? projects : projects.slice(0, 6);
+  const portfolioFilters = useMemo(() => buildPortfolioFilters(projects, extra.filterAll), [projects, extra.filterAll]);
+  const filteredProjects = useMemo(() => {
+    if (activePortfolioFilter === "__all__") return projects;
+    return projects.filter((project) => projectSearchText(project).includes(activePortfolioFilter));
+  }, [activePortfolioFilter, projects]);
+  const visibleProjects = showAllProjects ? filteredProjects : filteredProjects.slice(0, 6);
   const reviews = content.testimonials || [];
   const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 3);
   const heroProject = projects[0];
@@ -432,6 +513,26 @@ function App() {
     ["faq", copy.nav.faq],
     ["contact", copy.nav.contact],
   ];
+
+  useEffect(() => {
+    if (!portfolioFilters.some((filter) => filter.query === activePortfolioFilter)) {
+      setActivePortfolioFilter("__all__");
+    }
+  }, [activePortfolioFilter, portfolioFilters]);
+
+  useEffect(() => {
+    setShowAllProjects(false);
+  }, [activePortfolioFilter]);
+
+  useEffect(() => {
+    if (route.page) return undefined;
+    const targetId = window.location.hash.replace("#", "");
+    if (!targetId) return undefined;
+    const timer = window.setTimeout(() => {
+      document.getElementById(targetId)?.scrollIntoView({ behavior: "auto", block: "start" });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [projects.length, route.page, routeSnapshot]);
 
   const navigate = (path) => {
     window.history.pushState({}, "", path);
@@ -494,8 +595,36 @@ function App() {
             <button type="button" className={galleryMode === "sheet" ? "active" : ""} aria-pressed={galleryMode === "sheet"} onClick={() => setGalleryMode("sheet")}><Grid2X2 />{extra.contactSheet}</button>
           </div>
         </div>
-        <div className={`project-grid ${galleryMode === "sheet" ? "contact-sheet" : ""}`}>{visibleProjects.map((project, index) => <article className={`project-card ${index === 0 ? "featured" : ""}`} key={project.id}><button type="button" className="project-cover" onClick={() => openProjectPage(project)}><Media src={project.cover || project.media[0]?.src} alt={project.title} eager={index < 2} /><span className="watermark">© 365 Daily Snap</span><span className="project-number">{String(index + 1).padStart(2, "0")}</span></button><div className="project-card-copy"><div><p>{project.category || "Portrait"}</p><h3>{project.title}</h3></div><div className="project-card-meta">{cleanLocation(project.location) && <span><MapPin />{cleanLocation(project.location)}</span>}<span><Camera />{project.media.length} {copy.photoCount}</span></div><div className="project-card-actions"><button className="text-link" type="button" onClick={() => openProjectPage(project)}>{copy.viewProject}<ArrowRight /></button><button className="text-link share-mini" type="button" onClick={async () => { await navigator.clipboard?.writeText(`${window.location.origin}${getProjectPath(language, project)}`); trackEvent("Project link copied", { project: project.title }); }}><Copy />{extra.share}</button></div></div></article>)}</div>
-        {projects.length > 6 && <button className="button ghost centered" type="button" onClick={() => setShowAllProjects((value) => !value)}>{showAllProjects ? copy.lessProjects : copy.moreProjects}{showAllProjects ? <ChevronUp /> : <ChevronDown />}</button>}
+        <div className="portfolio-filter-panel" aria-label={extra.filterTitle}>
+          <div><Sparkles /><span>{extra.filterTitle}</span><b>{filteredProjects.length}{language === "ko" ? extra.filterResult : ` ${extra.filterResult}`}</b></div>
+          <div className="portfolio-filter-row" role="list">
+            {portfolioFilters.map((filter) => (
+              <button
+                key={filter.query}
+                type="button"
+                className={activePortfolioFilter === filter.query ? "active" : ""}
+                aria-pressed={activePortfolioFilter === filter.query}
+                onClick={() => setActivePortfolioFilter(filter.query)}
+              >
+                {filter.label}<small>{filter.count}</small>
+              </button>
+            ))}
+          </div>
+        </div>
+        {visibleProjects.length > 0 ? (
+          <div className={`project-grid ${galleryMode === "sheet" ? "contact-sheet" : ""}`}>{visibleProjects.map((project, index) => <article className={`project-card ${index === 0 ? "featured" : ""}`} key={project.id}><button type="button" className="project-cover" onClick={() => openProjectPage(project)}><Media src={project.cover || project.media[0]?.src} alt={project.title} eager={index < 2} /><span className="watermark">© 365 Daily Snap</span><span className="project-number">{String(index + 1).padStart(2, "0")}</span></button><div className="project-card-copy"><div><p>{project.category || "Portrait"}</p><h3>{project.title}</h3></div><div className="project-card-meta">{cleanLocation(project.location) && <span><MapPin />{cleanLocation(project.location)}</span>}<span><Camera />{project.media.length} {copy.photoCount}</span></div><div className="project-card-actions"><button className="text-link" type="button" onClick={() => openProjectPage(project)}>{copy.viewProject}<ArrowRight /></button><button className="text-link share-mini" type="button" onClick={async () => { await navigator.clipboard?.writeText(`${window.location.origin}${getProjectPath(language, project)}`); trackEvent("Project link copied", { project: project.title }); }}><Copy />{extra.share}</button></div></div></article>)}</div>
+        ) : (
+          <div className="portfolio-empty"><p>{extra.filterEmpty}</p><button type="button" className="text-link" onClick={() => setActivePortfolioFilter("__all__")}>{extra.filterClear}<ArrowRight /></button></div>
+        )}
+        {filteredProjects.length > 6 && <button className="button ghost centered" type="button" onClick={() => setShowAllProjects((value) => !value)}>{showAllProjects ? copy.lessProjects : copy.moreProjects}{showAllProjects ? <ChevronUp /> : <ChevronDown />}</button>}
+        <aside className="portfolio-cta-strip">
+          <div>
+            <p className="eyebrow">NEXT STEP</p>
+            <h3>{extra.portfolioCtaTitle}</h3>
+            <p>{extra.portfolioCtaText}</p>
+          </div>
+          <button type="button" className="button primary" onClick={() => scrollTo("contact")}>{extra.portfolioCtaButton}<ArrowRight /></button>
+        </aside>
       </section>
 
       <section className="why-section"><div className="section-wrap section"><SectionHeading eyebrow={copy.whyEyebrow} title={copy.whyTitle} /><div className="why-grid">{copy.whyItems.map((item, index) => <article key={item.title}><span>0{index + 1}</span><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></div></section>
