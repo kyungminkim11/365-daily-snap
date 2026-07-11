@@ -1,39 +1,12 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const distDir = new URL("../dist/", import.meta.url);
-const indexUrl = new URL("index.html", distDir);
-const appHtml = await readFile(indexUrl, "utf8");
 
 function ensureParent(fileUrl) {
   return mkdir(dirname(fileURLToPath(fileUrl)), { recursive: true });
 }
-
-await writeFile(indexUrl, appHtml, "utf8");
-
-const staticRoutes = [
-  "ko",
-  "ja",
-  "en",
-  "ko/seoul-portrait",
-  "ko/ilsan-profile",
-  "ko/couple-snap",
-  "en/seoul-portrait",
-  "en/ilsan-profile",
-  "en/couple-snap",
-  "ja/seoul-portrait",
-  "ja/ilsan-profile",
-  "ja/couple-snap",
-];
-
-for (const route of staticRoutes) {
-  const routeIndex = new URL(`${route}/index.html`, distDir);
-  await ensureParent(routeIndex);
-  await writeFile(routeIndex, appHtml, "utf8");
-}
-
-await writeFile(new URL("404.html", distDir), appHtml, "utf8");
 
 const adminTarget = "/admin-v2.html";
 const adminRedirect = `<!doctype html>
@@ -61,4 +34,4 @@ for (const path of ["admin/index.html", "manager/index.html", "admin.html"]) {
 await writeFile(new URL("CNAME", distDir), "snap.lavalabs.co.kr\n", "utf8");
 await writeFile(new URL(".nojekyll", distDir), "", "utf8");
 
-console.log("Prepared GitHub Pages routes, admin aliases, and custom domain.");
+console.log("Preserved generated route metadata and prepared GitHub Pages aliases.");
