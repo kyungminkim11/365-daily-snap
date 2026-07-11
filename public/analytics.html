@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#26231f" />
+  <title>365 Daily Snap · Analytics</title>
+  <style>
+    :root { --ink:#1a1917; --muted:#716b63; --paper:#f6f2e9; --panel:#fffdf8; --line:rgba(26,25,23,.14); --accent:#b38a57; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Inter, Pretendard, system-ui, sans-serif; }
+    main { width:min(1180px,100%); margin:auto; padding:clamp(1.2rem,4vw,3rem); }
+    header { display:flex; justify-content:space-between; gap:1rem; align-items:end; border-bottom:1px solid var(--line); padding-bottom:1.3rem; }
+    h1 { margin:.35rem 0 0; font-family:Georgia,serif; font-size:clamp(2rem,5vw,4rem); font-weight:500; letter-spacing:-.045em; }
+    .eyebrow { margin:0; color:var(--muted); font-size:.7rem; font-weight:800; letter-spacing:.16em; }
+    .controls { display:grid; grid-template-columns:1fr 1.4fr auto; gap:.6rem; margin:1.2rem 0; }
+    input,button { min-height:2.9rem; border:1px solid var(--line); background:var(--panel); padding:.7rem .85rem; font:inherit; }
+    button { background:var(--ink); color:var(--paper); cursor:pointer; font-weight:750; }
+    .status { min-height:1.5rem; color:var(--muted); font-size:.85rem; }
+    .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:.7rem; }
+    .card,.table-card { border:1px solid var(--line); background:var(--panel); padding:1rem; }
+    .card span { color:var(--muted); font-size:.76rem; }
+    .card strong { display:block; margin-top:.55rem; font-family:Georgia,serif; font-size:clamp(1.8rem,4vw,3rem); font-weight:500; }
+    .performance { display:grid; grid-template-columns:repeat(4,1fr); gap:.7rem; margin-top:.7rem; }
+    .performance .card strong { font-size:1.8rem; }
+    .tables { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-top:1rem; }
+    h2 { margin:0 0 .8rem; font-size:1rem; }
+    table { width:100%; border-collapse:collapse; font-size:.84rem; }
+    th,td { border-top:1px solid var(--line); padding:.62rem 0; text-align:left; vertical-align:top; }
+    th:last-child,td:last-child { text-align:right; }
+    code { overflow-wrap:anywhere; font-family:inherit; color:var(--muted); }
+    .empty { color:var(--muted); padding:1rem 0; }
+    @media(max-width:760px){ header{display:block}.controls{grid-template-columns:1fr}.kpis,.performance{grid-template-columns:1fr 1fr}.tables{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div><p class="eyebrow">PRIVATE OPERATIONS</p><h1>Analytics</h1></div>
+    <a href="/admin-v2.html">관리자 페이지로 이동</a>
+  </header>
+
+  <div class="controls">
+    <input id="date" type="date" aria-label="조회 날짜" />
+    <input id="token" type="password" autocomplete="current-password" placeholder="Netlify 관리자 토큰" aria-label="관리자 토큰" />
+    <button id="load" type="button">데이터 불러오기</button>
+  </div>
+  <p id="status" class="status">날짜와 관리자 토큰을 입력해 주세요.</p>
+
+  <section class="kpis" aria-label="주요 지표">
+    <article class="card"><span>전체 이벤트</span><strong id="total">–</strong></article>
+    <article class="card"><span>페이지 조회</span><strong id="pageviews">–</strong></article>
+    <article class="card"><span>문의 검토</span><strong id="reviews">–</strong></article>
+    <article class="card"><span>문의 전송률</span><strong id="conversion">–</strong></article>
+  </section>
+
+  <section class="performance" aria-label="웹 성능">
+    <article class="card"><span>평균 LCP</span><strong id="lcp">–</strong></article>
+    <article class="card"><span>평균 CLS</span><strong id="cls">–</strong></article>
+    <article class="card"><span>평균 TTFB</span><strong id="ttfb">–</strong></article>
+    <article class="card"><span>평균 Load</span><strong id="loadTime">–</strong></article>
+  </section>
+
+  <section class="tables">
+    <article class="table-card"><h2>이벤트</h2><div id="events"></div></article>
+    <article class="table-card"><h2>방문 경로</h2><div id="paths"></div></article>
+    <article class="table-card"><h2>유입 도메인</h2><div id="referrers"></div></article>
+    <article class="table-card"><h2>언어</h2><div id="languages"></div></article>
+  </section>
+</main>
+<script>
+  const byId = (id) => document.getElementById(id);
+  const today = new Date().toISOString().slice(0, 10);
+  byId('date').value = today;
+  byId('token').value = sessionStorage.getItem('snap-admin-token') || '';
+
+  function value(id, next) { byId(id).textContent = next; }
+  function table(target, data) {
+    const entries = Object.entries(data || {}).sort((a,b) => b[1] - a[1]);
+    byId(target).innerHTML = entries.length
+      ? `<table><thead><tr><th>항목</th><th>수</th></tr></thead><tbody>${entries.map(([key,count]) => `<tr><td><code>${escapeHtml(key)}</code></td><td>${Number(count).toLocaleString()}</td></tr>`).join('')}</tbody></table>`
+      : '<p class="empty">기록이 없습니다.</p>';
+  }
+  function escapeHtml(text) {
+    return String(text).replace(/[&<>'"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+  }
+
+  async function loadReport() {
+    const date = byId('date').value || today;
+    const token = byId('token').value.trim();
+    if (!token) { byId('status').textContent = '관리자 토큰을 입력해 주세요.'; return; }
+    sessionStorage.setItem('snap-admin-token', token);
+    byId('status').textContent = '데이터를 불러오는 중입니다.';
+    try {
+      const response = await fetch(`/api/analytics?date=${encodeURIComponent(date)}`, { headers: { 'X-Admin-Token': token, Accept:'application/json' } });
+      if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) throw new Error(`HTTP ${response.status}`);
+      const report = await response.json();
+      const events = report.events || {};
+      const pageviews = events['Page view'] || 0;
+      const inquiryReviews = events['Inquiry review'] || 0;
+      const inquirySent = events['Inquiry sent'] || 0;
+      value('total', Number(report.total || 0).toLocaleString());
+      value('pageviews', Number(pageviews).toLocaleString());
+      value('reviews', Number(inquiryReviews).toLocaleString());
+      value('conversion', pageviews ? `${((inquirySent / pageviews) * 100).toFixed(1)}%` : '0%');
+      const perf = report.performanceAverage;
+      value('lcp', perf ? `${perf.lcp} ms` : '–');
+      value('cls', perf ? perf.cls : '–');
+      value('ttfb', perf ? `${perf.ttfb} ms` : '–');
+      value('loadTime', perf ? `${perf.load} ms` : '–');
+      table('events', events);
+      table('paths', report.paths);
+      table('referrers', report.referrers);
+      table('languages', report.languages);
+      byId('status').textContent = `${date} 데이터 · 마지막 갱신 ${report.updatedAt ? new Date(report.updatedAt).toLocaleString() : '기록 없음'}`;
+    } catch (error) {
+      byId('status').textContent = `데이터를 불러오지 못했습니다. Netlify 배포와 관리자 토큰을 확인해 주세요. (${error.message})`;
+    }
+  }
+  byId('load').addEventListener('click', loadReport);
+  byId('token').addEventListener('keydown', (event) => { if (event.key === 'Enter') loadReport(); });
+</script>
+</body>
+</html>
