@@ -132,6 +132,21 @@ ${alternates.map(({ language, route: alternateRoute }) => `    <xhtml:link rel="
 await writeFile(path.join(dist, 'sitemap.xml'), sitemap);
 await copyFile(path.join(dist, 'index.html'), path.join(dist, '404.html'));
 
+const analyticsPath = path.join(dist, 'analytics.html');
+try {
+  const analyticsHtml = await readFile(analyticsPath, 'utf8');
+  const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+  const supabasePublishableKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+  await writeFile(
+    analyticsPath,
+    analyticsHtml
+      .replaceAll('__SUPABASE_URL__', supabaseUrl)
+      .replaceAll('__SUPABASE_PUBLISHABLE_KEY__', supabasePublishableKey),
+  );
+} catch {
+  // Analytics dashboard is optional in local builds.
+}
+
 for (const route of ['admin', 'manager']) {
   const dir = path.join(dist, route);
   await mkdir(dir, { recursive: true });
