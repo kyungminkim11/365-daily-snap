@@ -1,19 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#fff9ef" />
-  <path
-    d="M35.5 7.5c5.8 8 2.4 13.9-2.4 20.5 4.6-3.2 10.3-3.4 14.9-1.3-1.1 15.3-10 25.8-24.2 27.9C15.2 50 12 41.6 15.5 33.7c2.2-5 6.3-8.2 11.2-11.1 4.7-2.8 7.1-7.4 8.8-15.1Z"
-    fill="#39a8df"
-  />
-  <path
-    d="M23.5 29.8c7 1.4 11.2 6.2 13.2 13.1-5.6-1.1-10.8-5.2-13.2-13.1Z"
-    fill="#fff9ef"
-  />
-  <path
-    d="M31.6 32.4c-2.7 5.2-3.3 11-2.5 18"
-    fill="none"
-    stroke="#fff9ef"
-    stroke-width="4"
-    stroke-linecap="round"
-  />
-  <circle cx="46" cy="19" r="4" fill="#39a8df" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">365 Daily Snap</title>
+  <rect width="64" height="64" rx="14" fill="#f6f2e9"/>
+  <g transform="translate(8 8) scale(.375)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 42V24h18M86 24h18v18M104 86v18H86M42 104H24V86" stroke="#26231f" stroke-width="6"/>
+    <path d="M45 31v66h17c24 0 39-13 39-33S86 31 62 31H45Z" stroke="#26231f" stroke-width="7"/>
+    <path d="M89 44c-7-9-26-10-32 1-8 15 28 16 28 36 0 14-12 23-27 21-9-1-17-6-21-13" stroke="#26231f" stroke-width="7"/>
+    <path d="M34 80A40 40 0 0 1 91 38" stroke="#b38a57" stroke-width="4.5"/>
+  </g>
 </svg>
