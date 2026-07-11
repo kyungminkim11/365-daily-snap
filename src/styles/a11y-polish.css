@@ -22,3 +22,8 @@
 main:focus {
   outline: none;
 }
+
+.about-monogram {
+  background-image: url('/brand-symbol-light.svg');
+  filter: none;
+}
