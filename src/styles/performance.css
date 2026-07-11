@@ -13,14 +13,14 @@ img.protected-media[loading="lazy"] {
 .prepare-grid article,
 .local-seo-grid a,
 .detail-media-grid button {
-  contain: layout paint style;
+  contain: layout style;
 }
 
 .photo-motion-window,
 .project-grid,
 .review-grid,
 .detail-media-grid {
-  contain: layout paint;
+  contain: layout;
 }
 
 @supports (content-visibility: auto) {
