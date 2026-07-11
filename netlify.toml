@@ -14,6 +14,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/analytics"
+  to = "/.netlify/functions/analytics"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/"
   to = "/ko"
   status = 302
@@ -92,6 +98,12 @@
   for = "/*.svg"
   [headers.values]
     Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Service-Worker-Allowed = "/"
 
 [[headers]]
   for = "/robots.txt"
