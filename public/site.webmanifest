@@ -1,16 +1,27 @@
 {
   "name": "365 Daily Snap",
-  "short_name": "365 Snap",
-  "description": "서울과 수도권을 중심으로 인물 스냅, 프로필, 커플 스냅 촬영을 진행하는 365 Daily Snap 포트폴리오입니다.",
-  "start_url": "/",
+  "short_name": "Daily Snap",
+  "description": "당신다운 순간이 오래 남는 장면이 되도록. 서울·수도권 중심의 자연스러운 인물 스냅 포트폴리오입니다.",
+  "lang": "ko-KR",
+  "start_url": "/ko",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#f5f1e8",
-  "theme_color": "#1d1b18",
+  "orientation": "portrait-primary",
+  "background_color": "#f6f2e9",
+  "theme_color": "#26231f",
+  "categories": ["photography", "portfolio", "lifestyle"],
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }
