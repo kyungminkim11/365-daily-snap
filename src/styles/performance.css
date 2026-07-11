@@ -1,0 +1,50 @@
+/* Media loading and rendering performance */
+.protected-media {
+  background-color: var(--paper-2);
+}
+
+img.protected-media[loading="lazy"] {
+  content-visibility: auto;
+}
+
+.project-card,
+.review-card,
+.session-grid article,
+.prepare-grid article,
+.local-seo-grid a,
+.detail-media-grid button {
+  contain: layout paint style;
+}
+
+.photo-motion-window,
+.project-grid,
+.review-grid,
+.detail-media-grid {
+  contain: layout paint;
+}
+
+@supports (content-visibility: auto) {
+  #work,
+  #sessions,
+  #reviews,
+  #faq,
+  .process-section,
+  .local-seo-section,
+  .project-detail .related-projects {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 820px;
+  }
+}
+
+@media (max-width: 760px) {
+  @supports (content-visibility: auto) {
+    #work,
+    #sessions,
+    #reviews,
+    #faq,
+    .process-section,
+    .local-seo-section {
+      contain-intrinsic-size: auto 1100px;
+    }
+  }
+}
