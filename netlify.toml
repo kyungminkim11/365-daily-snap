@@ -20,6 +20,11 @@
   force = true
 
 [[redirects]]
+  from = "/analytics"
+  to = "/analytics.html"
+  status = 200
+
+[[redirects]]
   from = "/"
   to = "/ko"
   status = 302
@@ -119,6 +124,12 @@
 
 [[headers]]
   for = "/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/analytics*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
