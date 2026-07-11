@@ -1,7 +1,13 @@
 import { getStore } from "@netlify/blobs";
 import { jsonResponse, optionsResponse, parseJsonBody, requireAdmin } from "./_shared/data-utils.mjs";
 
-const EVENT_NAME_PATTERN = /^[\p{L}\p{N} _.-]{1,80}$/u;
+const ALLOWED_EVENTS = new Set([
+  "Page view", "Scroll depth", "CTA click", "Language change",
+  "Image error", "Render error", "Web vitals",
+  "Project open", "Project share", "Project link copied",
+  "Kakao click", "Instagram click",
+  "Inquiry review", "Inquiry sent", "Inquiry fallback",
+]);
 const ALLOWED_LANGUAGES = new Set(["ko", "ja", "en"]);
 const MAX_PROP_COUNT = 12;
 
@@ -25,17 +31,20 @@ function cleanProps(props) {
 
 function cleanEvent(payload = {}) {
   const name = cleanText(payload.name, 80);
-  if (!EVENT_NAME_PATTERN.test(name)) {
+  if (!ALLOWED_EVENTS.has(name)) {
     const error = new Error("INVALID_EVENT_NAME");
     error.statusCode = 400;
     throw error;
   }
 
   const language = ALLOWED_LANGUAGES.has(payload.language) ? payload.language : "ko";
-  const timestamp = Number.isNaN(Date.parse(payload.timestamp)) ? new Date().toISOString() : new Date(payload.timestamp).toISOString();
+  const parsedTimestamp = Number.isNaN(Date.parse(payload.timestamp)) ? new Date() : new Date(payload.timestamp);
+  const minimumTimestamp = Date.now() - 24 * 60 * 60 * 1000;
+  const timestamp = new Date(Math.max(parsedTimestamp.getTime(), minimumTimestamp)).toISOString();
+  const path = cleanText(payload.path, 240) || "/";
   return {
     name,
-    path: cleanText(payload.path, 240) || "/",
+    path: path.startsWith("/") ? path : "/",
     language,
     referrer: cleanText(payload.referrer, 120),
     sessionId: cleanText(payload.sessionId, 80),
