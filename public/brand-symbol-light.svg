@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">365 Daily Snap symbol</title>
+  <desc id="desc">A light DS monogram framed like a camera viewfinder.</desc>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 42V24h18M86 24h18v18M104 86v18H86M42 104H24V86" stroke="#f6f2e9" stroke-opacity=".72" stroke-width="5"/>
+    <path d="M45 31v66h17c24 0 39-13 39-33S86 31 62 31H45Z" stroke="#f6f2e9" stroke-width="6"/>
+    <path d="M89 44c-7-9-26-10-32 1-8 15 28 16 28 36 0 14-12 23-27 21-9-1-17-6-21-13" stroke="#f6f2e9" stroke-width="6"/>
+    <path d="M34 80A40 40 0 0 1 91 38" stroke="#c79a62" stroke-width="3.5"/>
+  </g>
+</svg>
