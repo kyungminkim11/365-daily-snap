@@ -14,6 +14,7 @@ const UI_COPY = {
     home: "홈으로 이동",
     nav: "주요 메뉴",
     menu: "메뉴 열기 또는 닫기",
+    close: "닫기",
     featured: "대표 사진",
     related: "비슷한 작업도 함께 보기",
     controller: "개인정보 처리자",
@@ -31,6 +32,7 @@ const UI_COPY = {
     home: "Go home",
     nav: "Primary navigation",
     menu: "Open or close menu",
+    close: "Close",
     featured: "Featured photography",
     related: "Explore similar projects",
     controller: "Data controller",
@@ -48,6 +50,7 @@ const UI_COPY = {
     home: "ホームへ",
     nav: "メインメニュー",
     menu: "メニューを開閉",
+    close: "閉じる",
     featured: "代表写真",
     related: "関連する作品を見る",
     controller: "個人情報取扱者",
@@ -62,40 +65,41 @@ function languageFromPath() {
   return UI_COPY[language] ? language : "ko";
 }
 
+function setTextIfChanged(element, value) {
+  if (element && element.textContent !== value) element.textContent = value;
+}
+
+function setAttributeIfChanged(element, name, value) {
+  if (element && element.getAttribute(name) !== value) element.setAttribute(name, value);
+}
+
 function patchStaticAccessibility(copy) {
   const main = document.querySelector("main");
   if (main) {
-    main.id = "main-content";
-    main.tabIndex = -1;
+    if (main.id !== "main-content") main.id = "main-content";
+    if (main.tabIndex !== -1) main.tabIndex = -1;
   }
 
-  const brand = document.querySelector(".brand");
-  if (brand) brand.setAttribute("aria-label", "365 Daily Snap home");
+  setAttributeIfChanged(document.querySelector(".brand"), "aria-label", "365 Daily Snap home");
+  setAttributeIfChanged(document.querySelector(".site-header nav"), "aria-label", copy.nav);
+  setAttributeIfChanged(document.querySelector(".menu-button"), "aria-label", copy.menu);
+  setAttributeIfChanged(document.querySelector(".hero-collage"), "aria-label", copy.featured);
 
-  const navigation = document.querySelector(".site-header nav");
-  if (navigation) navigation.setAttribute("aria-label", copy.nav);
-
-  const menu = document.querySelector(".menu-button");
-  if (menu) menu.setAttribute("aria-label", copy.menu);
-
-  const heroCollage = document.querySelector(".hero-collage");
-  if (heroCollage) heroCollage.setAttribute("aria-label", copy.featured);
-
-  const related = document.querySelector(".related-projects .section-heading h2");
-  if (related) related.textContent = copy.related;
+  setTextIfChanged(document.querySelector(".related-projects .section-heading h2"), copy.related);
 
   const privacyLabels = document.querySelectorAll(".privacy-modal dl dt");
   [copy.controller, copy.contact, copy.address].forEach((label, index) => {
-    if (privacyLabels[index]) privacyLabels[index].textContent = label;
+    setTextIfChanged(privacyLabels[index], label);
   });
 
   document.querySelectorAll(".faq-list article").forEach((article) => {
     const button = article.querySelector(":scope > button");
-    if (button) button.setAttribute("aria-expanded", article.classList.contains("open") ? "true" : "false");
+    const expanded = article.classList.contains("open") ? "true" : "false";
+    setAttributeIfChanged(button, "aria-expanded", expanded);
   });
 
   document.querySelectorAll(".modal-close").forEach((button) => {
-    if (!button.getAttribute("aria-label")) button.setAttribute("aria-label", copy.menu);
+    setAttributeIfChanged(button, "aria-label", copy.close);
   });
 }
 
@@ -156,8 +160,7 @@ export default function SiteExperience({ children }) {
     const update = () => {
       frame = 0;
       const documentHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const nextProgress = Math.min(1, Math.max(0, window.scrollY / documentHeight));
-      setProgress(nextProgress);
+      setProgress(Math.min(1, Math.max(0, window.scrollY / documentHeight)));
       setShowTop(window.scrollY > 720);
       document.querySelector(".site-header")?.classList.toggle("is-scrolled", window.scrollY > 12);
 
@@ -214,7 +217,12 @@ export default function SiteExperience({ children }) {
       window.clearTimeout(timer);
       timer = window.setTimeout(apply, 20);
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["class"],
+    });
     return () => {
       window.clearTimeout(timer);
       observer.disconnect();
@@ -238,12 +246,16 @@ export default function SiteExperience({ children }) {
   useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key !== "Escape") return;
-      const menuButton = document.querySelector(".menu-button[aria-expanded='true']");
-      menuButton?.click();
+      document.querySelector(".menu-button[aria-expanded='true']")?.click();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
+
+  const scrollToTop = () => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  };
 
   return (
     <>
@@ -256,7 +268,7 @@ export default function SiteExperience({ children }) {
         className={`back-to-top ${showTop ? "visible" : ""}`}
         aria-label={copy.backToTop}
         title={copy.backToTop}
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        onClick={scrollToTop}
       >
         <ArrowUp />
       </button>
