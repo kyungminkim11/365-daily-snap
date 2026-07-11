@@ -2,8 +2,13 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f6f2e9" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#26231f" />
+    <meta name="color-scheme" content="light" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Daily Snap" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="description" content="당신다운 순간이 오래 남는 장면이 되도록. 서울·수도권을 중심으로 자연스러운 인물 스냅, 프로필, 커플 촬영을 진행합니다." />
     <meta name="keywords" content="365 Daily Snap, 서울 인물 스냅, 서울 프로필 촬영, 커플 스냅, 모델 포트폴리오, 도쿄 스냅, Seoul portrait photographer, Tokyo portrait photographer" />
@@ -13,6 +18,7 @@
     <link rel="alternate" href="https://snap.lavalabs.co.kr/ja" hreflang="ja-JP" />
     <link rel="alternate" href="https://snap.lavalabs.co.kr/en" hreflang="en" />
     <link rel="alternate" href="https://snap.lavalabs.co.kr/ko" hreflang="x-default" />
+    <link rel="preload" href="/brand-symbol.svg" as="image" type="image/svg+xml" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -23,7 +29,7 @@
     <meta property="og:title" content="365 Daily Snap | 서울 인물 스냅·프로필 촬영" />
     <meta property="og:description" content="당신다운 순간이 오래 남는 장면이 되도록. 서울·수도권에서 자연스러운 인물 스냅을 촬영합니다." />
     <meta property="og:image" content="https://snap.lavalabs.co.kr/portfolio/uploads/instagram/ig-001-711885820_18178679521399756_3313720309772480387_n.jpg" />
-    <meta property="og:image:alt" content="365 Daily Snap portrait photography" />
+    <meta property="og:image:alt" content="365 Daily Snap 인물 사진 포트폴리오" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="365 Daily Snap | Seoul Portrait Photographer" />
     <meta name="twitter:description" content="Natural portrait sessions that feel like you, in Seoul and on selected Tokyo dates." />
@@ -34,12 +40,23 @@
         "@type": "ProfessionalService",
         "name": "365 Daily Snap",
         "url": "https://snap.lavalabs.co.kr/",
+        "logo": "https://snap.lavalabs.co.kr/brand-symbol.svg",
         "image": "https://snap.lavalabs.co.kr/portfolio/uploads/instagram/ig-001-711885820_18178679521399756_3313720309772480387_n.jpg",
         "description": "서울과 수도권을 중심으로 자연스러운 인물 스냅, 프로필, 커플 촬영을 진행합니다.",
         "sameAs": ["https://www.instagram.com/365daily.snap/", "https://open.kakao.com/o/sV8I6vmi"],
-        "areaServed": ["Seoul", "Capital Area", "Tokyo"],
+        "areaServed": ["Seoul", "Gyeonggi-do", "Tokyo"],
         "availableLanguage": ["Korean", "Japanese", "English"],
-        "brand": { "@type": "Brand", "name": "365 Daily Snap" },
+        "brand": { "@type": "Brand", "name": "365 Daily Snap", "logo": "https://snap.lavalabs.co.kr/brand-symbol.svg" },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Portrait Photography Sessions",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Personal Portrait Snap" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Couple Snap" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Profile and Branding Photography" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Portfolio Collaboration" } }
+          ]
+        },
         "parentOrganization": { "@type": "Organization", "name": "LavaLabs", "taxID": "455-23-01867" }
       }
     </script>
