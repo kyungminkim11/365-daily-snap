@@ -43,10 +43,10 @@
 
   <div class="controls">
     <input id="date" type="date" aria-label="조회 날짜" />
-    <input id="token" type="password" autocomplete="current-password" placeholder="Netlify 관리자 토큰" aria-label="관리자 토큰" />
+    <input id="token" type="password" autocomplete="current-password" placeholder="분석 조회 토큰" aria-label="분석 조회 토큰" />
     <button id="load" type="button">데이터 불러오기</button>
   </div>
-  <p id="status" class="status">날짜와 관리자 토큰을 입력해 주세요.</p>
+  <p id="status" class="status">날짜와 분석 조회 토큰을 입력해 주세요.</p>
 
   <section class="kpis" aria-label="주요 지표">
     <article class="card"><span>전체 이벤트</span><strong id="total">–</strong></article>
@@ -70,10 +70,12 @@
   </section>
 </main>
 <script>
+  const SUPABASE_URL = '__SUPABASE_URL__';
+  const SUPABASE_KEY = '__SUPABASE_PUBLISHABLE_KEY__';
   const byId = (id) => document.getElementById(id);
   const today = new Date().toISOString().slice(0, 10);
   byId('date').value = today;
-  byId('token').value = sessionStorage.getItem('snap-admin-token') || '';
+  byId('token').value = sessionStorage.getItem('snap-analytics-token') || '';
 
   function value(id, next) { byId(id).textContent = next; }
   function table(target, data) {
@@ -86,16 +88,34 @@
     return String(text).replace(/[&<>'"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
   }
 
+  async function requestNetlify(date, token) {
+    const response = await fetch(`/api/analytics?date=${encodeURIComponent(date)}`, { headers: { 'X-Admin-Token': token, Accept:'application/json' } });
+    if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) throw new Error(`Netlify HTTP ${response.status}`);
+    return response.json();
+  }
+
+  async function requestSupabase(date, token) {
+    if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_KEY || SUPABASE_KEY.startsWith('__')) throw new Error('Supabase build config missing');
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_site_analytics`, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token: token, report_date: date }),
+    });
+    if (!response.ok) throw new Error(`Supabase HTTP ${response.status}`);
+    return response.json();
+  }
+
   async function loadReport() {
     const date = byId('date').value || today;
     const token = byId('token').value.trim();
-    if (!token) { byId('status').textContent = '관리자 토큰을 입력해 주세요.'; return; }
-    sessionStorage.setItem('snap-admin-token', token);
+    if (!token) { byId('status').textContent = '분석 조회 토큰을 입력해 주세요.'; return; }
+    sessionStorage.setItem('snap-analytics-token', token);
     byId('status').textContent = '데이터를 불러오는 중입니다.';
     try {
-      const response = await fetch(`/api/analytics?date=${encodeURIComponent(date)}`, { headers: { 'X-Admin-Token': token, Accept:'application/json' } });
-      if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) throw new Error(`HTTP ${response.status}`);
-      const report = await response.json();
+      let report;
+      let source = 'Netlify';
+      try { report = await requestNetlify(date, token); }
+      catch { report = await requestSupabase(date, token); source = 'Supabase'; }
       const events = report.events || {};
       const pageviews = events['Page view'] || 0;
       const inquiryReviews = events['Inquiry review'] || 0;
@@ -113,9 +133,9 @@
       table('paths', report.paths);
       table('referrers', report.referrers);
       table('languages', report.languages);
-      byId('status').textContent = `${date} 데이터 · 마지막 갱신 ${report.updatedAt ? new Date(report.updatedAt).toLocaleString() : '기록 없음'}`;
+      byId('status').textContent = `${date} 데이터 · ${source} · 마지막 갱신 ${report.updatedAt ? new Date(report.updatedAt).toLocaleString() : '기록 없음'}`;
     } catch (error) {
-      byId('status').textContent = `데이터를 불러오지 못했습니다. Netlify 배포와 관리자 토큰을 확인해 주세요. (${error.message})`;
+      byId('status').textContent = `데이터를 불러오지 못했습니다. 조회 토큰과 배포 상태를 확인해 주세요. (${error.message})`;
     }
   }
   byId('load').addEventListener('click', loadReport);
