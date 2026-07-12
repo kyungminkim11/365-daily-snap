@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10110f" />
+    <meta name="description" content="조리개, 셔터스피드, ISO, 심도, 화각을 직접 움직이며 배우는 365 Daily Snap 사진 입문 도구입니다." />
+    <link rel="canonical" href="https://snap.lavalabs.co.kr/learn/" />
+    <meta property="og:title" content="Photo Lab | 365 Daily Snap" />
+    <meta property="og:description" content="사진의 원리를 읽지 말고 직접 움직여 보세요. 노출, 심도, 화각, 셔터 체험과 입문 카메라 추천을 제공합니다." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://snap.lavalabs.co.kr/learn/" />
+    <title>Photo Lab | 365 Daily Snap</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">본문으로 바로가기</a>
+    <header class="topbar">
+      <a class="brand" href="/ko" aria-label="365 Daily Snap 홈으로 이동"><span>365</span><b>Daily Snap</b></a>
+      <nav class="desktop-nav" aria-label="Photo Lab 메뉴">
+        <button data-route="home">입문 홈</button><button data-route="exposure">노출 3요소</button><button data-route="dof">심도</button><button data-route="focal">화각</button><button data-route="motion">셔터</button><button data-route="calculators">계산기</button><button data-route="finder">카메라 추천</button><button data-route="quiz">퀴즈</button>
+      </nav>
+      <div class="top-actions"><a class="portfolio-link" href="/ko">포트폴리오</a><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">메뉴</button></div>
+    </header>
+
+    <div id="mobile-menu" class="mobile-menu" hidden>
+      <button data-route="home">입문 홈</button><button data-route="exposure">노출 3요소</button><button data-route="dof">심도 시뮬레이터</button><button data-route="focal">화각 시뮬레이터</button><button data-route="motion">셔터스피드 체험</button><button data-route="calculators">사진 계산기</button><button data-route="finder">입문 카메라 추천</button><button data-route="quiz">오늘의 퀴즈</button>
+    </div>
+
+    <main id="app" tabindex="-1">
+      <section class="page active" data-page="home">
+        <div class="hero shell">
+          <div class="hero-copy">
+            <p class="section-label">365 DAILY SNAP · PHOTO LAB</p>
+            <h1>카메라를 외우지 말고,<br /><em>직접 움직여 보세요.</em></h1>
+            <p>조리개·셔터스피드·ISO부터 심도와 화각까지. 숫자를 바꾸면 사진이 어떻게 달라지는지 한 화면에서 확인할 수 있습니다.</p>
+            <div class="hero-actions"><button class="primary-action" data-route="exposure">노출부터 시작하기</button><button class="secondary-action" data-route="finder">내 카메라 찾기</button></div>
+            <div class="hero-proof" aria-label="서비스 특징"><span>로그인 없이 이용</span><span>모바일 최적화</span><span>초보자 기준 설명</span></div>
+          </div>
+          <div class="hero-demo" aria-label="카메라 설정 미리보기">
+            <div class="camera-display"><div class="focus-bracket"><i></i><i></i><i></i><i></i></div><div class="display-subject"><div class="subject-head"></div><div class="subject-body"></div></div><div class="display-readout"><span>1/250</span><span>F2.8</span><span>ISO 400</span></div></div>
+            <div class="demo-dials"><div><span>조리개</span><b>F2.8</b></div><div><span>셔터</span><b>1/250</b></div><div><span>감도</span><b>ISO 400</b></div></div>
+          </div>
+        </div>
+
+        <section class="shell section-block learning-path">
+          <div class="section-heading"><div><p class="section-label">BEGINNER PATH</p><h2>처음이라면 이 순서로 보세요.</h2></div><p>어려운 용어보다 촬영 상황을 먼저 이해하도록 구성했습니다.</p></div>
+          <div class="path-grid"><button data-route="exposure"><span>01</span><h3>노출의 3요소</h3><p>밝기와 표현을 결정하는 조리개·셔터·ISO</p></button><button data-route="dof"><span>02</span><h3>초점과 심도</h3><p>어디부터 어디까지 선명하게 보이는지</p></button><button data-route="focal"><span>03</span><h3>렌즈와 화각</h3><p>같은 장면이 렌즈에 따라 어떻게 달라지는지</p></button><button data-route="motion"><span>04</span><h3>움직임 표현</h3><p>셔터스피드로 순간을 멈추거나 흐르게</p></button></div>
+        </section>
+
+        <section class="tools-band"><div class="shell section-block"><div class="section-heading light"><div><p class="section-label">INTERACTIVE TOOLS</p><h2>읽는 설명보다 빠른 체험 도구</h2></div><p>값을 바꾸면 결과와 해설이 동시에 바뀝니다.</p></div><div class="tool-list"><button data-route="exposure"><span>노출</span><strong>밝기·배경 흐림·노이즈</strong><small>조리개, 셔터, ISO</small></button><button data-route="dof"><span>심도</span><strong>초점 범위와 과초점 거리</strong><small>센서, 렌즈, 거리</small></button><button data-route="focal"><span>화각</span><strong>렌즈별 보이는 범위</strong><small>14mm부터 300mm</small></button><button data-route="calculators"><span>계산</span><strong>크롭·ND·최소 셔터</strong><small>촬영 전 빠른 확인</small></button></div></div></section>
+
+        <section class="shell section-block scenario-section"><div class="section-heading"><div><p class="section-label">STARTING SETTINGS</p><h2>상황별 시작 설정</h2></div><p>정답이 아니라 현장에서 빠르게 출발하기 위한 기준값입니다.</p></div><div class="scenario-grid" id="scenario-grid"></div></section>
+      </section>
+
+      <section class="page" data-page="exposure">
+        <div class="page-intro shell"><p class="section-label">EXPOSURE TRIANGLE</p><h1>사진의 밝기와 표현을 결정하는 세 가지</h1><p>조리개, 셔터스피드, ISO는 서로 보완합니다. 하나를 바꾸면 다른 값도 함께 조정해야 같은 밝기를 유지할 수 있습니다.</p></div>
+        <div class="simulator-layout shell">
+          <section class="preview-panel exposure-preview-panel"><div class="preview-header"><span>실시간 미리보기</span><b id="exposure-status">적정 노출</b></div><div class="exposure-scene" id="exposure-scene"><div class="scene-background"><span></span><span></span><span></span></div><div class="scene-person"><i></i><b></b></div><div class="moving-ball"></div><div class="noise-layer"></div><div class="scene-meter"><span id="meter-value">0.0 EV</span></div></div><div class="preview-note" id="exposure-note"></div></section>
+          <aside class="control-panel"><div class="preset-row" id="exposure-presets"></div><label class="control-row"><span><b>조리개</b><small>빛의 양과 배경 흐림</small></span><output id="aperture-output">F2.8</output><input id="aperture-range" type="range" min="0" max="10" step="1" value="3" /></label><label class="control-row"><span><b>셔터스피드</b><small>움직임과 손떨림</small></span><output id="shutter-output">1/250초</output><input id="shutter-range" type="range" min="0" max="18" step="1" value="13" /></label><label class="control-row"><span><b>ISO</b><small>밝기와 노이즈</small></span><output id="iso-output">ISO 400</output><input id="iso-range" type="range" min="0" max="8" step="1" value="2" /></label><div class="result-grid"><div><span>밝기</span><b id="brightness-result">적정</b></div><div><span>배경</span><b id="blur-result">부드러움</b></div><div><span>움직임</span><b id="motion-result">정지</b></div><div><span>노이즈</span><b id="noise-result">낮음</b></div></div></aside>
+        </div>
+        <section class="concept-strip shell"><article><span>조리개</span><h3>F값이 작을수록 밝고, 배경은 더 흐려집니다.</h3><p>인물에서는 F1.8~F2.8, 여러 사람이 함께 서 있다면 F4 이상부터 시작해 보세요.</p></article><article><span>셔터스피드</span><h3>빠를수록 움직임을 선명하게 멈춥니다.</h3><p>걷는 사람은 1/250초, 스포츠는 1/1000초 이상을 시작점으로 잡을 수 있습니다.</p></article><article><span>ISO</span><h3>높일수록 밝아지지만 노이즈가 늘어납니다.</h3><p>셔터가 너무 느려지지 않도록 ISO를 올리는 편이 흔들린 사진보다 낫습니다.</p></article></section>
+      </section>
+
+      <section class="page" data-page="dof">
+        <div class="page-intro shell"><p class="section-label">DEPTH OF FIELD</p><h1>초점이 맞는 범위를 숫자와 그림으로 확인하세요.</h1><p>센서 크기, 초점거리, 조리개, 피사체 거리를 바꾸면 심도와 과초점 거리를 계산합니다.</p></div>
+        <div class="simulator-layout shell"><section class="preview-panel dof-preview-panel"><div class="preview-header"><span>초점 범위</span><b id="dof-summary">얕은 심도</b></div><div class="distance-stage"><div class="distance-line"><span class="camera-mark">카메라</span><span class="subject-mark" id="subject-mark">피사체</span><span class="background-mark">배경</span></div><div class="focus-zone" id="focus-zone"><span>선명 영역</span></div></div><div class="dof-results"><div><span>가까운 한계</span><b id="near-limit">-</b></div><div><span>먼 한계</span><b id="far-limit">-</b></div><div><span>전체 심도</span><b id="total-dof">-</b></div><div><span>과초점 거리</span><b id="hyperfocal">-</b></div></div><p class="preview-note" id="dof-note"></p></section><aside class="control-panel"><label class="select-row"><span><b>센서 크기</b><small>허용 착란원 기준에 사용</small></span><select id="sensor-select"><option value="1">풀프레임</option><option value="1.5" selected>APS-C (1.5×)</option><option value="1.6">APS-C (1.6×)</option><option value="2">마이크로포서드</option></select></label><label class="control-row"><span><b>초점거리</b><small>렌즈의 화각과 심도</small></span><output id="dof-focal-output">56mm</output><input id="dof-focal" type="range" min="14" max="300" step="1" value="56" /></label><label class="control-row"><span><b>조리개</b><small>작을수록 심도가 얕아짐</small></span><output id="dof-aperture-output">F1.7</output><input id="dof-aperture" type="range" min="0" max="10" step="1" value="1" /></label><label class="control-row"><span><b>피사체 거리</b><small>카메라에서 피사체까지</small></span><output id="dof-distance-output">2.0m</output><input id="dof-distance" type="range" min="50" max="3000" step="10" value="200" /></label><div class="gear-presets" id="gear-presets"></div></aside></div>
+      </section>
+
+      <section class="page" data-page="focal">
+        <div class="page-intro shell"><p class="section-label">FOCAL LENGTH</p><h1>렌즈가 바뀌면 보이는 범위가 어떻게 달라질까요?</h1><p>센서와 초점거리를 선택해 화각, 환산 초점거리, 추천 용도를 비교하세요.</p></div>
+        <div class="simulator-layout shell"><section class="preview-panel focal-preview-panel"><div class="preview-header"><span>프레임 미리보기</span><b id="focal-type">표준 화각</b></div><div class="focal-scene"><div class="city-scene"><i></i><i></i><i></i><i></i><i></i></div><div class="view-frame" id="view-frame"><span id="frame-label">50mm</span></div></div><div class="focal-copy"><h3 id="focal-title">자연스러운 표준 화각</h3><p id="focal-description"></p></div></section><aside class="control-panel"><label class="select-row"><span><b>센서</b><small>풀프레임 환산에 반영</small></span><select id="focal-sensor"><option value="1">풀프레임</option><option value="1.5" selected>APS-C (1.5×)</option><option value="1.6">APS-C (1.6×)</option><option value="2">마이크로포서드</option></select></label><label class="control-row"><span><b>초점거리</b><small>슬라이더 또는 빠른 선택</small></span><output id="focal-output">35mm</output><input id="focal-range" type="range" min="14" max="300" step="1" value="35" /></label><div class="quick-focals" id="quick-focals"></div><div class="result-grid two"><div><span>환산 화각</span><b id="equivalent-output">약 53mm</b></div><div><span>추천 장면</span><b id="focal-use">일상·인물</b></div></div><div class="info-callout"><strong>중요</strong><p>배경 압축과 얼굴 형태 변화는 렌즈 자체보다 촬영자가 피사체와의 거리를 바꾸면서 생기는 원근 변화가 핵심입니다.</p></div></aside></div>
+      </section>
+
+      <section class="page" data-page="motion">
+        <div class="page-intro shell"><p class="section-label">SHUTTER SPEED</p><h1>움직임을 멈출지, 흐르게 남길지 선택하세요.</h1><p>피사체 속도와 셔터스피드의 조합을 바꾸면 예상되는 움직임 표현을 보여줍니다.</p></div>
+        <div class="simulator-layout shell"><section class="preview-panel motion-preview-panel"><div class="preview-header"><span>움직임 미리보기</span><b id="motion-status">선명하게 정지</b></div><div class="motion-scene"><div class="motion-track"></div><div class="runner" id="runner"><i></i><b></b></div></div><p class="preview-note" id="motion-note"></p></section><aside class="control-panel"><label class="select-row"><span><b>피사체</b><small>움직임 속도 기준</small></span><select id="subject-speed"><option value="1">천천히 걷는 사람</option><option value="2" selected>달리는 사람</option><option value="3">자전거·반려동물</option><option value="4">자동차·스포츠</option><option value="5">빠른 공·새</option></select></label><label class="control-row"><span><b>셔터스피드</b><small>빠를수록 움직임이 멈춤</small></span><output id="motion-shutter-output">1/500초</output><input id="motion-shutter" type="range" min="0" max="18" step="1" value="14" /></label><div class="shutter-guide" id="shutter-guide"></div></aside></div>
+      </section>
+
+      <section class="page" data-page="calculators">
+        <div class="page-intro shell"><p class="section-label">PHOTO CALCULATORS</p><h1>촬영 전에 빠르게 확인하는 계산기</h1><p>크롭 환산, 손떨림 방지 최소 셔터, ND 필터 적용 후 노출시간을 한 페이지에서 계산합니다.</p></div>
+        <div class="calculator-grid shell"><article class="calculator-card"><div><span>01</span><h2>크롭 환산 계산기</h2><p>렌즈의 실제 초점거리를 풀프레임 기준 화각으로 환산합니다.</p></div><label>렌즈 초점거리 <input id="crop-focal" type="number" min="1" max="1200" value="56" /> mm</label><label>크롭 배수 <select id="crop-factor"><option value="1">1.0× 풀프레임</option><option value="1.5" selected>1.5× APS-C</option><option value="1.6">1.6× APS-C</option><option value="2">2.0× MFT</option></select></label><output id="crop-result">약 84mm 화각</output></article><article class="calculator-card"><div><span>02</span><h2>최소 셔터 계산기</h2><p>손떨림을 줄이기 위한 기본 셔터스피드를 계산합니다.</p></div><label>환산 초점거리 <input id="minimum-focal" type="number" min="1" max="1200" value="84" /> mm</label><label>안전 여유 <select id="safety-factor"><option value="1">기본 1배</option><option value="2" selected>안전 2배</option><option value="3">매우 안전 3배</option></select></label><output id="minimum-result">최소 약 1/168초</output></article><article class="calculator-card"><div><span>03</span><h2>ND 필터 계산기</h2><p>ND 필터를 끼웠을 때 필요한 새 셔터스피드를 계산합니다.</p></div><label>현재 셔터 <select id="nd-shutter"></select></label><label>ND 단계 <select id="nd-stops"><option value="1">ND2 · 1스톱</option><option value="2">ND4 · 2스톱</option><option value="3">ND8 · 3스톱</option><option value="4">ND16 · 4스톱</option><option value="5">ND32 · 5스톱</option><option value="6" selected>ND64 · 6스톱</option><option value="10">ND1000 · 10스톱</option></select></label><output id="nd-result">새 셔터 약 1/4초</output></article></div><div class="calculator-note shell">계산값은 시작점입니다. 손떨림 보정 성능, 자세, 피사체 움직임, 바람과 삼각대 상태에 따라 실제 안전 범위는 달라집니다.</div>
+      </section>
+
+      <section class="page" data-page="finder">
+        <div class="page-intro shell"><p class="section-label">BEGINNER CAMERA FINDER</p><h1>스펙표 대신 사용 목적부터 묻겠습니다.</h1><p>예산과 촬영 목적을 선택하면 가장 적합한 선택, 가성비 선택, 한 단계 성장형 선택을 비교합니다.</p></div>
+        <div class="finder-layout shell"><form class="finder-form" id="finder-form"><fieldset><legend>1. 바디와 기본 렌즈를 포함한 예산</legend><div class="choice-grid"><label><input type="radio" name="budget" value="1" checked /><span>100만원 안팎</span></label><label><input type="radio" name="budget" value="2" /><span>150만원 안팎</span></label><label><input type="radio" name="budget" value="3" /><span>200만원 안팎</span></label><label><input type="radio" name="budget" value="4" /><span>예산보다 성능</span></label></div></fieldset><fieldset><legend>2. 가장 많이 찍을 것</legend><div class="choice-grid"><label><input type="radio" name="purpose" value="portrait" checked /><span>인물·일상</span></label><label><input type="radio" name="purpose" value="travel" /><span>여행·카페</span></label><label><input type="radio" name="purpose" value="video" /><span>영상·브이로그</span></label><label><input type="radio" name="purpose" value="action" /><span>반려동물·스포츠</span></label></div></fieldset><fieldset><legend>3. 사진과 영상 비중</legend><div class="choice-grid"><label><input type="radio" name="balance" value="photo" checked /><span>사진 중심</span></label><label><input type="radio" name="balance" value="hybrid" /><span>반반</span></label><label><input type="radio" name="balance" value="video" /><span>영상 중심</span></label></div></fieldset><fieldset><legend>4. 가장 중요한 조건</legend><div class="choice-grid"><label><input type="radio" name="priority" value="light" checked /><span>작고 가벼움</span></label><label><input type="radio" name="priority" value="evf" /><span>뷰파인더</span></label><label><input type="radio" name="priority" value="af" /><span>빠른 자동초점</span></label><label><input type="radio" name="priority" value="color" /><span>색감·필름 룩</span></label></div></fieldset><button class="primary-action wide" type="submit">추천 결과 보기</button><p class="data-date">모델 데이터 기준: 2026년 7월 · 실제 판매가와 재고는 판매처에 따라 달라집니다.</p></form><section class="finder-results" id="finder-results" aria-live="polite"><div class="empty-result"><span>?</span><h2>조건을 선택하고 추천 결과를 확인하세요.</h2><p>입문자가 실제로 체감하기 쉬운 무게, 조작성, 자동초점, 렌즈 확장성을 중심으로 비교합니다.</p></div></section></div>
+      </section>
+
+      <section class="page" data-page="quiz">
+        <div class="page-intro shell"><p class="section-label">5-MINUTE QUIZ</p><h1>오늘 배운 내용을 5문제로 확인하세요.</h1><p>틀려도 바로 해설을 제공합니다. 점수보다 어떤 설정을 먼저 바꿔야 하는지 익히는 것이 목표입니다.</p></div>
+        <div class="quiz-layout shell"><section class="quiz-card" id="quiz-card"></section><aside class="quiz-progress"><span>오늘의 진행</span><strong id="quiz-progress-text">1 / 5</strong><div><i id="quiz-progress-bar"></i></div><p id="quiz-score">현재 0점</p><button class="secondary-action" id="quiz-reset" type="button">처음부터 다시</button></aside></div>
+      </section>
+    </main>
+
+    <footer class="lab-footer shell"><div><b>365 Daily Snap · Photo Lab</b><p>사진을 더 쉽게 이해하고, 더 자신 있게 촬영하기 위한 입문 도구입니다.</p></div><div><a href="/ko">포트폴리오</a><a href="/ko#contact">촬영 문의</a><a href="https://www.instagram.com/365daily.snap/" target="_blank" rel="noreferrer">Instagram</a></div><p>© 2026 365 Daily Snap. 계산 결과는 교육용 참고값입니다.</p></footer>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
