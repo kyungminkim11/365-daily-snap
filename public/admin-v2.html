@@ -35,7 +35,7 @@
       const SUPABASE_KEY='sb_publishable_UUzSE7O9wqI0WN9cKG9OAQ_VleRkL4I';
       const supabase=createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,detectSessionInUrl:true}});
       const authPanel=document.getElementById('authPanel');const inquiryPanel=document.getElementById('inquiryPanel');const authStatus=document.getElementById('authStatus');const inquiryStatus=document.getElementById('inquiryStatus');const inquiryList=document.getElementById('inquiryList');
-      const allowed=['auth@lavalabs.co.kr','auth@lavalabs.co.kr'];
+      const allowed=['auth@lavalabs.co.kr'];
       const esc=(value)=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
       const formatDate=(value)=>new Intl.DateTimeFormat('ko-KR',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value));
       async function sendMagicLink(){const email=document.getElementById('adminEmail').value.trim().toLowerCase();if(!allowed.includes(email)){authStatus.textContent='허용된 관리자 이메일만 사용할 수 있습니다.';authStatus.className='status bad';return}authStatus.textContent='로그인 링크를 보내는 중입니다.';const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:`${location.origin}/admin-v2.html`}});if(error){authStatus.textContent=`전송 실패: ${error.message}`;authStatus.className='status bad';return}authStatus.textContent='이메일로 로그인 링크를 보냈습니다.';authStatus.className='status good'}
