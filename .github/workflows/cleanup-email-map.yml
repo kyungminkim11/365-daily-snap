@@ -1,0 +1,32 @@
+name: Normalize Snap admin email mapping
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message, '[email-cleanup]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Normalize duplicate admin entries
+        shell: python
+        run: |
+          from pathlib import Path
+          workflow = Path('.github/workflows/cleanup-email-map.yml')
+          for name in ['public/admin-v2.html','public/admin-portfolio.html','SECURITY_ADMIN_ACCESS.md']:
+              path = Path(name)
+              if not path.exists(): continue
+              old = path.read_text(encoding='utf-8')
+              new = old.replace("['auth@lavalabs.co.kr','auth@lavalabs.co.kr']", "['auth@lavalabs.co.kr']")
+              new = new.replace('auth@lavalabs.co.kr 또는 auth@lavalabs.co.kr', 'auth@lavalabs.co.kr')
+              if new != old: path.write_text(new, encoding='utf-8')
+          workflow.unlink()
+      - name: Commit changes
+        run: |
+          git config user.name "Lava Labs Automation"
+          git config user.email "dev@lavalabs.co.kr"
+          git add -A
+          git diff --cached --quiet || git commit -m "fix: normalize Snap admin email mapping [email-cleanup]"
+          git push
