@@ -13,7 +13,7 @@ export const BUSINESS = {
   registration: "455-23-01867",
   onlineSales: "2025-고양일산서-1352",
   address: "경기도 고양시 일산서구 일현로 47, 2층 204호 1308호실",
-  email: "info@lavalabs.co.kr",
+  email: "snap@lavalabs.co.kr",
 };
 
 const GENERIC_TAGS = new Set(["인물", "프로필", "데일리", "포트폴리오협업", "야외", "실내", "낮", "밤", "자연광", "클로즈업", "전신", "반신", "촬영기록"]);
