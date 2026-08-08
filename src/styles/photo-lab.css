@@ -1,0 +1,82 @@
+.photo-lab-hero-link {
+  border-style: dashed;
+}
+
+.photo-lab-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 36px;
+  margin-top: 34px;
+  margin-bottom: 92px;
+  padding: 38px 42px;
+  border: 1px solid rgba(18, 20, 17, 0.14);
+  border-radius: 28px;
+  background: linear-gradient(135deg, #171a16 0%, #23271f 62%, #303925 100%);
+  color: #fff;
+  box-shadow: 0 26px 70px rgba(18, 20, 17, 0.14);
+}
+
+.photo-lab-entry .eyebrow {
+  color: #d9ff5b;
+}
+
+.photo-lab-entry h2 {
+  max-width: 760px;
+  margin: 0;
+  font-size: clamp(30px, 4vw, 52px);
+  line-height: 1.08;
+  letter-spacing: -0.05em;
+}
+
+.photo-lab-entry p:not(.eyebrow) {
+  max-width: 760px;
+  margin: 16px 0 0;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.photo-lab-entry-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.photo-lab-entry-links button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.photo-lab-entry-links button:hover,
+.photo-lab-entry-links button:focus-visible {
+  border-color: #d9ff5b;
+  color: #d9ff5b;
+}
+
+.photo-lab-entry .button.primary {
+  background: #d9ff5b;
+  color: #11130f;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .photo-lab-entry {
+    grid-template-columns: 1fr;
+    align-items: start;
+    margin-top: 20px;
+    margin-bottom: 72px;
+    padding: 28px 24px;
+    border-radius: 22px;
+  }
+
+  .photo-lab-entry .button {
+    width: 100%;
+    justify-content: center;
+  }
+}

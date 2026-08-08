@@ -26,6 +26,7 @@ import { loadMergedPortfolio } from "./livePortfolio";
 import { COPY } from "./siteCopy";
 import { BUSINESS, CONTACT, cleanLocation, createProjectGroups, setMeta, useLanguage } from "./siteUtils";
 import { InquiryForm, Media, ProjectModal, ReviewModal, SectionHeading } from "./siteComponents";
+import { PhotoLabEntry } from "./PhotoLabEntry";
 
 const EXTRA_COPY = {
   ko: {
@@ -372,7 +373,7 @@ function PhotoMotionRail({ projects, language, onOpenProject }) {
               onClick={() => onOpenProject(frame.project)}
               aria-label={`${frame.category} - ${frame.title}`}
             >
-              <Media src={frame.src} alt={frame.alt} eager={index < frames.length} />
+              <Media src={frame.src} alt={frame.alt} eager={index === 0} />
               <span>{frame.category}</span>
             </button>
           ))}
@@ -593,6 +594,7 @@ function App() {
     ["work", copy.nav.work],
     ["sessions", copy.nav.sessions],
     ["prepare", extra.prepareNav],
+    ["learn", language === "ko" ? "사진 입문" : language === "ja" ? "写真入門" : "Photo Lab"],
     ["reviews", copy.nav.reviews],
     ["about", copy.nav.about],
     ["faq", copy.nav.faq],
@@ -636,6 +638,10 @@ function App() {
     setMenuOpen(false);
   };
 
+  const openPhotoLab = (hash = "") => {
+    window.location.href = `/learn/${hash}`;
+  };
+
   const openProjectPage = (project) => {
     trackEvent("Project open", { project: project.title });
     navigate(getProjectPath(language, project));
@@ -662,7 +668,7 @@ function App() {
           <p className="eyebrow">{copy.heroEyebrow}</p>
           <h1>{copy.heroTitle.split("\n").map((line) => <span key={line}>{line}</span>)}</h1>
           <p className="hero-description">{copy.heroDescription}</p>
-          <div className="hero-actions"><button className="button primary" type="button" onClick={() => scrollTo("work")}>{copy.heroPrimary}<ArrowRight /></button><button className="button ghost" type="button" onClick={() => scrollTo("contact")}>{copy.heroSecondary}</button></div>
+          <div className="hero-actions"><button className="button primary" type="button" onClick={() => scrollTo("work")}>{copy.heroPrimary}<ArrowRight /></button><button className="button ghost" type="button" onClick={() => scrollTo("contact")}>{copy.heroSecondary}</button><button className="button ghost photo-lab-hero-link" type="button" onClick={() => openPhotoLab()}>{language === "ko" ? "사진 입문 도구" : language === "ja" ? "写真入門ツール" : "Photo Lab"}</button></div>
           <div className="trust-row">{copy.trust.map((item) => <span key={item}><Check />{item}</span>)}</div>
         </div>
         <div className="hero-collage" aria-label="Featured photography">
@@ -672,6 +678,7 @@ function App() {
       </section>
 
       <PhotoMotionRail projects={projects} language={language} onOpenProject={openProjectPage} />
+      <PhotoLabEntry language={language} onOpen={openPhotoLab} />
 
       <section id="work" className="section section-wrap">
         <SectionHeading eyebrow={copy.workEyebrow} title={copy.workTitle} description={copy.workDescription} />
@@ -731,7 +738,7 @@ function App() {
       <header className="site-header">
         <button className="brand" type="button" onClick={() => navigate(`/${language}`)}><span>365</span><b>Daily Snap</b></button>
         <nav className={menuOpen ? "open" : ""} aria-label="Primary navigation">
-          {navItems.map(([key, label]) => <button key={key} type="button" onClick={() => scrollTo(key)}>{label}</button>)}
+          {navItems.map(([key, label]) => key === "learn" ? <button key={key} type="button" onClick={() => openPhotoLab()}>{label}</button> : <button key={key} type="button" onClick={() => scrollTo(key)}>{label}</button>)}
         </nav>
         <div className="header-tools">
           <div className="language-switch" aria-label="Language"><Globe2 />{Object.keys(COPY).map((code) => <button key={code} type="button" className={language === code ? "active" : ""} onClick={() => setLanguage(code)}>{code.toUpperCase()}</button>)}</div>
