@@ -1,0 +1,40 @@
+name: Refactor Photo Lab source
+
+on:
+  push:
+    branches:
+      - refactor/photo-lab-source
+
+permissions:
+  contents: write
+
+jobs:
+  refactor:
+    if: ${{ !contains(github.event.head_commit.message, '[photo-lab-source]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: refactor/photo-lab-source
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Move Photo Lab integration into source files
+        run: node scripts/refactor-photo-lab-source.mjs
+
+      - name: Remove temporary migration files
+        run: rm scripts/refactor-photo-lab-source.mjs .github/workflows/refactor-photo-lab-source.yml
+
+      - name: Commit refactor
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "Refactor Photo Lab integration into source files [photo-lab-source]"
+          git push origin HEAD:refactor/photo-lab-source
