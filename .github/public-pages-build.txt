@@ -1,0 +1,1 @@
+Build the current 365 Daily Snap site for the public GitHub Pages mirror.
