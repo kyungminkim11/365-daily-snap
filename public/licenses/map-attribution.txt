@@ -1,0 +1,8 @@
+District map attribution
+Seoul boundaries: JUSO 2015, converted by Lucy Park / southkorea/seoul-maps. Apache License 2.0.
+https://github.com/southkorea/seoul-maps/blob/master/juso/2015/json/seoul_municipalities_geo_simple.json
+Goyang/Paju boundaries: KOSTAT 2013, southkorea/southkorea-maps. Repository license: KOSTAT, free to share or remix.
+https://github.com/southkorea/southkorea-maps/blob/master/kostat/2013/json/skorea_municipalities_geo_simple.json
+Modified 2026-09-24: geographic coordinates projected and rounded to SVG paths; label positions adjusted for readability.
+Maps are simplified area selectors based on historical administrative boundaries, not navigation or cadastral maps.
+Apache license copy: /licenses/Apache-2.0.txt
