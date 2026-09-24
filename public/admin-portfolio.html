@@ -286,5 +286,11 @@
       renderModels();
       renderSession();
     </script>
-  </body>
+  <section style="max-width:1100px;margin:24px auto;padding:24px;border:1px solid #ccc;border-radius:12px" aria-label="Instagram 동기화 상태">
+<h2>Instagram 동기화 상태</h2><p id="instagram-sync-health" role="status">확인 중…</p>
+<button type="button" id="refresh-instagram-health">상태 새로고침</button>
+<a href="https://github.com/kyungminkim11/365-daily-snap/actions/workflows/sync-instagram.yml" target="_blank" rel="noreferrer">GitHub에서 동기화 실행 / 오류 확인 ↗</a>
+<p>인증 연결 후 GitHub의 Run workflow에서 원하는 브랜치를 선택하세요. 운영 반영 전에는 작업 브랜치를 선택합니다.</p></section>
+<script type="module" src="/instagram-health.js"></script>
+</body>
 </html>

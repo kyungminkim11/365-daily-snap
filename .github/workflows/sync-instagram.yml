@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: instagram-portfolio-sync
+  group: instagram-portfolio-sync-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -30,13 +30,14 @@ jobs:
           INSTAGRAM_API_BASE_URL: ${{ vars.INSTAGRAM_API_BASE_URL }}
           INSTAGRAM_SYNC_LIMIT: ${{ vars.INSTAGRAM_SYNC_LIMIT || '60' }}
       - name: Commit changed portfolio files
+        if: always()
         run: |
-          if git diff --quiet -- public/portfolio/instagram-feed.json public/portfolio/uploads/instagram-live; then
+          if git diff --quiet -- public/portfolio/instagram-feed.json public/portfolio/instagram-status.json public/portfolio/uploads/instagram-live; then
             echo "No Instagram portfolio changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/portfolio/instagram-feed.json public/portfolio/uploads/instagram-live
+          git add public/portfolio/instagram-feed.json public/portfolio/instagram-status.json public/portfolio/uploads/instagram-live
           git commit -m "chore: sync Instagram portfolio"
-          git push
+          git push origin HEAD:${{ github.ref_name }}

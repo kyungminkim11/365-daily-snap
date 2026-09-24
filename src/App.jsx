@@ -1,3 +1,4 @@
+import { BrandMark, ShootPlanner, InstagramSyncStatus, emptyPlan } from "./ShootPlanner";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
@@ -43,7 +44,7 @@ const EXTRA_COPY = {
     prepDescription: "처음 촬영하는 분도 편하게 준비할 수 있도록 의상, 장소, 레퍼런스, 공개 범위를 미리 정리합니다.",
     availabilityTitle: "촬영 일정 안내",
     availabilityText:
-      "주말과 공휴일, 평일 저녁 시간대 촬영을 중심으로 운영합니다. 평일 낮 촬영은 가능한 일정에 한해 별도 조율하며, 서울·수도권과 일산을 기본으로 그 외 지역도 문의 주시면 함께 확인합니다.",
+      "주말과 공휴일, 평일 저녁 시간대 촬영을 중심으로 운영합니다. 평일은 19시 이후, 주말은 협의하여 촬영합니다. 서울 중심으로 일산·탄현·야당·파주까지 함께 조율합니다.",
     localTitle: "지역과 목적에 맞춰 보기",
     localDescription: "검색으로 들어온 방문자도 원하는 촬영 유형을 바로 확인할 수 있도록 주요 안내를 분리했습니다.",
     seoCta: "해당 촬영 문의하기",
@@ -544,6 +545,8 @@ function LocalSeoSection({ language, extra, navigate }) {
 }
 
 function App() {
+  const [plan, setPlan] = useState(emptyPlan);
+  const [inquirySelection, setInquirySelection] = useState(null);
   const [language, setLanguage] = useLanguage();
   const copy = COPY[language];
   const extra = EXTRA_COPY[language] || EXTRA_COPY.ko;
@@ -591,7 +594,7 @@ function App() {
   const seoPage = route.page && SEO_PAGES[route.page] ? SEO_PAGES[route.page][language] : null;
   const navItems = [
     ["work", copy.nav.work],
-    ["sessions", copy.nav.sessions],
+    ["planner", language === "ko" ? "장소·촬영 선택" : "Plan a shoot"],
     ["prepare", extra.prepareNav],
     ["reviews", copy.nav.reviews],
     ["about", copy.nav.about],
@@ -636,6 +639,13 @@ function App() {
     setMenuOpen(false);
   };
 
+  const inquireWithPlan = (patch = {}) => {
+    const next = { ...plan, ...patch };
+    setPlan(next);
+    setInquirySelection({ ...next });
+    scrollTo("contact");
+  };
+
   const openProjectPage = (project) => {
     trackEvent("Project open", { project: project.title });
     navigate(getProjectPath(language, project));
@@ -675,6 +685,7 @@ function App() {
 
       <section id="work" className="section section-wrap">
         <SectionHeading eyebrow={copy.workEyebrow} title={copy.workTitle} description={copy.workDescription} />
+        <InstagramSyncStatus />
         <div className="portfolio-toolbar">
           <p>{extra.portfolioView}</p>
           <div role="group" aria-label={extra.portfolioView}>
@@ -699,7 +710,7 @@ function App() {
           </div>
         </div>
         {visibleProjects.length > 0 ? (
-          <div className={`project-grid ${galleryMode === "sheet" ? "contact-sheet" : ""}`}>{visibleProjects.map((project, index) => <article className={`project-card ${index === 0 ? "featured" : ""}`} key={project.id}><button type="button" className="project-cover" onClick={() => openProjectPage(project)}><Media src={project.cover || project.media[0]?.src} alt={project.title} eager={index < 2} /><span className="watermark">© 365 Daily Snap</span><span className="project-number">{String(index + 1).padStart(2, "0")}</span></button><div className="project-card-copy"><div><p>{project.category || "Portrait"}</p><h3>{project.title}</h3></div><div className="project-card-meta">{cleanLocation(project.location) && <span><MapPin />{cleanLocation(project.location)}</span>}<span><Camera />{project.media.length} {copy.photoCount}</span></div><div className="project-card-actions"><button className="text-link" type="button" onClick={() => openProjectPage(project)}>{copy.viewProject}<ArrowRight /></button><button className="text-link share-mini" type="button" onClick={async () => { await navigator.clipboard?.writeText(`${window.location.origin}${getProjectPath(language, project)}`); trackEvent("Project link copied", { project: project.title }); }}><Copy />{extra.share}</button></div></div></article>)}</div>
+          <div className={`project-grid ${galleryMode === "sheet" ? "contact-sheet" : ""}`}>{visibleProjects.map((project, index) => <article className={`project-card ${index === 0 ? "featured" : ""}`} key={project.id}><button type="button" className="project-cover" onClick={() => openProjectPage(project)}><Media src={project.cover || project.media[0]?.src} alt={project.title} eager={index < 2} /><span className="watermark">© 365 Daily Snap</span><span className="project-number">{String(index + 1).padStart(2, "0")}</span></button><div className="project-card-copy"><div><p>{project.category || "Portrait"}</p><h3>{project.title}</h3></div><div className="project-card-meta">{cleanLocation(project.location) && <span><MapPin />{cleanLocation(project.location)}</span>}<span><Camera />{project.media.length} {copy.photoCount}</span></div><div className="project-card-actions"><button className="text-link inquire-project" type="button" onClick={() => inquireWithPlan({ portfolio: project.title + " — " + getProjectPath(language, project) })}>{copy.projectInquiry}<ArrowRight /></button><button className="text-link" type="button" onClick={() => openProjectPage(project)}>{copy.viewProject}<ArrowRight /></button><button className="text-link share-mini" type="button" onClick={async () => { await navigator.clipboard?.writeText(`${window.location.origin}${getProjectPath(language, project)}`); trackEvent("Project link copied", { project: project.title }); }}><Copy />{extra.share}</button></div></div></article>)}</div>
         ) : (
           <div className="portfolio-empty"><p>{extra.filterEmpty}</p><button type="button" className="text-link" onClick={() => setActivePortfolioFilter("__all__")}>{extra.filterClear}<ArrowRight /></button></div>
         )}
@@ -714,22 +725,25 @@ function App() {
         </aside>
       </section>
 
+      <ShootPlanner plan={plan} onChange={(patch) => setPlan((current) => ({ ...current, ...patch }))} onInquiry={() => inquireWithPlan()} />
+
       <section className="why-section"><div className="section-wrap section"><SectionHeading eyebrow={copy.whyEyebrow} title={copy.whyTitle} /><div className="why-grid">{copy.whyItems.map((item, index) => <article key={item.title}><span>0{index + 1}</span><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></div></section>
       <section id="sessions" className="section section-wrap"><SectionHeading eyebrow={copy.sessionsEyebrow} title={copy.sessionsTitle} description={copy.sessionsDescription} /><div className="session-grid">{copy.sessions.map((session) => { const Icon = session.icon; return <article key={session.name}><div className="session-icon"><Icon /></div><p className="eyebrow">{session.name}</p><h3>{session.title}</h3><span className="session-time"><Clock3 />{session.time}</span><p>{session.text}</p><div className="tag-row">{session.tags.map((tag) => <span key={tag}>{tag}</span>)}</div></article>; })}</div></section>
       <PrepareSection extra={extra} language={language} onContact={() => scrollTo("contact")} />
       <section className="process-section"><div className="section section-wrap"><SectionHeading eyebrow={copy.processEyebrow} title={copy.processTitle} /><div className="process-grid">{copy.process.map((item) => <article key={item.number}><span>{item.number}</span><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></div></section>
       <section id="reviews" className="section section-wrap"><SectionHeading eyebrow={copy.reviewsEyebrow} title={copy.reviewsTitle} description={copy.reviewsDescription} /><div className="review-grid">{visibleReviews.map((review) => <article className="review-card" key={`${review.name}-${review.date}`}><div className="quote-mark">“</div><p>{review.content}</p><footer><div><strong>{review.name}</strong><span>{review.type} · {review.date}</span></div>{review.reviewImage && <button type="button" onClick={() => setReviewModal(review)}>{copy.reviewOriginal}<ExternalLink /></button>}</footer></article>)}</div>{reviews.length > 3 && <button className="button ghost centered" type="button" onClick={() => setShowAllReviews((value) => !value)}>{showAllReviews ? copy.lessProjects : copy.moreReviews}{showAllReviews ? <ChevronUp /> : <ChevronDown />}</button>}</section>
       <LocalSeoSection language={language} extra={extra} navigate={navigate} />
-      <section id="about" className="about-section"><div className="section section-wrap about-grid"><div className="about-visual"><div className="about-monogram">K<br />M</div><Camera /></div><div><p className="eyebrow">{copy.aboutEyebrow}</p><h2>{copy.aboutTitle}</h2><p>{copy.aboutText}</p><div className="about-facts">{copy.aboutFacts.map((fact) => <span key={fact}><Check />{fact}</span>)}</div><a className="text-link" href={CONTACT.instagramUrl} target="_blank" rel="noreferrer"><InstagramIcon />{CONTACT.instagramHandle}<ExternalLink /></a></div></div></section>
+      <section id="about" className="about-section"><div className="section section-wrap about-grid"><div className="about-visual"><div className="about-monogram">365<br /><em>ds.</em></div><Camera /></div><div><p className="eyebrow">{copy.aboutEyebrow}</p><h2>{copy.aboutTitle}</h2><p>{copy.aboutText}</p><div className="about-facts">{copy.aboutFacts.map((fact) => <span key={fact}><Check />{fact}</span>)}</div><a className="text-link" href={CONTACT.instagramUrl} target="_blank" rel="noreferrer"><InstagramIcon />{CONTACT.instagramHandle}<ExternalLink /></a></div></div></section>
       <section id="faq" className="section section-wrap"><SectionHeading eyebrow={copy.faqEyebrow} title={copy.faqTitle} /><div className="faq-list">{copy.faqs.map((item, index) => <article key={item.q} className={faqOpen === index ? "open" : ""}><button type="button" onClick={() => setFaqOpen(faqOpen === index ? -1 : index)}><span>{String(index + 1).padStart(2, "0")}</span><b>{item.q}</b>{faqOpen === index ? <ChevronUp /> : <ChevronDown />}</button>{faqOpen === index && <p>{item.a}</p>}</article>)}</div></section>
-      <section id="contact" className="contact-section"><div className="section section-wrap contact-grid"><div><p className="eyebrow">{copy.inquiryEyebrow}</p><h2>{copy.inquiryTitle}</h2><p>{copy.inquiryDescription}</p><div className="contact-direct"><a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent("Kakao click")}><MessageCircle /><span><b>KakaoTalk</b><small>Open chat</small></span><ExternalLink /></a><a href={CONTACT.instagramUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent("Instagram click")}><InstagramIcon /><span><b>Instagram DM</b><small>{CONTACT.instagramHandle}</small></span><ExternalLink /></a></div></div><InquiryForm copy={copy} language={language} onTrack={trackEvent} /></div></section>
+      <section id="contact" className="contact-section"><div className="section section-wrap contact-grid"><div><p className="eyebrow">{copy.inquiryEyebrow}</p><h2>{copy.inquiryTitle}</h2><p>{copy.inquiryDescription}</p><div className="contact-direct"><a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent("Kakao click")}><MessageCircle /><span><b>KakaoTalk</b><small>Open chat</small></span><ExternalLink /></a><a href={CONTACT.instagramUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent("Instagram click")}><InstagramIcon /><span><b>Instagram DM</b><small>{CONTACT.instagramHandle}</small></span><ExternalLink /></a></div></div><InquiryForm copy={copy} language={language} onTrack={trackEvent} selection={inquirySelection} /></div></section>
     </main>
   );
 
   return (
     <div className="site-shell" data-route={routeSnapshot}>
+      {import.meta.env.VITE_PREVIEW_MODE === "true" && <div className="preview-notice">작업본 미리보기 · 문의는 테스트로만 처리됩니다</div> }
       <header className="site-header">
-        <button className="brand" type="button" onClick={() => navigate(`/${language}`)}><span>365</span><b>Daily Snap</b></button>
+        <button className="brand" type="button" onClick={() => navigate(`/${language}`)}><BrandMark /></button>
         <nav className={menuOpen ? "open" : ""} aria-label="Primary navigation">
           {navItems.map(([key, label]) => <button key={key} type="button" onClick={() => scrollTo(key)}>{label}</button>)}
         </nav>
@@ -748,7 +762,7 @@ function App() {
           extra={extra}
           language={language}
           onBack={() => scrollTo("work")}
-          onContact={() => scrollTo("contact")}
+          onContact={() => inquireWithPlan({ portfolio: detailProject.title + " — " + getProjectPath(language, detailProject) })}
           onOpenProject={setProjectModal}
         />
       ) : seoPage ? (
@@ -757,7 +771,7 @@ function App() {
 
       <footer className="site-footer section-wrap"><div><b>365 Daily Snap</b><p>{copy.footerLine}</p></div><div className="footer-business"><span>{BUSINESS.name}</span><span>{BUSINESS.registration} · {BUSINESS.onlineSales}</span><span>{BUSINESS.email}</span></div><button type="button" onClick={() => setPrivacyOpen(true)}>{copy.privacy}</button><p>© 2026 365 Daily Snap. All rights reserved.</p></footer>
       <div className="mobile-contact-bar"><button type="button" onClick={() => scrollTo("contact")}><CalendarDays />{copy.heroSecondary}</button><a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer"><MessageCircle />Kakao</a></div>
-      <ProjectModal project={projectModal} copy={copy} onClose={() => setProjectModal(null)} />
+      <ProjectModal project={projectModal} copy={copy} onClose={() => setProjectModal(null)} onInquiry={(project) => { setProjectModal(null); inquireWithPlan({ portfolio: project.title + " — " + getProjectPath(language, project) }); }} />
       <ReviewModal review={reviewModal} copy={copy} onClose={() => setReviewModal(null)} />
       {privacyOpen && <div className="modal-backdrop" onMouseDown={() => setPrivacyOpen(false)} role="presentation"><section className="privacy-modal" role="dialog" aria-modal="true" onMouseDown={(e) => e.stopPropagation()}><button className="modal-close" type="button" onClick={() => setPrivacyOpen(false)}><X /></button><ShieldCheck /><h2>{copy.privacy}</h2><p>{copy.consentDetail}</p><dl><dt>Controller</dt><dd>{BUSINESS.name}</dd><dt>Contact</dt><dd>{BUSINESS.email}</dd><dt>Business address</dt><dd>{BUSINESS.address}</dd></dl></section></div>}
     </div>

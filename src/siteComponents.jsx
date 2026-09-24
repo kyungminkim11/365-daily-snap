@@ -83,7 +83,7 @@ const INQUIRY_UI = {
   },
 };
 
-const LOCATION_OPTIONS = ["서울숲", "성수", "연남", "홍대", "한강", "반포대교", "잠실", "을지로", "북촌", "일산", "호수공원", "카페", "실내", "협의"];
+const LOCATION_OPTIONS = ["경복궁·서촌", "북촌·삼청동", "광화문·청계천", "홍대·연남", "신촌·서강대", "경의중앙선", "일산역", "탄현역", "야당역", "파주", "일산 호수공원", "협의"];
 
 const INQUIRY_FORM_META = {
   ko: {
@@ -96,7 +96,7 @@ const INQUIRY_FORM_META = {
     selectedDates: "선택한 날짜",
     removeDate: "삭제",
     timeTitle: "가능 시간대",
-    timeOptions: ["평일 저녁", "주말 오전", "주말 오후", "공휴일", "일정 협의"],
+    timeOptions: ["평일 19시 이후", "주말 오전 협의", "주말 오후 협의", "주말 저녁 협의", "일정 협의"],
     summaryLabels: {
       shootMode: "문의 방식",
       time: "가능 시간대",
@@ -170,7 +170,7 @@ export function Media({ src, alt, eager = false, className = "" }) {
       className={`protected-media ${className}`}
       loading={eager ? "eager" : "lazy"}
       decoding={eager ? "sync" : "async"}
-      fetchPriority={eager ? "high" : "auto"}
+      fetchpriority={eager ? "high" : "auto"}
       draggable="false"
       onContextMenu={blockSave}
     />
@@ -195,7 +195,7 @@ function modelInfo(model) {
   return { name, url: String(model || "").startsWith("@") ? `https://www.instagram.com/${name}/` : "" };
 }
 
-export function ProjectModal({ project, copy, onClose }) {
+export function ProjectModal({ project, copy, onClose, onInquiry }) {
   const [active, setActive] = useState(0);
   useEffect(() => {
     setActive(0);
@@ -225,7 +225,7 @@ export function ProjectModal({ project, copy, onClose }) {
             {models.length > 0 && <span><UserRound />{models.map((model) => model.url ? <a key={model.name} href={model.url} target="_blank" rel="noreferrer">@{model.name}</a> : `@${model.name}`).reduce((acc, item, index) => index ? [...acc, ", ", item] : [item], [])}</span>}
           </div>
           <div className="project-thumbs">{project.media.map((media, index) => <button key={`${media.src}-${index}`} type="button" className={active === index ? "active" : ""} onClick={() => setActive(index)} aria-label={`${index + 1}`}><Media src={media.src} alt="" /></button>)}</div>
-          <div className="modal-actions"><a className="button primary" href="#contact" onClick={onClose}>{copy.projectInquiry}<ArrowRight /></a>{instagramUrl && <a className="button ghost" href={instagramUrl} target="_blank" rel="noreferrer">{copy.originalPost}<ExternalLink /></a>}</div>
+          <div className="modal-actions"><a className="button primary" href="#contact" onClick={(event) => { if (onInquiry) { event.preventDefault(); onInquiry(project); } else onClose(); }}>{copy.projectInquiry}<ArrowRight /></a>{instagramUrl && <a className="button ghost" href={instagramUrl} target="_blank" rel="noreferrer">{copy.originalPost}<ExternalLink /></a>}</div>
         </aside>
       </section>
     </div>
@@ -237,7 +237,7 @@ export function ReviewModal({ review, copy, onClose }) {
   return <div className="modal-backdrop" onMouseDown={onClose} role="presentation"><section className="review-modal" role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}><button className="modal-close" type="button" onClick={onClose} aria-label={copy.close}><X /></button><img src={review.reviewImage} alt={review.imageAlt || review.name} /></section></div>;
 }
 
-export function InquiryForm({ copy, language = "ko", onTrack = () => {} }) {
+export function InquiryForm({ copy, language = "ko", onTrack = () => {}, selection }) {
   const ui = INQUIRY_UI[language] || INQUIRY_UI.ko;
   const meta = INQUIRY_FORM_META[language] || INQUIRY_FORM_META.ko;
   const contactOptions = copy.contactMethods?.length ? copy.contactMethods : ["Instagram DM", "카카오톡", "문자·전화", "이메일"];
@@ -248,6 +248,7 @@ export function InquiryForm({ copy, language = "ko", onTrack = () => {} }) {
   const [copied, setCopied] = useState(false);
   const [files, setFiles] = useState([]);
   const [form, setForm] = useState(() => ({
+    setting: "", portfolio: "", studioUrl: "", pinterestUrl: "",
     shootMode: meta.shootModes[0],
     type: "",
     name: "",
@@ -276,6 +277,13 @@ export function InquiryForm({ copy, language = "ko", onTrack = () => {} }) {
       };
     });
   }, [copy, language]);
+  useEffect(() => {
+    if (!selection) return;
+    setForm((current) => ({ ...current, ...selection }));
+    setReviewing(false);
+    setStatus("");
+    setStep(1);
+  }, [selection]);
   const update = (key, value) => {
     setReviewing(false);
     setStatus("");
@@ -324,6 +332,10 @@ export function InquiryForm({ copy, language = "ko", onTrack = () => {} }) {
   const coreReady = Boolean(form.shootMode && form.type && form.name.trim() && contactSummary && dateSummary);
   const requiredReady = Boolean(coreReady && form.consent);
   const summaryRows = useMemo(() => [
+    ["촬영 방식", form.setting],
+    ["참고 포트폴리오", form.portfolio],
+    ["스튜디오 링크", form.studioUrl],
+    ["Pinterest / 참고 링크", form.pinterestUrl],
     ["shootMode", form.shootMode],
     ["type", form.type],
     ["name", form.name],
@@ -357,9 +369,14 @@ export function InquiryForm({ copy, language = "ko", onTrack = () => {} }) {
   };
 
   const saveInquiry = async () => {
+    if (import.meta.env.VITE_PREVIEW_MODE === "true") return "preview";
     const referenceImages = await uploadReferences();
     const messageWithMeta = [
       timeSummary && `${summaryLabel("time")}: ${timeSummary}`,
+      form.setting && `촬영 방식: ${form.setting}`,
+      form.portfolio && `참고 포트폴리오: ${form.portfolio}`,
+      form.studioUrl && `스튜디오 링크: ${form.studioUrl}`,
+      form.pinterestUrl && `Pinterest / 참고 링크: ${form.pinterestUrl}`,
       form.message,
     ].filter(Boolean).join("\n");
     const payload = {
@@ -404,7 +421,7 @@ export function InquiryForm({ copy, language = "ko", onTrack = () => {} }) {
     if (!reviewing) { setReviewing(true); onTrack("Inquiry review"); return; }
     if (!requiredReady) { setStatus("validation"); return; }
     setStatus("sending");
-    try { if (await saveInquiry()) { setStatus("sent"); onTrack("Inquiry sent", { type: form.type }); return; } throw new Error("storage unavailable"); }
+    try { const saved = await saveInquiry(); if (saved === "preview") { setStatus("preview"); return; } if (saved) { setStatus("sent"); onTrack("Inquiry sent", { type: form.type }); return; } throw new Error("storage unavailable"); }
     catch { await navigator.clipboard?.writeText(summary()); setStatus("fallback"); onTrack("Inquiry fallback"); }
   };
   const visibleStep = mode === "quick" ? 1 : step;
@@ -418,6 +435,19 @@ export function InquiryForm({ copy, language = "ko", onTrack = () => {} }) {
       </div>
       {mode === "detail" && <div className="step-indicator"><span>{copy.step} {step}/3</span><div><i style={{ width: `${step * 33.333}%` }} /></div></div>}
       <form onSubmit={handleSubmit}>
+        <section className="selected-plan" aria-label="선택한 촬영 내용">
+          <h3>선택한 장면을 이어서 문의해요</h3>
+          <div className="field-grid">
+            <label>촬영 방식<select value={form.setting} onChange={(e) => update("setting", e.target.value)}><option value="">함께 정할게요</option>{["야외", "실내", "스튜디오"].map((item) => <option key={item}>{item}</option>)}</select></label>
+            <label>원하는 분위기<input value={form.mood} onChange={(e) => update("mood", e.target.value)} /></label>
+            <label className="wide">희망 스튜디오 링크<input type="url" value={form.studioUrl} onChange={(e) => update("studioUrl", e.target.value)} placeholder="https://…" /></label>
+            <label className="wide">Pinterest / 참고 링크<input type="url" value={form.pinterestUrl} onChange={(e) => update("pinterestUrl", e.target.value)} placeholder="https://…" /></label>
+          </div>
+          {form.portfolio && <p className="plan-reference"><span>참고 포트폴리오: {form.portfolio}</span><button type="button" onClick={() => update("portfolio", "")}>선택 해제</button></p>}
+          <p className="reference-note">평일 19시 이후 · 주말 협의. 선택 내용은 아래 확인 요약과 문의에 포함됩니다.</p>
+        </section>
+        {status === "preview" && <p className="preview-status" role="status">문의 흐름 테스트가 완료되었습니다. 작업본이므로 실제 문의는 전송하지 않았습니다.</p>}
+
         {visibleStep === 1 && (
           <div className="form-step">
             <fieldset>

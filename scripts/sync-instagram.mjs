@@ -1,4 +1,4 @@
-import { access, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, readdir, rm, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -12,9 +12,17 @@ const accountId = String(process.env.INSTAGRAM_ACCOUNT_ID || "").trim();
 const baseUrl = String(process.env.INSTAGRAM_API_BASE_URL || "https://graph.instagram.com").replace(/\/+$/, "");
 const syncLimit = Math.min(100, Math.max(1, Number(process.env.INSTAGRAM_SYNC_LIMIT || 60)));
 
+const statusPath = path.join(root, "public", "portfolio", "instagram-status.json");
+async function writeStatus(status, error = "", count = null) {
+  let previous = {};
+  try { previous = JSON.parse(await readFile(outputPath, "utf8")); } catch {}
+  await mkdir(path.dirname(statusPath), { recursive: true });
+  await writeFile(statusPath, JSON.stringify({ status, attemptedAt: new Date().toISOString(), lastSuccessAt: previous.updatedAt || null, postCount: count ?? previous.projects?.length ?? 0, error }, null, 2) + "\n");
+}
 if (!token) {
-  console.log("Instagram sync skipped: INSTAGRAM_ACCESS_TOKEN is not configured.");
-  process.exit(0);
+  await writeStatus("error", "Instagram 인증 설정이 없습니다. 관리자에서 계정 연결을 확인해주세요.");
+  console.error("Instagram sync failed: INSTAGRAM_ACCESS_TOKEN is not configured.");
+  process.exit(1);
 }
 
 function escapeFilePart(value) {
@@ -69,10 +77,10 @@ async function readExistingFeed() {
 }
 
 async function graphJson(url) {
-  const response = await fetch(url, { headers: { Accept: "application/json" } });
+  const response = await fetch(url, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(30000) });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok || payload?.error) {
-    throw new Error(payload?.error?.message || `Instagram API request failed (${response.status})`);
+    throw new Error(`Instagram API request failed (HTTP ${response.status}, code ${Number(payload?.error?.code) || 0})`);
   }
   return payload;
 }
@@ -110,7 +118,7 @@ async function existingMediaIsUsable(project, expectedCount) {
 }
 
 async function downloadImage(url, absoluteDirectory, fileStem) {
-  const response = await fetch(url);
+  const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
   if (!response.ok) throw new Error(`Instagram media download failed (${response.status})`);
   const contentType = response.headers.get("content-type") || "image/jpeg";
   const extension = extensionFor(contentType, url);
@@ -132,7 +140,6 @@ async function buildProject(post, existingProject) {
     media = existingProject.media.map((item) => ({ ...item, alt: title }));
   } else {
     const directory = path.join(mediaRoot, escapeFilePart(post.id));
-    await rm(directory, { recursive: true, force: true });
     await mkdir(directory, { recursive: true });
 
     for (let index = 0; index < sourceItems.length; index += 1) {
@@ -183,17 +190,26 @@ async function cleanupRemovedPosts(activeIds) {
   }
 }
 
+try {
 const existingProjects = await readExistingFeed();
 const existingMap = new Map(existingProjects.map((project) => [String(project.externalId || project.id?.replace(/^instagram-/, "")), project]));
 const posts = await fetchPosts();
 const projects = [];
+if (!posts.length) throw new Error("Instagram returned no posts; previous feed preserved.");
 
 for (const post of posts) {
   const project = await buildProject(post, existingMap.get(String(post.id)));
   if (project) projects.push(project);
 }
 
-await cleanupRemovedPosts(new Set(posts.map((post) => escapeFilePart(post.id))));
+if (!projects.length) throw new Error("No usable media; previous feed preserved.");
 await mkdir(path.dirname(outputPath), { recursive: true });
-await writeFile(outputPath, `${JSON.stringify({ updatedAt: new Date().toISOString(), username: posts[0]?.username || "365daily.snap", projects }, null, 2)}\n`, "utf8");
+await writeFile(outputPath + ".tmp", `${JSON.stringify({ updatedAt: new Date().toISOString(), username: posts[0]?.username || "365daily.snap", projects }, null, 2)}\n`, "utf8");
+await rename(outputPath + ".tmp", outputPath);
+await writeStatus("success", "", projects.length);
 console.log(`Instagram sync complete: ${projects.length} posts.`);
+} catch {
+  await writeStatus("error", "Instagram 동기화 실패: 인증 만료·권한·네트워크 상태를 확인해주세요. 마지막 성공 데이터는 유지됩니다.");
+  console.error("Instagram sync failed. Check credentials, API permissions, and network. Previous feed retained.");
+  process.exitCode = 1;
+}
