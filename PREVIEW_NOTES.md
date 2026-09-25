@@ -69,3 +69,11 @@ Instagram 토큰 미설정 시 종료 코드 1 확인. 실제 API 인증/최신�
 - 85mm 고정 위치 8.0m / 인물 크기 맞춤 19.4m, 구도 중앙 50%, 격자 토글/초기화 확인.
 - 키보드 슬라이더 조작, 모바일 메뉴 및 페이지 이동, 브라우저 오류/경고 없음.
 - Netlify 배포는 이전 인증 만료로 여전히 보류. 로컬 작업본만 변경; 운영 main/원격 변경 없음.
+
+
+## Gear guide — 2026-09-25
+- Added /learn/gear, /learn/budget, /learn/brands: 13 cameras, 12 lenses, 7 brand introductions, 4 kit budgets and 12 beginner buying notes.
+- Official reference prices distinguish body-only, lens kits, catalog starting prices and unavailable prices. Every card links its source and dated review. Editorial recommendations are explicitly identified.
+- Search (including Korean brand names), purpose/brand/mount/price filters, three-product comparison and mount/sensor compatibility guidance. No live inventory claims.
+- Browser checks: search, budget results, lens category, comparison, matching/mismatching mounts; all three routes at 390px without page overflow and with one h1. Desktop and mobile screenshots inspected. Build passed.
+- No production/main edits or deployment.

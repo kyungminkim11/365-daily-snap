@@ -651,7 +651,7 @@ function App() {
 
   useEffect(() => {
     const venue = route.page === "locations" ? PLACES.find(p=>p.id===route.slug) : null;
-    const learningTitle = route.page === "learn" ? (LESSONS.find(l=>l.id===route.slug)?.title || ({labs:"사진 실험실",glossary:"사진 용어 사전"})[route.slug] || "사진 배우기") : null;
+    const learningTitle = route.page === "learn" ? (LESSONS.find(l=>l.id===route.slug)?.title || ({labs:"사진 실험실",glossary:"사진 용어 사전",gear:"카메라·렌즈 장비 가이드",brands:"카메라 브랜드 안내",budget:"예산별 입문 장비"})[route.slug] || "사진 배우기") : null;
     const routeTitle = learningTitle || venue?.name || ({locations:"촬영지 찾기",portfolio:"포트폴리오",guide:"촬영 안내",about:"소개",faq:"자주 묻는 질문",contact:"촬영 문의",plan:"촬영 계획"})[route.page];
     const title = routeTitle ? `${routeTitle} | 365 Daily Snap` : detailProject ? `${detailProject.title} | 365 Daily Snap` : seoPage ? `${seoPage.title} | 365 Daily Snap` : copy.title;
     const description = detailProject?.description || seoPage?.description || copy.description;
