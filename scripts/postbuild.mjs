@@ -1,6 +1,7 @@
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { PLACES } from '../src/data/shootPlaces.js';
+import { LESSONS } from '../src/data/photoLessons.js';
 
 const dist = path.resolve('dist');
 const base = await readFile(path.join(dist, 'index.html'), 'utf8');
@@ -23,7 +24,7 @@ for (const [code, meta] of Object.entries(locales)) {
     .replace(/(<meta property="og:description" content=")[^"]*(" \/>)/, `$1${meta.description}$2`)
     .replace(/(<meta property="og:locale" content=")[^"]*(" \/>)/, `$1${meta.locale}$2`);
   await writeFile(path.join(dir, 'index.html'), html);
-  const pages = [['locations','촬영지 찾기'],['portfolio','포트폴리오'],['guide','촬영 안내'],['about','소개'],['faq','자주 묻는 질문'],['contact','촬영 문의'],['plan','촬영 계획'], ...PLACES.map(p => [`locations/${p.id}`,p.name])];
+  const pages = [['locations','촬영지 찾기'],['portfolio','포트폴리오'],['guide','촬영 안내'],['about','소개'],['faq','자주 묻는 질문'],['contact','촬영 문의'],['plan','촬영 계획'], ['learn','사진 배우기'],['learn/labs','사진 실험실'],['learn/glossary','사진 용어 사전'],...LESSONS.map(l=>[`learn/${l.id}`,l.title]), ...PLACES.map(p => [`locations/${p.id}`,p.name])];
   for (const [route,title] of pages) {
     const pageDir = path.join(dir,route);
     await mkdir(pageDir,{recursive:true});

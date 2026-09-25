@@ -1,7 +1,9 @@
 import { LocationCatalog, LocationDetail, PageHeading, SiteLink } from './LocationPages';
 import { PLACES } from './data/shootPlaces';
 import { BrandMark, ShootPlanner, InstagramSyncStatus, emptyPlan } from "./ShootPlanner";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { LESSONS } from "./data/photoLessons";
+const LearningCenter = lazy(() => import("./LearningCenter"));
 import {
   ArrowLeft,
   ArrowRight,
@@ -594,7 +596,7 @@ function App() {
   const route = getRouteParts(window.location.pathname);
   const detailProject = route.page === "work" ? projects.find((project) => getProjectSlug(project) === route.slug) : null;
   const seoPage = route.page && SEO_PAGES[route.page] ? SEO_PAGES[route.page][language] : null;
-  const navItems = [['locations','촬영지 찾기'],['portfolio',copy.nav.work],['guide',extra.prepareNav],['about',copy.nav.about]];
+  const navItems = [['locations','촬영지 찾기'],['portfolio',copy.nav.work],['guide',extra.prepareNav],['learn','사진 배우기'],['about',copy.nav.about]];
 
   useEffect(() => {
     if (!portfolioFilters.some((filter) => filter.query === activePortfolioFilter)) {
@@ -649,7 +651,8 @@ function App() {
 
   useEffect(() => {
     const venue = route.page === "locations" ? PLACES.find(p=>p.id===route.slug) : null;
-    const routeTitle = venue?.name || ({locations:"촬영지 찾기",portfolio:"포트폴리오",guide:"촬영 안내",about:"소개",faq:"자주 묻는 질문",contact:"촬영 문의",plan:"촬영 계획"})[route.page];
+    const learningTitle = route.page === "learn" ? (LESSONS.find(l=>l.id===route.slug)?.title || ({labs:"사진 실험실",glossary:"사진 용어 사전"})[route.slug] || "사진 배우기") : null;
+    const routeTitle = learningTitle || venue?.name || ({locations:"촬영지 찾기",portfolio:"포트폴리오",guide:"촬영 안내",about:"소개",faq:"자주 묻는 질문",contact:"촬영 문의",plan:"촬영 계획"})[route.page];
     const title = routeTitle ? `${routeTitle} | 365 Daily Snap` : detailProject ? `${detailProject.title} | 365 Daily Snap` : seoPage ? `${seoPage.title} | 365 Daily Snap` : copy.title;
     const description = detailProject?.description || seoPage?.description || copy.description;
     const canonicalPath = route.page ? `/${language}/${route.page}${route.slug ? `/${encodeURIComponent(route.slug)}` : ""}` : `/${language}`;
@@ -726,6 +729,7 @@ function App() {
 </>);
   const pageTitles = { portfolio: '포트폴리오', guide: '촬영 안내', about: '365 Daily Snap 이야기', faq: '자주 묻는 질문', contact: '당신의 다음 장면을 함께', plan: '나의 촬영 계획' };
   const renderWebsite = () => {
+    if (route.page === "learn") return <Suspense fallback={<main className="section section-wrap" aria-busy="true"><h1>사진 배우기</h1><p>학습 노트를 펼치고 있어요.</p></main>}><LearningCenter slug={route.slug} language={language} navigate={navigate}/></Suspense>;
     if (route.page === 'locations') {
       const place = PLACES.find(p => p.id === route.slug);
       if (route.slug && place) return <LocationDetail key={place.id} place={place} language={language} navigate={navigate} onInquiry={inquireWithPlan}/>;
@@ -748,7 +752,7 @@ function App() {
       <PhotoMotionRail projects={projects} language={language} onOpenProject={openProjectPage} />
 
 
-      <section className="section-wrap home-directory"><div><p className="eyebrow">MAKE YOUR NEXT MEMORY</p><h2>사진을 넘어,<br/><em>우리의 다음 장면으로.</em></h2><p>장소를 발견하고, 취향을 고르고,<br/>당신에게 맞는 촬영을 준비하세요.</p></div><div className="directory-links">{[['locations','01 / LOCATION ATLAS',`${PLACES.length}곳에서 찾는 나의 촬영지`,'서울·경기·인천 지도와 지하철로 찾아보기'],['portfolio','02 / SELECTED WORK','사진으로 먼저 만나요','인물·커플·프로필, 작업별로 살펴보기'],['guide','03 / BEFORE WE MEET','편안한 촬영을 위한 안내','촬영 종류, 일정과 준비사항']].map(([path,eyebrow,title,text])=><SiteLink key={path} href={`/${language}/${path}`} navigate={navigate}><span>{eyebrow}</span><h3>{title}</h3><p>{text}</p><ArrowRight/></SiteLink>)}</div></section>
+      <section className="section-wrap home-directory"><div><p className="eyebrow">MAKE YOUR NEXT MEMORY</p><h2>사진을 넘어,<br/><em>우리의 다음 장면으로.</em></h2><p>장소를 발견하고, 취향을 고르고,<br/>당신에게 맞는 촬영을 준비하세요.</p></div><div className="directory-links">{[['locations','01 / LOCATION ATLAS',`${PLACES.length}곳에서 찾는 나의 촬영지`,'서울·경기·인천 지도와 지하철로 찾아보기'],['portfolio','02 / SELECTED WORK','사진으로 먼저 만나요','인물·커플·프로필, 작업별로 살펴보기'],['guide','03 / BEFORE WE MEET','편안한 촬영을 위한 안내','촬영 종류, 일정과 준비사항'],['learn','04 / PHOTO NOTEBOOK','사진, 한 장씩 알아가요','노출·화각·구도를 직접 바꾸며 배우기']].map(([path,eyebrow,title,text])=><SiteLink key={path} href={`/${language}/${path}`} navigate={navigate}><span>{eyebrow}</span><h3>{title}</h3><p>{text}</p><ArrowRight/></SiteLink>)}</div></section>
       <section className="home-invite section-wrap"><p className="eyebrow">365 DAILY SNAP</p><h2>특별한 날도, 평범한 오늘도.</h2><p>평일 19시 이후 · 주말 협의 / 서울·경기·인천 일정 상담</p><SiteLink href={`/${language}/contact`} navigate={navigate} className="button primary">촬영 이야기 나누기 <ArrowRight/></SiteLink></section>
     </main>;
     const renderers={portfolio:renderPortfolio,guide:renderGuide,about:renderAbout,faq:renderFaq,contact:renderContact};
@@ -787,7 +791,7 @@ function App() {
       ) : renderWebsite()}
 
       <div className="section-wrap footer-navigation">{[["","홈"],...navItems,["faq","자주 묻는 질문"],["contact","촬영 문의"]].map(([key,label])=><SiteLink key={key} href={`/${language}/${key}`} navigate={navigate}>{label}</SiteLink>)}</div><footer className="site-footer section-wrap"><div><b>365 Daily Snap</b><p>{copy.footerLine}</p></div><div className="footer-business"><span>{BUSINESS.name}</span><span>{BUSINESS.registration} · {BUSINESS.onlineSales}</span><span>{BUSINESS.email}</span></div><button type="button" onClick={() => setPrivacyOpen(true)}>{copy.privacy}</button><p>© 2026 365 Daily Snap. All rights reserved.</p></footer>
-      <div className="mobile-contact-bar"><button type="button" onClick={() => scrollTo("contact")}><CalendarDays />{copy.heroSecondary}</button><a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer"><MessageCircle />Kakao</a></div>
+      {route.page !== "learn" && <div className="mobile-contact-bar"><button type="button" onClick={() => scrollTo("contact")}><CalendarDays />{copy.heroSecondary}</button><a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer"><MessageCircle />Kakao</a></div>}
       <ProjectModal project={projectModal} copy={copy} onClose={() => setProjectModal(null)} onInquiry={(project) => { setProjectModal(null); inquireWithPlan({ portfolio: project.title + " — " + getProjectPath(language, project) }); }} />
       <ReviewModal review={reviewModal} copy={copy} onClose={() => setReviewModal(null)} />
       {privacyOpen && <div className="modal-backdrop" onMouseDown={() => setPrivacyOpen(false)} role="presentation"><section className="privacy-modal" role="dialog" aria-modal="true" onMouseDown={(e) => e.stopPropagation()}><button className="modal-close" type="button" onClick={() => setPrivacyOpen(false)}><X /></button><ShieldCheck /><h2>{copy.privacy}</h2><p>{copy.consentDetail}</p><dl><dt>Controller</dt><dd>{BUSINESS.name}</dd><dt>Contact</dt><dd>{BUSINESS.email}</dd><dt>Business address</dt><dd>{BUSINESS.address}</dd></dl></section></div>}
