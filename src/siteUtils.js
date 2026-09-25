@@ -238,7 +238,9 @@ export function useLanguage() {
 
   const setLanguage = (next) => {
     const hash = window.location.hash;
-    window.history.pushState({}, "", `/${next}${hash}`);
+    const tail = window.location.pathname.split("/").slice(2).join("/");
+    window.history.pushState({}, "", `/${next}${tail ? "/"+tail : ""}${window.location.search}${hash}`);
+    window.dispatchEvent(new PopStateEvent("popstate"));
     setLanguageState(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };

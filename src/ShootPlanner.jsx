@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, ExternalLink, Clock3 } from "lucide-react";
 import "./styles/planner.css";
-import DistrictExplorer from "./DistrictExplorer";
 import { PLACES as EXPANDED_PLACES } from "./data/shootPlaces";
 
 const MODES = [
@@ -17,7 +16,7 @@ export function BrandMark() {
   return <><span className="brand-frame">365<i /></span><span className="brand-signature"><b>Daily Snap</b><small>PORTRAITS OF YOUR EVERYDAY</small></span></>;
 }
 
-export function ShootPlanner({ plan, onChange, onInquiry }) {
+export function ShootPlanner({ plan, onChange, onInquiry, onBrowse }) {
   const [query, setQuery] = useState("자연스러운 portrait photography");
   const place = EXPANDED_PLACES.find((item) => item.name === plan.region) || EXPANDED_PLACES[0];
   const mode = MODES.find((item) => item.name === plan.setting) || MODES[0];
@@ -25,13 +24,13 @@ export function ShootPlanner({ plan, onChange, onInquiry }) {
   const pinterestQuery = query.trim() || `${plan.mood} portrait photography`;
   return <section id="planner" className="section section-wrap shoot-planner">
     <div className="planner-heading"><div><p className="eyebrow">YOUR NEXT SCENE / 01 — 03</p><h2>어떤 장면을<br /><em>남기고 싶나요?</em></h2></div><p>사진에서 찾은 취향에 장소와 분위기를 더해보세요.<br />선택한 내용은 촬영 문의에 그대로 이어집니다.</p></div>
-    <div className="availability"><Clock3 /><strong>평일 19:00 이후 · 주말 협의</strong><span>서울 중심 / 일산·파주 가능 · 경복궁역 인근 평일 저녁 추천</span></div>
+    <div className="availability"><Clock3 /><strong>평일 19:00 이후 · 주말 협의</strong><span>서울·경기·인천 일정 상담 · 경복궁역 인근 평일 저녁 추천</span></div>
     <div className="planner-layout"><div className="planner-main">
       <h3 className="planner-step"><span>01</span> 촬영 방식</h3>
       <div className="setting-tabs" role="group" aria-label="촬영 방식">{MODES.map((item) => <button key={item.name} type="button" aria-pressed={plan.setting === item.name} onClick={() => onChange({ setting: item.name })}><small>{item.en}</small>{item.name}<span>↗</span></button>)}</div>
       <div className="setting-detail" aria-live="polite"><h3>{mode.title}</h3><p>{mode.text}</p><p className="planner-benefit">{mode.benefits}</p><strong>{mode.cost}</strong><small>{mode.note}</small>{plan.setting === "스튜디오" && <a className="planner-source" href="https://www.spacecloud.kr/host/1663819616" target="_blank" rel="noreferrer">대관 요금 참고 사례 ↗</a>}</div>
       <h3 className="planner-step"><span>02</span> 만나고 싶은 동네</h3>
-      <DistrictExplorer selectedPlace={plan.region} onSelect={(selected) => { onChange({ region: selected.name }); requestAnimationFrame(() => document.getElementById("selected-location")?.scrollIntoView({ behavior: "smooth", block: "start" })); }} />
+      <button type="button" className="button ghost" onClick={onBrowse}>지도·역으로 다른 촬영지 찾기 <ArrowRight/></button>
       <article id="selected-location" className="place-detail" aria-live="polite"><p className="eyebrow">선택한 촬영 장소 / LOCATION NOTES</p><h3>{place.name}</h3><dl><div><dt>분위기</dt><dd>{place.mood}</dd></div><div><dt>추천 촬영</dt><dd>{place.type}</dd></div><div><dt>추천 시간</dt><dd>{place.time}</dd></div><div><dt>접근성</dt><dd>{place.access}</dd></div><div><dt>공간 비용</dt><dd>{plan.setting === "야외" ? place.cost : mode.cost}</dd></div></dl><p>{place.note}</p><div className="location-links"><a href={`https://map.naver.com/p/search/${encodeURIComponent(place.name)}`} target="_blank" rel="noreferrer">지도에서 위치·동선 확인 <ExternalLink /></a><a href={place.source} target="_blank" rel="noreferrer">지역 관광·공원 안내 <ExternalLink /></a></div><button type="button" className="text-link" onClick={onInquiry}>이 장소로 문의하기 <ArrowRight /></button></article>
       {plan.setting === "스튜디오" && <div className="studio-finder"><p className="eyebrow">FIND YOUR STUDIO</p><h3>{place.search}, 촬영 공간 찾아보기</h3><p>지역과 분위기를 담은 검색어로 후보를 찾아보세요. 마음에 드는 공간의 링크를 아래에 붙여주세요.</p><div className="external-searches"><a href={searchUrl(`site:spacecloud.kr ${studioQuery}`)} target="_blank" rel="noreferrer">스페이스클라우드 공간 검색 <ExternalLink /></a><a href={searchUrl(`site:hourplace.co.kr ${studioQuery}`)} target="_blank" rel="noreferrer">아워플레이스 공간 검색 <ExternalLink /></a><a href={`https://map.naver.com/p/search/${encodeURIComponent(`${place.search} 렌탈스튜디오`)}`} target="_blank" rel="noreferrer">네이버지도에서 찾기 <ExternalLink /></a></div><small>플랫폼별 검색은 네이버 검색 결과로 연결됩니다. 사진·실시간 가격은 원본에서 확인해주세요.</small><label>희망 스튜디오 링크<input type="url" value={plan.studioUrl} onChange={(e) => onChange({ studioUrl: e.target.value })} placeholder="https://…" /></label></div>}
       <h3 className="planner-step"><span>03</span> 원하는 분위기와 레퍼런스</h3>

@@ -9,3 +9,5 @@ dist
 .netlify
 public/inquiries/
 public/*.png
+
+.playwright-cli/

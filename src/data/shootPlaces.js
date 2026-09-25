@@ -1,5 +1,6 @@
 // Curated starting points, not a live transit/distance API. Station names refer
 // to access options; walking routes and venue permissions are checked separately.
+import { MORE_PLACES } from './morePlaces.js';
 const PARKS = "https://parks.seoul.go.kr/content.do?key=2604070017";
 const SEOUL = "https://www.seoul.go.kr/storyw/sasaek/list.do";
 const GOYANG = "https://www.goyang.go.kr/ilswgu/index.do";
@@ -31,7 +32,7 @@ function place(name, districts, stations, mood, extra = {}) {
   };
 }
 
-export const PLACES = [
+const ORIGINAL_PLACES = [
   place("경복궁 · 서촌", "종로구", [s.gyeongbok], "한옥 골목 · 차분한 영화의 한 장면", { time: "평일 19시 이후 서촌 골목 우선 추천 / 주말 협의", type: "인물 · 한복 · 커플", note: "고궁 내부 촬영은 개방 일정·입장권·촬영 허가를 별도로 확인합니다.", source: SEOUL }),
   place("북촌 · 삼청동", "종로구", [s.anguk], "전통 · 한옥 · 단정한 색감", { time: "주말 낮 협의", note: "주거 구역 방문 시간과 촬영 제한을 확인하고 주민의 일상을 배려합니다.", source: SEOUL }),
   place("광화문 · 청계천 · 종로", "종로구/중구", [s.gwanghwa, s.jonggak], "도시의 불빛 · 시네마틱 · 야간", { time: "평일 19시 이후 추천 / 주말 협의", source: SEOUL }),
@@ -94,12 +95,18 @@ export const PLACES = [
   place("금릉역 중앙공원 주변", "파주시", [s.geumneung], "동네 공원 · 산책 · 담백한 프로필", { source: "https://tour.paju.go.kr/", note: "역 주변과 공원을 잇는 코스로 제안합니다. 행사와 현장 이용 상황에 맞춰 조율합니다." }),
 ];
 
-export const STATIONS = Object.values(s).filter((item) => PLACES.some((place) => place.stations.some((station) => station.name === item.name))).sort((a, b) => a.name.localeCompare(b.name, "ko"));
+const categoryFor = (name) => /한강|호수|천|수변/.test(name) ? '호수·강변' : /궁|한옥|북촌|정동/.test(name) ? '역사·한옥' : /공원|숲|산|수목/.test(name) ? '숲·공원' : '거리·건축';
+export const PLACES = [...ORIGINAL_PLACES.map(p => ({ ...p, area: p.area === '일산·파주' ? '경기' : p.area, districts: p.districts.map(d => ['일산서구','일산동구','덕양구'].includes(d) ? '고양시' : d), category: categoryFor(p.name) })), ...MORE_PLACES].map(p => ({ ...p, id: p.name }));
+const stationMap = new Map();
+PLACES.forEach(p => p.stations.forEach(s => { const old = stationMap.get(s.name); stationMap.set(s.name, { name:s.name, lines:[...new Set([...(old?.lines || []), ...s.lines])] }); }));
+export const STATIONS = [...stationMap.values()].sort((a,b) => a.name.localeCompare(b.name,'ko'));
+export const LINES = [...new Set(STATIONS.flatMap(s => s.lines))].sort((a,b) => a.localeCompare(b,'ko',{numeric:true}));
+export const CATEGORIES = ['숲·공원','호수·강변','바다·섬','역사·한옥','거리·건축'];
 export const normalizeSearch = (value) => String(value).normalize("NFKC").replace(/\s|·/g, "").toLowerCase();
 export function matchesStation(place, stationName) {
   return !stationName || place.stations.some((item) => item.name === stationName);
 }
-export function filterPlaces({ area = "서울", district = "", stationName = "" }) {
-  return PLACES.filter((place) => place.area === area && (!district || place.districts.includes(district)) && matchesStation(place, stationName));
+export function filterPlaces({ area = "", district = "", stationName = "", line = "", category = "", query = "" } = {}) {
+  return PLACES.filter(p => (!area || p.area === area) && (!district || p.districts.includes(district)) && matchesStation(p, stationName) && (!line || p.stations.some(s => (!stationName || s.name === stationName) && s.lines.includes(line))) && (!category || p.category === category) && (!query || normalizeSearch([p.name,p.area,...p.districts,p.mood,...p.stations.map(s => s.name)].join(' ')).includes(normalizeSearch(query))));
 }
 

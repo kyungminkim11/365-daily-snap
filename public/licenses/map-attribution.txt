@@ -1,8 +1,15 @@
-District map attribution
-Seoul boundaries: JUSO 2015, converted by Lucy Park / southkorea/seoul-maps. Apache License 2.0.
-https://github.com/southkorea/seoul-maps/blob/master/juso/2015/json/seoul_municipalities_geo_simple.json
-Goyang/Paju boundaries: KOSTAT 2013, southkorea/southkorea-maps. Repository license: KOSTAT, free to share or remix.
-https://github.com/southkorea/southkorea-maps/blob/master/kostat/2013/json/skorea_municipalities_geo_simple.json
-Modified 2026-09-24: geographic coordinates projected and rounded to SVG paths; label positions adjusted for readability.
-Maps are simplified area selectors based on historical administrative boundaries, not navigation or cadastral maps.
-Apache license copy: /licenses/Apache-2.0.txt
+District selection map attribution
+Source: SGIS statistical boundary data, adapted by vuski/admdongkor.
+Version: 2026-07-01.
+https://github.com/vuski/admdongkor
+https://github.com/vuski/admdongkor/tree/master/ver20260701
+Original agency: Statistics Korea / SGIS (https://sgis.kostat.go.kr/)
+License: Korea Open Government License (KOGL), Type 1: attribution.
+https://www.kogl.or.kr/info/license.do
+
+365 Daily Snap modifications: administrative neighborhoods dissolved into
+Seoul districts, Gyeonggi cities/counties, and Incheon districts/counties;
+geometry simplified and projected for an SVG selection graphic. Ongjin
+islands are drawn in a smaller inset, not at the mainland map scale.
+This is a place selection aid, not a survey or navigation map.
+Rebuild: scripts/build-region-maps.py with the original GeoJSON.

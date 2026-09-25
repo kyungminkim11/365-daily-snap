@@ -1,3 +1,5 @@
+import { LocationCatalog, LocationDetail, PageHeading, SiteLink } from './LocationPages';
+import { PLACES } from './data/shootPlaces';
 import { BrandMark, ShootPlanner, InstagramSyncStatus, emptyPlan } from "./ShootPlanner";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -44,7 +46,7 @@ const EXTRA_COPY = {
     prepDescription: "처음 촬영하는 분도 편하게 준비할 수 있도록 의상, 장소, 레퍼런스, 공개 범위를 미리 정리합니다.",
     availabilityTitle: "촬영 일정 안내",
     availabilityText:
-      "주말과 공휴일, 평일 저녁 시간대 촬영을 중심으로 운영합니다. 평일은 19시 이후, 주말은 협의하여 촬영합니다. 서울 중심으로 일산·탄현·야당·파주까지 함께 조율합니다.",
+      "주말과 공휴일, 평일 저녁 시간대 촬영을 중심으로 운영합니다. 평일은 19시 이후, 주말은 협의하여 촬영합니다. 서울·경기·인천의 이동 동선과 촬영 일정을 함께 조율합니다.",
     localTitle: "지역과 목적에 맞춰 보기",
     localDescription: "검색으로 들어온 방문자도 원하는 촬영 유형을 바로 확인할 수 있도록 주요 안내를 분리했습니다.",
     seoCta: "해당 촬영 문의하기",
@@ -213,7 +215,7 @@ function InstagramIcon(props) {
 }
 
 function currentPath() {
-  return `${window.location.pathname}${window.location.hash}`;
+  return `${window.location.pathname}${window.location.search}${window.location.hash}`;
 }
 
 function getRouteParts(pathname) {
@@ -592,15 +594,7 @@ function App() {
   const route = getRouteParts(window.location.pathname);
   const detailProject = route.page === "work" ? projects.find((project) => getProjectSlug(project) === route.slug) : null;
   const seoPage = route.page && SEO_PAGES[route.page] ? SEO_PAGES[route.page][language] : null;
-  const navItems = [
-    ["work", copy.nav.work],
-    ["planner", language === "ko" ? "장소·촬영 선택" : "Plan a shoot"],
-    ["prepare", extra.prepareNav],
-    ["reviews", copy.nav.reviews],
-    ["about", copy.nav.about],
-    ["faq", copy.nav.faq],
-    ["contact", copy.nav.contact],
-  ];
+  const navItems = [['locations','촬영지 찾기'],['portfolio',copy.nav.work],['guide',extra.prepareNav],['about',copy.nav.about]];
 
   useEffect(() => {
     if (!portfolioFilters.some((filter) => filter.query === activePortfolioFilter)) {
@@ -616,6 +610,12 @@ function App() {
     if (route.page) return undefined;
     const targetId = window.location.hash.replace("#", "");
     if (!targetId) return undefined;
+    const legacyPages={locations:'locations',planner:'plan',work:'portfolio',prepare:'guide',sessions:'guide',reviews:'about',about:'about',faq:'faq',contact:'contact'};
+    if (legacyPages[targetId]) {
+      window.history.replaceState({},'',`/${language}/${legacyPages[targetId]}`);
+      setRouteSnapshot(currentPath());
+      return undefined;
+    }
     const timer = window.setTimeout(() => {
       document.getElementById(targetId)?.scrollIntoView({ behavior: "auto", block: "start" });
     }, 80);
@@ -626,17 +626,13 @@ function App() {
     window.history.pushState({}, "", path);
     setRouteSnapshot(currentPath());
     setMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: "auto" });
+    window.scrollTo({ top: 0, behavior: "instant" });
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" }));
   };
 
   const scrollTo = (id) => {
-    if (route.page) {
-      navigate(`/${language}#${id}`);
-      window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 60);
-      return;
-    }
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setMenuOpen(false);
+    const pages={work:'portfolio',planner:'plan',locations:'locations',prepare:'guide',sessions:'guide',reviews:'about'};
+    navigate(`/${language}/${pages[id] || id}`);
   };
 
   const inquireWithPlan = (patch = {}) => {
@@ -652,7 +648,9 @@ function App() {
   };
 
   useEffect(() => {
-    const title = detailProject ? `${detailProject.title} | 365 Daily Snap` : seoPage ? `${seoPage.title} | 365 Daily Snap` : copy.title;
+    const venue = route.page === "locations" ? PLACES.find(p=>p.id===route.slug) : null;
+    const routeTitle = venue?.name || ({locations:"촬영지 찾기",portfolio:"포트폴리오",guide:"촬영 안내",about:"소개",faq:"자주 묻는 질문",contact:"촬영 문의",plan:"촬영 계획"})[route.page];
+    const title = routeTitle ? `${routeTitle} | 365 Daily Snap` : detailProject ? `${detailProject.title} | 365 Daily Snap` : seoPage ? `${seoPage.title} | 365 Daily Snap` : copy.title;
     const description = detailProject?.description || seoPage?.description || copy.description;
     const canonicalPath = route.page ? `/${language}/${route.page}${route.slug ? `/${encodeURIComponent(route.slug)}` : ""}` : `/${language}`;
     document.documentElement.lang = language === "ja" ? "ja" : language;
@@ -665,24 +663,7 @@ function App() {
     if (canonical) canonical.href = `https://snap.lavalabs.co.kr${canonicalPath}`;
   }, [language, copy, detailProject, seoPage, route.page, route.slug]);
 
-  const renderHome = () => (
-    <main>
-      <section className="hero section-wrap">
-        <div className="hero-copy">
-          <p className="eyebrow">{copy.heroEyebrow}</p>
-          <h1>{copy.heroTitle.split("\n").map((line) => <span key={line}>{line}</span>)}</h1>
-          <p className="hero-description">{copy.heroDescription}</p>
-          <div className="hero-actions"><button className="button primary" type="button" onClick={() => scrollTo("work")}>{copy.heroPrimary}<ArrowRight /></button><button className="button ghost" type="button" onClick={() => scrollTo("contact")}>{copy.heroSecondary}</button></div>
-          <div className="trust-row">{copy.trust.map((item) => <span key={item}><Check />{item}</span>)}</div>
-        </div>
-        <div className="hero-collage" aria-label="Featured photography">
-          {heroMedia[0]?.src && <button className="hero-photo hero-photo-main" type="button" onClick={() => heroProject && openProjectPage(heroProject)}><Media src={heroMedia[0].src} alt={heroMedia[0].alt || heroProject.title} eager /><span className="watermark">© 365 Daily Snap</span></button>}
-          <div className="hero-photo-stack">{heroMedia.slice(1, 3).map((item, index) => <button className="hero-photo" type="button" key={item.src} onClick={() => heroProject && openProjectPage(heroProject)}><Media src={item.src} alt={item.alt || heroProject.title} eager={index === 0} /><span className="watermark">© 365 Daily Snap</span></button>)}</div>
-        </div>
-      </section>
-
-      <PhotoMotionRail projects={projects} language={language} onOpenProject={openProjectPage} />
-
+  const renderPortfolio = () => (<>
       <section id="work" className="section section-wrap">
         <SectionHeading eyebrow={copy.workEyebrow} title={copy.workTitle} description={copy.workDescription} />
         <InstagramSyncStatus />
@@ -725,19 +706,55 @@ function App() {
         </aside>
       </section>
 
-      <ShootPlanner plan={plan} onChange={(patch) => setPlan((current) => ({ ...current, ...patch }))} onInquiry={() => inquireWithPlan()} />
 
-      <section className="why-section"><div className="section-wrap section"><SectionHeading eyebrow={copy.whyEyebrow} title={copy.whyTitle} /><div className="why-grid">{copy.whyItems.map((item, index) => <article key={item.title}><span>0{index + 1}</span><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></div></section>
+</>);
+  const renderGuide = () => (<>
       <section id="sessions" className="section section-wrap"><SectionHeading eyebrow={copy.sessionsEyebrow} title={copy.sessionsTitle} description={copy.sessionsDescription} /><div className="session-grid">{copy.sessions.map((session) => { const Icon = session.icon; return <article key={session.name}><div className="session-icon"><Icon /></div><p className="eyebrow">{session.name}</p><h3>{session.title}</h3><span className="session-time"><Clock3 />{session.time}</span><p>{session.text}</p><div className="tag-row">{session.tags.map((tag) => <span key={tag}>{tag}</span>)}</div></article>; })}</div></section>
       <PrepareSection extra={extra} language={language} onContact={() => scrollTo("contact")} />
       <section className="process-section"><div className="section section-wrap"><SectionHeading eyebrow={copy.processEyebrow} title={copy.processTitle} /><div className="process-grid">{copy.process.map((item) => <article key={item.number}><span>{item.number}</span><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></div></section>
-      <section id="reviews" className="section section-wrap"><SectionHeading eyebrow={copy.reviewsEyebrow} title={copy.reviewsTitle} description={copy.reviewsDescription} /><div className="review-grid">{visibleReviews.map((review) => <article className="review-card" key={`${review.name}-${review.date}`}><div className="quote-mark">“</div><p>{review.content}</p><footer><div><strong>{review.name}</strong><span>{review.type} · {review.date}</span></div>{review.reviewImage && <button type="button" onClick={() => setReviewModal(review)}>{copy.reviewOriginal}<ExternalLink /></button>}</footer></article>)}</div>{reviews.length > 3 && <button className="button ghost centered" type="button" onClick={() => setShowAllReviews((value) => !value)}>{showAllReviews ? copy.lessProjects : copy.moreReviews}{showAllReviews ? <ChevronUp /> : <ChevronDown />}</button>}</section>
-      <LocalSeoSection language={language} extra={extra} navigate={navigate} />
+</>);
+  const renderAbout = () => (<>
       <section id="about" className="about-section"><div className="section section-wrap about-grid"><div className="about-visual"><div className="about-monogram">365<br /><em>ds.</em></div><Camera /></div><div><p className="eyebrow">{copy.aboutEyebrow}</p><h2>{copy.aboutTitle}</h2><p>{copy.aboutText}</p><div className="about-facts">{copy.aboutFacts.map((fact) => <span key={fact}><Check />{fact}</span>)}</div><a className="text-link" href={CONTACT.instagramUrl} target="_blank" rel="noreferrer"><InstagramIcon />{CONTACT.instagramHandle}<ExternalLink /></a></div></div></section>
+      <section className="why-section"><div className="section-wrap section"><SectionHeading eyebrow={copy.whyEyebrow} title={copy.whyTitle} /><div className="why-grid">{copy.whyItems.map((item, index) => <article key={item.title}><span>0{index + 1}</span><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></div></section>
+      <section id="reviews" className="section section-wrap"><SectionHeading eyebrow={copy.reviewsEyebrow} title={copy.reviewsTitle} description={copy.reviewsDescription} /><div className="review-grid">{visibleReviews.map((review) => <article className="review-card" key={`${review.name}-${review.date}`}><div className="quote-mark">“</div><p>{review.content}</p><footer><div><strong>{review.name}</strong><span>{review.type} · {review.date}</span></div>{review.reviewImage && <button type="button" onClick={() => setReviewModal(review)}>{copy.reviewOriginal}<ExternalLink /></button>}</footer></article>)}</div>{reviews.length > 3 && <button className="button ghost centered" type="button" onClick={() => setShowAllReviews((value) => !value)}>{showAllReviews ? copy.lessProjects : copy.moreReviews}{showAllReviews ? <ChevronUp /> : <ChevronDown />}</button>}</section>
+</>);
+  const renderFaq = () => (<>
       <section id="faq" className="section section-wrap"><SectionHeading eyebrow={copy.faqEyebrow} title={copy.faqTitle} /><div className="faq-list">{copy.faqs.map((item, index) => <article key={item.q} className={faqOpen === index ? "open" : ""}><button type="button" onClick={() => setFaqOpen(faqOpen === index ? -1 : index)}><span>{String(index + 1).padStart(2, "0")}</span><b>{item.q}</b>{faqOpen === index ? <ChevronUp /> : <ChevronDown />}</button>{faqOpen === index && <p>{item.a}</p>}</article>)}</div></section>
+</>);
+  const renderContact = () => (<>
       <section id="contact" className="contact-section"><div className="section section-wrap contact-grid"><div><p className="eyebrow">{copy.inquiryEyebrow}</p><h2>{copy.inquiryTitle}</h2><p>{copy.inquiryDescription}</p><div className="contact-direct"><a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent("Kakao click")}><MessageCircle /><span><b>KakaoTalk</b><small>Open chat</small></span><ExternalLink /></a><a href={CONTACT.instagramUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent("Instagram click")}><InstagramIcon /><span><b>Instagram DM</b><small>{CONTACT.instagramHandle}</small></span><ExternalLink /></a></div></div><InquiryForm copy={copy} language={language} onTrack={trackEvent} selection={inquirySelection} /></div></section>
-    </main>
-  );
+</>);
+  const pageTitles = { portfolio: '포트폴리오', guide: '촬영 안내', about: '365 Daily Snap 이야기', faq: '자주 묻는 질문', contact: '당신의 다음 장면을 함께', plan: '나의 촬영 계획' };
+  const renderWebsite = () => {
+    if (route.page === 'locations') {
+      const place = PLACES.find(p => p.id === route.slug);
+      if (route.slug && place) return <LocationDetail key={place.id} place={place} language={language} navigate={navigate} onInquiry={inquireWithPlan}/>;
+      if (!route.slug) return <LocationCatalog key={language} language={language} navigate={navigate}/>;
+    }
+    if (!route.page) return <main>      <section className="hero section-wrap">
+        <div className="hero-copy">
+          <p className="eyebrow">{copy.heroEyebrow}</p>
+          <h1>{copy.heroTitle.split("\n").map((line) => <span key={line}>{line}</span>)}</h1>
+          <p className="hero-description">{copy.heroDescription}</p>
+          <div className="hero-actions"><button className="button primary" type="button" onClick={() => scrollTo("work")}>{copy.heroPrimary}<ArrowRight /></button><button className="button ghost" type="button" onClick={() => scrollTo("contact")}>{copy.heroSecondary}</button></div>
+          <div className="trust-row">{copy.trust.map((item) => <span key={item}><Check />{item}</span>)}</div>
+        </div>
+        <div className="hero-collage" aria-label="Featured photography">
+          {heroMedia[0]?.src && <button className="hero-photo hero-photo-main" type="button" onClick={() => heroProject && openProjectPage(heroProject)}><Media src={heroMedia[0].src} alt={heroMedia[0].alt || heroProject.title} eager /><span className="watermark">© 365 Daily Snap</span></button>}
+          <div className="hero-photo-stack">{heroMedia.slice(1, 3).map((item, index) => <button className="hero-photo" type="button" key={item.src} onClick={() => heroProject && openProjectPage(heroProject)}><Media src={item.src} alt={item.alt || heroProject.title} eager={index === 0} /><span className="watermark">© 365 Daily Snap</span></button>)}</div>
+        </div>
+      </section>
+
+      <PhotoMotionRail projects={projects} language={language} onOpenProject={openProjectPage} />
+
+
+      <section className="section-wrap home-directory"><div><p className="eyebrow">MAKE YOUR NEXT MEMORY</p><h2>사진을 넘어,<br/><em>우리의 다음 장면으로.</em></h2><p>장소를 발견하고, 취향을 고르고,<br/>당신에게 맞는 촬영을 준비하세요.</p></div><div className="directory-links">{[['locations','01 / LOCATION ATLAS',`${PLACES.length}곳에서 찾는 나의 촬영지`,'서울·경기·인천 지도와 지하철로 찾아보기'],['portfolio','02 / SELECTED WORK','사진으로 먼저 만나요','인물·커플·프로필, 작업별로 살펴보기'],['guide','03 / BEFORE WE MEET','편안한 촬영을 위한 안내','촬영 종류, 일정과 준비사항']].map(([path,eyebrow,title,text])=><SiteLink key={path} href={`/${language}/${path}`} navigate={navigate}><span>{eyebrow}</span><h3>{title}</h3><p>{text}</p><ArrowRight/></SiteLink>)}</div></section>
+      <section className="home-invite section-wrap"><p className="eyebrow">365 DAILY SNAP</p><h2>특별한 날도, 평범한 오늘도.</h2><p>평일 19시 이후 · 주말 협의 / 서울·경기·인천 일정 상담</p><SiteLink href={`/${language}/contact`} navigate={navigate} className="button primary">촬영 이야기 나누기 <ArrowRight/></SiteLink></section>
+    </main>;
+    const renderers={portfolio:renderPortfolio,guide:renderGuide,about:renderAbout,faq:renderFaq,contact:renderContact};
+    if (renderers[route.page] || route.page === 'plan') return <main className="website-page"><PageHeading eyebrow={`365 DAILY SNAP / ${route.page.toUpperCase()}`} title={pageTitles[route.page]} text={route.page==='guide'?'처음 촬영해도 괜찮아요. 장소부터 준비까지 차근차근 함께 정합니다.':undefined}/>{route.page==='plan'?<ShootPlanner plan={plan} onChange={patch=>setPlan(current=>({...current,...patch}))} onInquiry={()=>inquireWithPlan()} onBrowse={()=>navigate(`/${language}/locations`)}/>:renderers[route.page]()} {route.page==='guide' && <div className="section-wrap page-next-links"><SiteLink className="button primary" href={`/${language}/plan`} navigate={navigate}>나의 촬영 계획 만들기 <ArrowRight/></SiteLink><SiteLink className="button ghost" href={`/${language}/faq`} navigate={navigate}>자주 묻는 질문</SiteLink></div>}</main>;
+    return <main><PageHeading eyebrow="PAGE NOT FOUND" title="찾으시는 페이지가 없어요." text="메뉴에서 원하는 페이지를 다시 찾아주세요."/><div className="section-wrap page-next-links"><SiteLink className="button primary" href={`/${language}`} navigate={navigate}>홈으로 돌아가기</SiteLink></div></main>;
+  };
 
   return (
     <div className="site-shell" data-route={routeSnapshot}>
@@ -745,7 +762,7 @@ function App() {
       <header className="site-header">
         <button className="brand" type="button" onClick={() => navigate(`/${language}`)}><BrandMark /></button>
         <nav className={menuOpen ? "open" : ""} aria-label="Primary navigation">
-          {navItems.map(([key, label]) => <button key={key} type="button" onClick={() => scrollTo(key)}>{label}</button>)}
+          {navItems.map(([key,label])=><SiteLink key={key} href={`/${language}/${key}`} navigate={navigate} aria-current={route.page===key?"page":undefined}>{label}</SiteLink>)}
         </nav>
         <div className="header-tools">
           <div className="language-switch" aria-label="Language"><Globe2 />{Object.keys(COPY).map((code) => <button key={code} type="button" className={language === code ? "active" : ""} onClick={() => setLanguage(code)}>{code.toUpperCase()}</button>)}</div>
@@ -767,9 +784,9 @@ function App() {
         />
       ) : seoPage ? (
         <SeoLandingPage page={seoPage} projects={projects} copy={copy} extra={extra} onContact={() => scrollTo("contact")} onOpenProject={openProjectPage} />
-      ) : renderHome()}
+      ) : renderWebsite()}
 
-      <footer className="site-footer section-wrap"><div><b>365 Daily Snap</b><p>{copy.footerLine}</p></div><div className="footer-business"><span>{BUSINESS.name}</span><span>{BUSINESS.registration} · {BUSINESS.onlineSales}</span><span>{BUSINESS.email}</span></div><button type="button" onClick={() => setPrivacyOpen(true)}>{copy.privacy}</button><p>© 2026 365 Daily Snap. All rights reserved.</p></footer>
+      <div className="section-wrap footer-navigation">{[["","홈"],...navItems,["faq","자주 묻는 질문"],["contact","촬영 문의"]].map(([key,label])=><SiteLink key={key} href={`/${language}/${key}`} navigate={navigate}>{label}</SiteLink>)}</div><footer className="site-footer section-wrap"><div><b>365 Daily Snap</b><p>{copy.footerLine}</p></div><div className="footer-business"><span>{BUSINESS.name}</span><span>{BUSINESS.registration} · {BUSINESS.onlineSales}</span><span>{BUSINESS.email}</span></div><button type="button" onClick={() => setPrivacyOpen(true)}>{copy.privacy}</button><p>© 2026 365 Daily Snap. All rights reserved.</p></footer>
       <div className="mobile-contact-bar"><button type="button" onClick={() => scrollTo("contact")}><CalendarDays />{copy.heroSecondary}</button><a href={CONTACT.kakaoOpenChatUrl} target="_blank" rel="noreferrer"><MessageCircle />Kakao</a></div>
       <ProjectModal project={projectModal} copy={copy} onClose={() => setProjectModal(null)} onInquiry={(project) => { setProjectModal(null); inquireWithPlan({ portfolio: project.title + " — " + getProjectPath(language, project) }); }} />
       <ReviewModal review={reviewModal} copy={copy} onClose={() => setReviewModal(null)} />

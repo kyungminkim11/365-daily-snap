@@ -6,9 +6,9 @@ export const COPY = {
     title: "365 Daily Snap | 서울 인물 스냅·프로필 촬영",
     description: "서울·수도권에서 자연스러운 인물 스냅, 프로필, 커플 촬영과 모델 포트폴리오 협업을 진행합니다.",
     nav: { work: "대표 작업", sessions: "촬영 구성", reviews: "후기", about: "작가 소개", faq: "FAQ", contact: "문의" },
-    heroEyebrow: "SEOUL · ILSAN · PAJU",
+    heroEyebrow: "SEOUL · GYEONGGI · INCHEON",
     heroTitle: "평범한 하루도,\n오래 기억될 장면으로.",
-    heroDescription: "사진에서 마음에 드는 분위기를 찾고, 원하는 장소를 골라보세요. 서울 중심, 일산·파주까지. 당신다운 장면을 함께 만듭니다.",
+    heroDescription: "사진에서 마음에 드는 분위기를 찾고, 원하는 장소를 골라보세요. 서울·경기·인천에서. 당신다운 장면을 함께 만듭니다.",
     heroPrimary: "대표 작업 보기",
     heroSecondary: "촬영 문의하기",
     trust: ["평일 19시 이후 · 주말 협의", "개인·커플·프로필", "TFP 협업 가능"],
@@ -53,7 +53,7 @@ export const COPY = {
     aboutEyebrow: "ABOUT PHOTOGRAPHER",
     aboutTitle: "안녕하세요. 365 Daily Snap입니다.",
     aboutText: "정해진 포즈를 반복하기보다 대화와 움직임 속에서 자연스러운 표정을 담습니다. 사진이 익숙하지 않은 분도 부담 없이 촬영할 수 있도록 포즈와 시선을 단계별로 안내합니다.",
-    aboutFacts: ["서울 중심 · 일산·파주", "평일 19시 이후 · 주말 협의", "개인·커플·프로필", "도쿄 선택 일정"],
+    aboutFacts: ["서울·경기·인천", "평일 19시 이후 · 주말 협의", "개인·커플·프로필", "도쿄 선택 일정"],
     faqEyebrow: "FAQ",
     faqTitle: "촬영 전에 많이 묻는 내용",
     faqs: [
@@ -119,7 +119,7 @@ export const COPY = {
     title: "365 Daily Snap | ソウル・東京 ポートレート撮影",
     description: "ソウル首都圏を中心に、自然なポートレート、プロフィール、カップル撮影を行います。",
     nav: { work: "作品", sessions: "撮影プラン", reviews: "レビュー", about: "プロフィール", faq: "FAQ", contact: "お問い合わせ" },
-    heroEyebrow: "SEOUL · ILSAN · PAJU",
+    heroEyebrow: "SEOUL · GYEONGGI · INCHEON",
     heroTitle: "何気ない一日を、\n長く残る一枚に。",
     heroDescription: "ソウル首都圏を中心に、自然なポートレートを撮影します。撮影が初めての方にも、ポーズや目線を丁寧にご案内します。",
     heroPrimary: "作品を見る", heroSecondary: "撮影を問い合わせる", trust: ["平日夜・週末", "個人・カップル・プロフィール", "TFP相談可能"],
@@ -152,7 +152,7 @@ export const COPY = {
     title: "365 Daily Snap | Seoul & Tokyo Portrait Photographer",
     description: "Natural portrait, profile and couple sessions in Seoul, the capital area and selected Tokyo dates.",
     nav: { work: "Work", sessions: "Sessions", reviews: "Reviews", about: "About", faq: "FAQ", contact: "Contact" },
-    heroEyebrow: "SEOUL · ILSAN · PAJU", heroTitle: "Turn an ordinary day\ninto a lasting frame.", heroDescription: "Natural portrait sessions in Seoul and the capital area. First time in front of a camera? I will guide your pose, gaze and movement throughout the shoot.", heroPrimary: "View featured work", heroSecondary: "Plan a session", trust: ["Weekday evenings & weekends", "Portrait · Couple · Profile", "TFP collaboration available"],
+    heroEyebrow: "SEOUL · GYEONGGI · INCHEON", heroTitle: "Turn an ordinary day\ninto a lasting frame.", heroDescription: "Natural portrait sessions in Seoul and the capital area. First time in front of a camera? I will guide your pose, gaze and movement throughout the shoot.", heroPrimary: "View featured work", heroSecondary: "Plan a session", trust: ["Weekday evenings & weekends", "Portrait · Couple · Profile", "TFP collaboration available"],
     workEyebrow: "FEATURED PROJECTS", workTitle: "See the flow of a session, not just one frame.", workDescription: "Photos from the same shoot are grouped into projects so you can understand the full mood and story.", viewProject: "View project", moreProjects: "Show more projects", lessProjects: "Show less", projectInquiry: "Ask for this mood", originalPost: "View on Instagram",
     whyEyebrow: "WHY 365 DAILY SNAP", whyTitle: "We start by making the shoot feel comfortable.", whyItems: [
       { title: "Beginner-friendly direction", text: "I guide small movements such as walking, eye line and hand placement." }, { title: "Location and timing support", text: "Locations are suggested around your preferred mood and travel route." }, { title: "Natural retouching", text: "Skin tone, color and distractions are refined while keeping you recognizable." }, { title: "Clear publishing consent", text: "Full, partial or private use is agreed before the session." }
