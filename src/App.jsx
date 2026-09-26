@@ -651,7 +651,7 @@ function App() {
 
   useEffect(() => {
     const venue = route.page === "locations" ? PLACES.find(p=>p.id===route.slug) : null;
-    const learningTitle = route.page === "learn" ? (LESSONS.find(l=>l.id===route.slug)?.title || ({labs:"사진 실험실",glossary:"사진 용어 사전",gear:"카메라·렌즈 장비 가이드",brands:"카메라 브랜드 안내",budget:"예산별 입문 장비"})[route.slug] || "사진 배우기") : null;
+    const learningTitle = route.page === "learn" ? (LESSONS.find(l=>l.id===route.slug)?.title || ({labs:"사진 실험실",glossary:"사진 용어 사전",gear:"카메라·렌즈 장비 가이드",brands:"카메라 브랜드 안내",budget:"예산별 입문 장비",posing:"포즈·구도 노트"})[route.slug] || "사진 배우기") : null;
     const routeTitle = learningTitle || venue?.name || ({locations:"촬영지 찾기",portfolio:"포트폴리오",guide:"촬영 안내",about:"소개",faq:"자주 묻는 질문",contact:"촬영 문의",plan:"촬영 계획"})[route.page];
     const title = routeTitle ? `${routeTitle} | 365 Daily Snap` : detailProject ? `${detailProject.title} | 365 Daily Snap` : seoPage ? `${seoPage.title} | 365 Daily Snap` : copy.title;
     const description = detailProject?.description || seoPage?.description || copy.description;
@@ -756,7 +756,7 @@ function App() {
       <section className="home-invite section-wrap"><p className="eyebrow">365 DAILY SNAP</p><h2>특별한 날도, 평범한 오늘도.</h2><p>평일 19시 이후 · 주말 협의 / 서울·경기·인천 일정 상담</p><SiteLink href={`/${language}/contact`} navigate={navigate} className="button primary">촬영 이야기 나누기 <ArrowRight/></SiteLink></section>
     </main>;
     const renderers={portfolio:renderPortfolio,guide:renderGuide,about:renderAbout,faq:renderFaq,contact:renderContact};
-    if (renderers[route.page] || route.page === 'plan') return <main className="website-page"><PageHeading eyebrow={`365 DAILY SNAP / ${route.page.toUpperCase()}`} title={pageTitles[route.page]} text={route.page==='guide'?'처음 촬영해도 괜찮아요. 장소부터 준비까지 차근차근 함께 정합니다.':undefined}/>{route.page==='plan'?<ShootPlanner plan={plan} onChange={patch=>setPlan(current=>({...current,...patch}))} onInquiry={()=>inquireWithPlan()} onBrowse={()=>navigate(`/${language}/locations`)}/>:renderers[route.page]()} {route.page==='guide' && <div className="section-wrap page-next-links"><SiteLink className="button primary" href={`/${language}/plan`} navigate={navigate}>나의 촬영 계획 만들기 <ArrowRight/></SiteLink><SiteLink className="button ghost" href={`/${language}/faq`} navigate={navigate}>자주 묻는 질문</SiteLink></div>}</main>;
+    if (renderers[route.page] || route.page === 'plan') return <main className="website-page"><PageHeading eyebrow={`365 DAILY SNAP / ${route.page.toUpperCase()}`} title={pageTitles[route.page]} text={route.page==='guide'?'처음 촬영해도 괜찮아요. 장소부터 준비까지 차근차근 함께 정합니다.':undefined}/>{route.page==='plan'?<ShootPlanner plan={plan} onChange={patch=>setPlan(current=>({...current,...patch}))} onInquiry={()=>inquireWithPlan()} onBrowse={()=>navigate(`/${language}/locations`)}/>:renderers[route.page]()} {route.page==='guide' && <div className="section-wrap page-next-links"><SiteLink className="button ghost" href={`/${language}/learn/posing`} navigate={navigate}>포즈 32가지 · 대표 구도 20가지 <ArrowRight/></SiteLink><SiteLink className="button primary" href={`/${language}/plan`} navigate={navigate}>나의 촬영 계획 만들기 <ArrowRight/></SiteLink><SiteLink className="button ghost" href={`/${language}/faq`} navigate={navigate}>자주 묻는 질문</SiteLink></div>}</main>;
     return <main><PageHeading eyebrow="PAGE NOT FOUND" title="찾으시는 페이지가 없어요." text="메뉴에서 원하는 페이지를 다시 찾아주세요."/><div className="section-wrap page-next-links"><SiteLink className="button primary" href={`/${language}`} navigate={navigate}>홈으로 돌아가기</SiteLink></div></main>;
   };
 

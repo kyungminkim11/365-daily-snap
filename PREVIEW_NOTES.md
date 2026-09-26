@@ -77,3 +77,10 @@ Instagram 토큰 미설정 시 종료 코드 1 확인. 실제 API 인증/최신�
 - Search (including Korean brand names), purpose/brand/mount/price filters, three-product comparison and mount/sensor compatibility guidance. No live inventory claims.
 - Browser checks: search, budget results, lens category, comparison, matching/mismatching mounts; all three routes at 390px without page overflow and with one h1. Desktop and mobile screenshots inspected. Build passed.
 - No production/main edits or deployment.
+
+## Pose and composition notebook — 2026-09-26
+- /learn/posing includes 32 poses across 6 situations and 20 composition notes with SVG layout diagrams.
+- Each pose includes body, hands/gaze, spoken prompt, and a link to its suggested composition; beginner six-frame practice sequence included.
+- Search, category filters, local saved picks (validated IDs and storage failure handling); links from learning navigation/overview and preparation guide.
+- Verified counts, category/search/empty/reset, saved pick persistence and removal, linked composition, guide navigation, desktop/mobile rendering, no horizontal overflow, successful build and no browser console errors.
+- Fixed inherited global SVG sizing so diagrams render at full card width. Production main remains untouched.
