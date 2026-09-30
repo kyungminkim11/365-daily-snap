@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowRight, ExternalLink, Clock3 } from "lucide-react";
 import "./styles/planner.css";
 import { PLACES as EXPANDED_PLACES } from "./data/shootPlaces";
@@ -40,14 +40,4 @@ export function ShootPlanner({ plan, onChange, onInquiry, onBrowse }) {
       <label className="reference-url">Pinterest / 참고 작품 링크<input type="url" value={plan.pinterestUrl} onChange={(e) => onChange({ pinterestUrl: e.target.value })} placeholder="https://www.pinterest.com/pin/…" /></label>
     </div><aside className="plan-summary"><p className="eyebrow">MY SHOOT NOTE</p><h3>당신의 다음 장면</h3><div className="note-rule" /><dl><div><dt>촬영 방식</dt><dd>{plan.setting}</dd></div><div><dt>장소</dt><dd>{plan.region}</dd></div><div><dt>분위기</dt><dd>{plan.mood}</dd></div>{plan.portfolio && <div><dt>참고 작품</dt><dd>{plan.portfolio}</dd></div>}</dl><p>평일 19시 이후 · 주말 협의<br />촬영료와 공간 이용료는 상담 후 확정합니다.</p><button className="button primary" type="button" onClick={onInquiry}>이 선택으로 문의하기 <ArrowRight /></button><small>아직 정하지 못한 항목은 문의하며 함께 정해요.</small></aside></div>
   </section>;
-}
-
-export function InstagramSyncStatus() {
-  const [state, setState] = useState(null);
-  useEffect(() => { const controller = new AbortController(); Promise.all([
-    fetch("/portfolio/instagram-feed.json", { cache: "no-cache", signal: controller.signal }).then((r) => { if (!r.ok) throw new Error(); return r.json(); }),
-    fetch("/portfolio/instagram-status.json", { cache: "no-cache", signal: controller.signal }).then((r) => r.ok ? r.json() : {}).catch(() => ({})),
-  ]).then(([feed, status]) => setState({ feed, status })).catch(() => { if (!controller.signal.aborted) setState({ error: true }); }); return () => controller.abort(); }, []);
-  const count = state?.feed?.projects?.length || 0;
-  return <details className="instagram-status"><summary>Instagram 연동 상태 · {state === null ? "확인 중" : count ? `${count}개 게시물` : "연결 확인 필요"}</summary><p>{state?.error ? "동기화 정보를 불러오지 못했습니다." : state?.status?.error || (count ? "동기화한 게시물을 포트폴리오에 표시합니다." : "최신 게시물 동기화 내역이 없습니다. 현재 포트폴리오는 저장된 기존 작업입니다.")}</p><p>마지막 성공: {state?.feed?.updatedAt ? new Date(state.feed.updatedAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }) + " KST" : "아직 없음"} · 게시물 {count}개</p><a href="https://instagram.com/365daily.snap" target="_blank" rel="noreferrer">Instagram에서 최신 작업 보기 ↗</a></details>;
 }

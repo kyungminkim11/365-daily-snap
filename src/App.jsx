@@ -1,6 +1,6 @@
 import { LocationCatalog, LocationDetail, PageHeading, SiteLink } from './LocationPages';
 import { PLACES } from './data/shootPlaces';
-import { BrandMark, ShootPlanner, InstagramSyncStatus, emptyPlan } from "./ShootPlanner";
+import { BrandMark, ShootPlanner, emptyPlan } from "./ShootPlanner";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { LESSONS } from "./data/photoLessons";
 const LearningCenter = lazy(() => import("./LearningCenter"));
@@ -674,7 +674,6 @@ function App() {
   const renderPortfolio = () => (<>
       <section id="work" className="section section-wrap">
         <SectionHeading eyebrow={copy.workEyebrow} title={copy.workTitle} description={copy.workDescription} />
-        <InstagramSyncStatus />
         <div className="portfolio-toolbar">
           <p>{extra.portfolioView}</p>
           <div role="group" aria-label={extra.portfolioView}>
