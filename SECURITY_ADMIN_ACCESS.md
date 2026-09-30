@@ -44,4 +44,4 @@
 ## Cloudflare Access로 바꾸고 싶을 때
 
 나중에 Cloudflare Zero Trust를 쓰면 이메일 로그인 기반으로 바꿀 수 있습니다.
-그 경우 허용 계정은 `lavalabs.ceo@gmail.com`만 두는 것을 권장합니다.
+그 경우 허용 계정은 `auth@lavalabs.co.kr`만 두는 것을 권장합니다.

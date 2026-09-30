@@ -6,6 +6,7 @@
     <xhtml:link rel="alternate" hreflang="ja-JP" href="https://snap.lavalabs.co.kr/ja" />
     <xhtml:link rel="alternate" hreflang="en" href="https://snap.lavalabs.co.kr/en" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://snap.lavalabs.co.kr/ko" />
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -14,6 +15,7 @@
     <xhtml:link rel="alternate" hreflang="ko-KR" href="https://snap.lavalabs.co.kr/ko" />
     <xhtml:link rel="alternate" hreflang="ja-JP" href="https://snap.lavalabs.co.kr/ja" />
     <xhtml:link rel="alternate" hreflang="en" href="https://snap.lavalabs.co.kr/en" />
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -22,22 +24,62 @@
     <xhtml:link rel="alternate" hreflang="ko-KR" href="https://snap.lavalabs.co.kr/ko" />
     <xhtml:link rel="alternate" hreflang="ja-JP" href="https://snap.lavalabs.co.kr/ja" />
     <xhtml:link rel="alternate" hreflang="en" href="https://snap.lavalabs.co.kr/en" />
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://snap.lavalabs.co.kr/ko/seoul-portrait</loc>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://snap.lavalabs.co.kr/ja/seoul-portrait</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://snap.lavalabs.co.kr/en/seoul-portrait</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://snap.lavalabs.co.kr/ko/ilsan-profile</loc>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://snap.lavalabs.co.kr/ja/ilsan-profile</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://snap.lavalabs.co.kr/en/ilsan-profile</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://snap.lavalabs.co.kr/ko/couple-snap</loc>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://snap.lavalabs.co.kr/ja/couple-snap</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://snap.lavalabs.co.kr/en/couple-snap</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

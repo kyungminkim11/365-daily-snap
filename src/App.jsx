@@ -31,6 +31,7 @@ import { loadMergedPortfolio } from "./livePortfolio";
 import { COPY } from "./siteCopy";
 import { BUSINESS, CONTACT, cleanLocation, createProjectGroups, setMeta, useLanguage } from "./siteUtils";
 import { InquiryForm, Media, ProjectModal, ReviewModal, SectionHeading } from "./siteComponents";
+import { PhotoLabEntry } from "./PhotoLabEntry";
 
 const EXTRA_COPY = {
   ko: {
@@ -377,7 +378,7 @@ function PhotoMotionRail({ projects, language, onOpenProject }) {
               onClick={() => onOpenProject(frame.project)}
               aria-label={`${frame.category} - ${frame.title}`}
             >
-              <Media src={frame.src} alt={frame.alt} eager={index < frames.length} />
+              <Media src={frame.src} alt={frame.alt} eager={index === 0} />
               <span>{frame.category}</span>
             </button>
           ))}
@@ -644,6 +645,10 @@ function App() {
     scrollTo("contact");
   };
 
+  const openPhotoLab = (hash = "") => {
+    window.location.href = `/learn/${hash}`;
+  };
+
   const openProjectPage = (project) => {
     trackEvent("Project open", { project: project.title });
     navigate(getProjectPath(language, project));
@@ -750,6 +755,7 @@ function App() {
       </section>
 
       <PhotoMotionRail projects={projects} language={language} onOpenProject={openProjectPage} />
+      <PhotoLabEntry language={language} onOpen={openPhotoLab} />
 
 
       <section className="section-wrap home-directory"><div><p className="eyebrow">MAKE YOUR NEXT MEMORY</p><h2>사진을 넘어,<br/><em>우리의 다음 장면으로.</em></h2><p>장소를 발견하고, 취향을 고르고,<br/>당신에게 맞는 촬영을 준비하세요.</p></div><div className="directory-links">{[['locations','01 / LOCATION ATLAS',`${PLACES.length}곳에서 찾는 나의 촬영지`,'서울·경기·인천 지도와 지하철로 찾아보기'],['portfolio','02 / SELECTED WORK','사진으로 먼저 만나요','인물·커플·프로필, 작업별로 살펴보기'],['guide','03 / BEFORE WE MEET','편안한 촬영을 위한 안내','촬영 종류, 일정과 준비사항'],['learn','04 / PHOTO NOTEBOOK','사진, 한 장씩 알아가요','노출·화각·구도를 직접 바꾸며 배우기']].map(([path,eyebrow,title,text])=><SiteLink key={path} href={`/${language}/${path}`} navigate={navigate}><span>{eyebrow}</span><h3>{title}</h3><p>{text}</p><ArrowRight/></SiteLink>)}</div></section>

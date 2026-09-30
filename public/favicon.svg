@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#f6f2e9"/><circle cx="32" cy="32" r="25" fill="none" stroke="#1a1917"/><text x="31" y="40" text-anchor="middle" font-family="Georgia,serif" font-size="25" font-style="italic" fill="#1a1917">365</text><path d="M44 51l13-7" stroke="#b17c50" stroke-width="3"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">365 Daily Snap</title>
+  <rect width="64" height="64" rx="14" fill="#f6f2e9"/>
+  <g transform="translate(8 8) scale(.375)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 42V24h18M86 24h18v18M104 86v18H86M42 104H24V86" stroke="#26231f" stroke-width="6"/>
+    <path d="M45 31v66h17c24 0 39-13 39-33S86 31 62 31H45Z" stroke="#26231f" stroke-width="7"/>
+    <path d="M89 44c-7-9-26-10-32 1-8 15 28 16 28 36 0 14-12 23-27 21-9-1-17-6-21-13" stroke="#26231f" stroke-width="7"/>
+    <path d="M34 80A40 40 0 0 1 91 38" stroke="#b38a57" stroke-width="4.5"/>
+  </g>
+</svg>

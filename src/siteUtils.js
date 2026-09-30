@@ -13,7 +13,7 @@ export const BUSINESS = {
   registration: "455-23-01867",
   onlineSales: "2025-고양일산서-1352",
   address: "경기도 고양시 일산서구 일현로 47, 2층 204호 1308호실",
-  email: "info@lavalabs.co.kr",
+  email: "snap@lavalabs.co.kr",
 };
 
 const GENERIC_TAGS = new Set(["인물", "프로필", "데일리", "포트폴리오협업", "야외", "실내", "낮", "밤", "자연광", "클로즈업", "전신", "반신", "촬영기록"]);
@@ -43,7 +43,7 @@ const SCENE_DESCRIPTIONS = {
   야간: "도시의 조명과 짙은 명암을 활용해 차분하게 완성한 야간 인물 스냅입니다.",
   거리: "일상적인 거리의 흐름 속에서 자연스러운 움직임과 표정을 기록했습니다.",
   플라워: "꽃과 인물의 색감이 조화롭게 이어지도록 구성한 포트레이트입니다.",
-  프로필: "과한 연출 없이 인물의 분위기와 표정에 집중한 자연스러운 프로필 사진입니다.",
+  프로필: "인물의 분위기와 표정에 집중해 자연스럽게 완성한 프로필 사진입니다.",
   시네마틱: "빛과 여백을 활용해 한 장면처럼 구성한 시네마틱 포트레이트입니다.",
   차분한: "부드러운 빛과 절제된 구도로 차분한 분위기를 담은 인물 사진입니다.",
   인물: "촬영 현장의 분위기와 인물의 자연스러운 순간을 중심으로 정리한 포트레이트입니다.",
@@ -218,23 +218,24 @@ export function createProjectGroups(content) {
     }));
 }
 
-export function setMeta(name, value, property = false) {
+export function setMeta(name, content, property = false) {
   const selector = property ? `meta[property="${name}"]` : `meta[name="${name}"]`;
-  let element = document.head.querySelector(selector);
-  if (!element) {
-    element = document.createElement("meta");
-    element.setAttribute(property ? "property" : "name", name);
-    document.head.appendChild(element);
+  let meta = document.querySelector(selector);
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.setAttribute(property ? "property" : "name", name);
+    document.head.appendChild(meta);
   }
-  element.setAttribute("content", value);
+  meta.setAttribute("content", content || "");
+}
+
+function languageFromPath() {
+  const pathLanguage = window.location.pathname.split("/").filter(Boolean)[0];
+  return COPY[pathLanguage] ? pathLanguage : "";
 }
 
 export function useLanguage() {
-  const getLanguage = () => {
-    const route = window.location.pathname.split("/").filter(Boolean)[0];
-    return COPY[route] ? route : "ko";
-  };
-  const [language, setLanguageState] = useState(getLanguage);
+  const [language, setLanguageState] = useState(() => languageFromPath() || window.localStorage.getItem("site-language") || "ko");
 
   const setLanguage = (next) => {
     const hash = window.location.hash;
@@ -246,9 +247,12 @@ export function useLanguage() {
   };
 
   useEffect(() => {
-    const handlePopState = () => setLanguageState(getLanguage());
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
+    const syncLanguage = () => {
+      const pathLanguage = languageFromPath();
+      if (pathLanguage) setLanguageState(pathLanguage);
+    };
+    window.addEventListener("popstate", syncLanguage);
+    return () => window.removeEventListener("popstate", syncLanguage);
   }, []);
 
   return [language, setLanguage];
