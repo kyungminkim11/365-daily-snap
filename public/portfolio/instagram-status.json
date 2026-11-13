@@ -1,7 +1,7 @@
 {
-  "status": "error",
-  "attemptedAt": "2026-09-24T08:00:09.634Z",
+  "status": "unconfigured",
+  "attemptedAt": "2026-11-13T06:46:54.940Z",
   "lastSuccessAt": null,
   "postCount": 0,
-  "error": "Instagram 인증 설정이 없습니다. 관리자에서 계정 연결을 확인해주세요."
+  "error": "인스타그램 액세스 토큰이 설정되지 않았습니다. GitHub 저장소 Settings → Secrets and variables → Actions 에 INSTAGRAM_ACCESS_TOKEN 을 등록하면 자동 동기화가 시작됩니다."
 }
