@@ -1,5 +1,15 @@
+import {
+  buildInstagramProject,
+  importedInstagramIds,
+  instagramCaptionSummary,
+  instagramDateLabel,
+  instagramExternalId,
+  isInstagramPostImported,
+} from "./admin-instagram.js";
+
 const API_CONTENT_URL = "/api/content";
 const API_UPLOAD_URL = "/api/upload-media";
+const INSTAGRAM_FEED_URL = "/portfolio/instagram-feed.json";
 const STORAGE_KEY = "365-daily-snap-admin-token";
 
 const state = {
@@ -11,6 +21,14 @@ const state = {
   selectedMediaIndexes: new Set(),
   isDirty: false,
   uploadBusy: false,
+  instagramCategory: "",
+  instagram: {
+    loaded: false,
+    loading: false,
+    feed: { updatedAt: "", username: "", projects: [] },
+    error: "",
+    selectedIds: new Set(),
+  },
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -151,6 +169,7 @@ function normalizeContent(content = {}) {
 
 function normalizeProject(project = {}) {
   return {
+    ...project,
     id: String(project.id || `${project.title || "project"}-${Date.now()}`).trim(),
     title: String(project.title || "새 프로젝트").trim(),
     subtitle: String(project.subtitle || "").trim(),
@@ -172,6 +191,7 @@ function renderAll() {
   renderProjectEditor();
   renderBatchTools();
   renderMediaGrid();
+  renderInstagramSummary();
 }
 
 function renderCounts() {
@@ -203,12 +223,24 @@ function renderCreateFields() {
   $("#locationSelect").innerHTML = locationOptions;
   $("#batchLocationSelect").innerHTML = locationOptions;
   $("#projectLocationSelect").innerHTML = locationOptions;
+
+  const instagramCategorySelect = $("#instagramCategorySelect");
+  if (instagramCategorySelect) {
+    const fallbackCategory = categories.includes("인물 사진") ? "인물 사진" : categories[0] || "";
+    instagramCategorySelect.innerHTML = categoryOptions;
+    const desired = state.instagramCategory || fallbackCategory;
+    instagramCategorySelect.value = categories.includes(desired) ? desired : fallbackCategory;
+    state.instagramCategory = instagramCategorySelect.value || fallbackCategory;
+  }
 }
 
 function renderProjectEditor() {
   const project = selectedProject();
   const locations = state.content?.taxonomy?.locations || [];
-  if (!project) return;
+  if (!project) {
+    renderProjectSourceLine(null);
+    return;
+  }
   $("#projectStatusSelect").value = project.status || "published";
   $("#projectCategorySelect").value = project.category || state.content.taxonomy.categories[0] || "";
   $("#projectTitleInput").value = project.title || "";
@@ -217,6 +249,20 @@ function renderProjectEditor() {
   $("#projectTagsInput").value = (project.tags || []).join(", ");
   const locationIndex = Math.max(0, locations.findIndex((location) => locationKey(location) === locationKey(project.location)));
   $("#projectLocationSelect").value = String(locationIndex);
+  renderProjectSourceLine(project);
+}
+
+function renderProjectSourceLine(project) {
+  const line = $("#projectInstagramLine");
+  if (!line) return;
+  if (!project?.instagramUrl) {
+    line.hidden = true;
+    line.textContent = "";
+    return;
+  }
+  const publishedAt = project.sourcePublishedAt ? ` · ${instagramDateLabel(project.sourcePublishedAt)} 게시` : "";
+  line.hidden = false;
+  line.innerHTML = `인스타그램 원본${publishedAt} · <a href="${escapeHtml(project.instagramUrl)}" target="_blank" rel="noreferrer">게시물 열기 ↗</a>`;
 }
 
 function renderBatchTools() {
@@ -457,6 +503,24 @@ function duplicateProject() {
   renderAll();
 }
 
+function deleteProject() {
+  const project = selectedProject();
+  if (!project || !state.content) return;
+  const label = project.title || project.id;
+  const confirmed = confirm(
+    `'${label}' 프로젝트를 목록에서 삭제할까요?\n\n· 사진 파일 자체는 서버에서 지워지지 않습니다.\n· '전체 저장'을 누르기 전에는 새로고침으로 되돌릴 수 있습니다.`,
+  );
+  if (!confirmed) return;
+  const index = state.content.projects.findIndex((item) => item.id === project.id);
+  if (index < 0) return;
+  state.content.projects.splice(index, 1);
+  state.selectedProjectId = state.content.projects[Math.max(0, index - 1)]?.id || state.content.projects[0]?.id || "";
+  state.selectedMediaIndexes.clear();
+  setDirty(true);
+  renderAll();
+  renderInstagramFeed();
+}
+
 async function uploadDataUrl(dataUrl, nameParts) {
   return apiFetch(API_UPLOAD_URL, {
     method: "POST",
@@ -646,6 +710,245 @@ function importBackup(file) {
   reader.readAsText(file);
 }
 
+/* ── 인스타그램 피드에서 골라 가져오기 ────────────────────────── */
+
+function instagramFeed() {
+  return state.instagram.feed || { updatedAt: "", username: "", projects: [] };
+}
+
+function formatInstagramSyncedAt(value = "") {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) return "";
+  const time = new Intl.DateTimeFormat("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Seoul" }).format(date);
+  return `${instagramDateLabel(value)} ${time}`;
+}
+
+function importedInstagramExternalIds() {
+  return importedInstagramIds(state.content?.projects || []);
+}
+
+function setInstagramNote(text, target = "#instagramFeedNote") {
+  const element = $(target);
+  if (element) element.textContent = text;
+}
+
+async function loadInstagramFeed({ force = false } = {}) {
+  if (state.instagram.loading) return;
+  if (state.instagram.loaded && !force) {
+    renderInstagramFeed();
+    renderInstagramSummary();
+    return;
+  }
+  state.instagram.loading = true;
+  setInstagramNote("인스타그램 피드를 불러오는 중입니다…");
+  setInstagramNote("인스타그램 피드를 불러오는 중입니다…", "#instagramModalNote");
+  renderInstagramSummary();
+  try {
+    const response = await fetch(`${INSTAGRAM_FEED_URL}?t=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const feed = await response.json();
+    state.instagram.feed = {
+      updatedAt: String(feed?.updatedAt || ""),
+      username: String(feed?.username || ""),
+      projects: Array.isArray(feed?.projects) ? feed.projects : [],
+    };
+    state.instagram.error = "";
+    state.instagram.loaded = true;
+  } catch (error) {
+    state.instagram.error = error?.message || "알 수 없는 오류";
+    state.instagram.loaded = true;
+  } finally {
+    state.instagram.loading = false;
+    renderInstagramFeed();
+    renderInstagramSummary();
+  }
+}
+
+function renderInstagramSummary() {
+  const feed = instagramFeed();
+  const posts = feed.projects || [];
+  const importedCount = importedInstagramExternalIds().size;
+  if (state.instagram.loading) {
+    setInstagramNote("인스타그램 피드를 불러오는 중입니다…");
+    return;
+  }
+  if (state.instagram.error) {
+    setInstagramNote(`피드를 불러오지 못했습니다 (${state.instagram.error}). 잠시 후 [피드 새로고침]을 눌러주세요.`);
+    return;
+  }
+  if (!state.instagram.loaded) {
+    setInstagramNote("피드를 아직 확인하지 않았습니다. [📸 인스타그램에서 가져오기]를 누르면 최근 게시물을 보여드립니다.");
+    return;
+  }
+  if (!posts.length) {
+    setInstagramNote("인스타그램 피드가 비어 있습니다. GitHub Actions의 'Sync Instagram Portfolio' 워크플로가 성공한 뒤 [피드 새로고침]을 눌러주세요. 그 전에는 관리자에서 직접 올리는 수동 등록을 쓸 수 있습니다.");
+    return;
+  }
+  const syncedAt = formatInstagramSyncedAt(feed.updatedAt);
+  setInstagramNote(`최근 게시물 ${posts.length}개${syncedAt ? ` · 마지막 동기화 ${syncedAt}` : ""} · 이미 가져온 게시물 ${importedCount}개`);
+}
+
+function visibleInstagramPosts() {
+  const posts = instagramFeed().projects || [];
+  const query = ($("#instagramSearch")?.value || "").trim().toLowerCase();
+  const hideImported = Boolean($("#instagramHideImported")?.checked);
+  const projects = state.content?.projects || [];
+  return posts.filter((post) => {
+    if (hideImported && isInstagramPostImported(projects, post)) return false;
+    if (!query) return true;
+    const haystack = [post.title, post.description, ...(Array.isArray(post.tags) ? post.tags : [])].join(" ").toLowerCase();
+    return haystack.includes(query);
+  });
+}
+
+function updateInstagramSelectionSummary(posts = visibleInstagramPosts()) {
+  const selectedCount = posts.filter((post) => state.instagram.selectedIds.has(instagramExternalId(post))).length;
+  const label = $("#instagramSelectedSummary");
+  if (label) label.textContent = `선택 ${selectedCount}개 / 보이는 게시물 ${posts.length}개`;
+  const importButton = $("#importInstagramButton");
+  if (importButton) importButton.disabled = selectedCount === 0;
+}
+
+function renderInstagramFeed() {
+  const grid = $("#instagramFeedGrid");
+  if (!grid) return;
+  const allPosts = instagramFeed().projects || [];
+  const posts = visibleInstagramPosts();
+  const projects = state.content?.projects || [];
+
+  const visibleIds = new Set(posts.map((post) => instagramExternalId(post)));
+  state.instagram.selectedIds.forEach((id) => {
+    if (!visibleIds.has(id)) state.instagram.selectedIds.delete(id);
+  });
+
+  if (state.instagram.loading) {
+    grid.innerHTML = `<p class="instagram-empty">피드를 불러오는 중입니다…</p>`;
+    updateInstagramSelectionSummary(posts);
+    return;
+  }
+
+  if (!posts.length) {
+    const message = allPosts.length
+      ? "조건에 맞는 게시물이 없습니다. 검색어를 지우거나 '이미 가져온 게시물 숨기기'를 해제해 보세요."
+      : state.instagram.error
+        ? `피드를 불러오지 못했습니다 (${state.instagram.error}). 아래 [피드 새로고침]으로 다시 시도해 주세요.`
+        : "아직 인스타그램 피드가 비어 있습니다. 'Sync Instagram Portfolio' 워크플로를 한 번 실행한 뒤 [피드 새로고침]을 눌러주세요.";
+    grid.innerHTML = `<p class="instagram-empty">${escapeHtml(message)}</p>`;
+    updateInstagramSelectionSummary(posts);
+    return;
+  }
+
+  grid.innerHTML = posts
+    .map((post) => {
+      const externalId = instagramExternalId(post);
+      const imported = isInstagramPostImported(projects, post);
+      const media = Array.isArray(post.media) ? post.media : [];
+      const thumb = media[0]?.thumbnail || media[0]?.src || post.cover || "";
+      const date = instagramDateLabel(post.sourcePublishedAt || post.timestamp || "");
+      const checked = state.instagram.selectedIds.has(externalId);
+      return `
+        <article class="instagram-card${imported ? " is-imported" : ""}">
+          <label class="instagram-card-check">
+            <input type="checkbox" data-instagram-select="${escapeHtml(externalId)}" ${checked ? "checked" : ""} />
+            <span>선택</span>
+          </label>
+          <div class="instagram-card-thumb">${thumb ? `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(post.title || "인스타그램 사진")}" loading="lazy" />` : `<span>미리보기 없음</span>`}</div>
+          <div class="instagram-card-body">
+            <p class="instagram-card-meta">${escapeHtml(date || "날짜 없음")}${media.length > 1 ? ` · 사진 ${media.length}장` : ""}${imported ? " · 가져옴" : ""}</p>
+            <strong class="instagram-card-title">${escapeHtml(post.title || "제목 없음")}</strong>
+            <p class="instagram-card-caption">${escapeHtml(instagramCaptionSummary(post))}</p>
+            <div class="instagram-card-actions">
+              ${post.instagramUrl ? `<a href="${escapeHtml(post.instagramUrl)}" target="_blank" rel="noreferrer">인스타 원본 ↗</a>` : "<span></span>"}
+              <button type="button" class="${imported ? "ghost-button" : "secondary-button"}" data-instagram-import="${escapeHtml(externalId)}" ${imported ? "disabled" : ""}>${imported ? "가져옴" : "프로젝트로 가져오기"}</button>
+            </div>
+          </div>
+        </article>`;
+    })
+    .join("");
+
+  updateInstagramSelectionSummary(posts);
+}
+
+function openInstagramModal() {
+  const modal = $("#instagramModal");
+  if (!modal) return;
+  modal.hidden = false;
+  document.body.classList.add("modal-open");
+  renderInstagramSummary();
+  loadInstagramFeed();
+  window.setTimeout(() => $("#instagramSearch")?.focus(), 30);
+}
+
+function closeInstagramModal() {
+  const modal = $("#instagramModal");
+  if (!modal) return;
+  modal.hidden = true;
+  document.body.classList.remove("modal-open");
+}
+
+function instagramImportLocation(post) {
+  const location = post?.location || {};
+  const hasValue = [location.city, location.district, location.place].some((value) => String(value || "").trim());
+  return hasValue ? location : defaultLocation();
+}
+
+function importInstagramPosts(posts = []) {
+  if (!state.content) {
+    alert("먼저 관리 데이터를 불러와 주세요.");
+    return;
+  }
+  if (!posts.length) return;
+
+  const category = state.instagramCategory || $("#instagramCategorySelect")?.value || "";
+  const existing = importedInstagramExternalIds();
+  const imported = [];
+  let skipped = 0;
+
+  posts.forEach((post) => {
+    const externalId = instagramExternalId(post);
+    if (!externalId || existing.has(externalId)) {
+      skipped += 1;
+      return;
+    }
+    const project = buildInstagramProject(post, { category, location: instagramImportLocation(post) });
+    if (!project) {
+      skipped += 1;
+      return;
+    }
+    state.content.projects.unshift(project);
+    existing.add(externalId);
+    state.instagram.selectedIds.delete(externalId);
+    imported.push(project);
+  });
+
+  if (!imported.length) {
+    setInstagramNote("새로 가져올 게시물이 없습니다. 이미 가져온 게시물은 '이미 가져온 게시물 숨기기'를 해제하면 목록에서 확인할 수 있습니다.", "#instagramModalNote");
+    renderInstagramFeed();
+    return;
+  }
+
+  state.selectedProjectId = imported[0].id;
+  state.selectedMediaIndexes.clear();
+  setDirty(true);
+  renderAll();
+  renderInstagramFeed();
+  setInstagramNote(
+    `${imported.length}개 게시물을 임시저장 프로젝트로 가져왔습니다.${skipped ? ` (이미 있어 건너뜀 ${skipped}개)` : ""} 공개 상태와 카테고리를 확인한 뒤 [전체 저장]을 눌러주세요.`,
+    "#instagramModalNote",
+  );
+}
+
+function selectAllVisibleInstagram() {
+  const posts = visibleInstagramPosts();
+  const allSelected = posts.length > 0 && posts.every((post) => state.instagram.selectedIds.has(instagramExternalId(post)));
+  posts.forEach((post) => {
+    const externalId = instagramExternalId(post);
+    if (allSelected) state.instagram.selectedIds.delete(externalId);
+    else state.instagram.selectedIds.add(externalId);
+  });
+  renderInstagramFeed();
+}
+
 function bindEvents() {
   bootAdvancedStyle();
   $("#adminKey").value = localStorage.getItem(STORAGE_KEY) || "";
@@ -653,6 +956,7 @@ function bindEvents() {
   $("#createProjectButton").addEventListener("click", createProject);
   $("#applyProjectEditButton").addEventListener("click", applyProjectEdit);
   $("#duplicateProjectButton").addEventListener("click", duplicateProject);
+  $("#deleteProjectButton").addEventListener("click", deleteProject);
   $("#exportBackupButton").addEventListener("click", exportBackup);
   $("#importBackupInput").addEventListener("change", (event) => importBackup(event.target.files?.[0]));
   $("#uploadButton").addEventListener("click", uploadQueue);
@@ -715,12 +1019,49 @@ function bindEvents() {
   $("#mediaSearch").addEventListener("input", renderMediaGrid);
   $("#selectAllButton").addEventListener("click", selectAllVisible);
   $("#applyBatchButton").addEventListener("click", applyBatchToSelected);
+
+  $("#openInstagramPickerButton").addEventListener("click", openInstagramModal);
+  $("#refreshInstagramFeedButton").addEventListener("click", () => loadInstagramFeed({ force: true }));
+  $("#closeInstagramModalButton").addEventListener("click", closeInstagramModal);
+  $$("[data-close-instagram-modal]").forEach((element) => element.addEventListener("click", closeInstagramModal));
+  $("#instagramSearch").addEventListener("input", renderInstagramFeed);
+  $("#instagramHideImported").addEventListener("change", renderInstagramFeed);
+  $("#instagramCategorySelect").addEventListener("change", (event) => {
+    state.instagramCategory = event.target.value;
+  });
+  $("#instagramSelectAllButton").addEventListener("click", selectAllVisibleInstagram);
+  $("#importInstagramButton").addEventListener("click", () => {
+    const posts = visibleInstagramPosts().filter((post) => state.instagram.selectedIds.has(instagramExternalId(post)));
+    if (!posts.length) {
+      setInstagramNote("가져올 게시물을 먼저 선택해 주세요.", "#instagramModalNote");
+      return;
+    }
+    importInstagramPosts(posts);
+  });
+  $("#instagramFeedGrid").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-instagram-import]");
+    if (!button || button.disabled) return;
+    const externalId = button.dataset.instagramImport;
+    const post = (instagramFeed().projects || []).find((item) => instagramExternalId(item) === externalId);
+    if (post) importInstagramPosts([post]);
+  });
+  $("#instagramFeedGrid").addEventListener("change", (event) => {
+    if (!event.target.matches("[data-instagram-select]")) return;
+    const externalId = event.target.dataset.instagramSelect;
+    if (event.target.checked) state.instagram.selectedIds.add(externalId);
+    else state.instagram.selectedIds.delete(externalId);
+    updateInstagramSelectionSummary();
+  });
   window.addEventListener("beforeunload", (event) => {
     if (!state.isDirty) return;
     event.preventDefault();
     event.returnValue = "";
   });
   document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !$("#instagramModal")?.hidden) {
+      closeInstagramModal();
+      return;
+    }
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
       event.preventDefault();
       saveContent();
