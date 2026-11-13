@@ -246,6 +246,8 @@ async function cleanProjectMedia(media, projectIndex, mediaIndex, projectTitle) 
     tags: cleanTags(media.tags),
     models: cleanModelNames(media.models),
     location: cleanLocation(media.location),
+    instagramUrl: cleanString(media.instagramUrl),
+    externalId: cleanString(media.externalId),
   };
 }
 
@@ -263,17 +265,30 @@ async function cleanProject(project, index) {
   const explicitCover = getDataUrlInfo(project.cover) ? "" : cleanString(project.cover);
   const cover = coverSaved?.src || coverFromInlineData?.src || explicitCover || media.find((item) => item.src)?.src || "";
 
+  // 관리자에서 고른 공개 상태와 인스타그램 출처 정보는 저장 단계에서 사라지면 안 된다.
+  // (사라지면 가져온 프로젝트가 검토 전에 공개되거나 원본 게시물 링크를 잃는다.)
+  const status = cleanString(project.status).toLowerCase();
+  const source = cleanString(project.source);
+  const externalId = cleanString(project.externalId);
+  const instagramUrl = cleanString(project.instagramUrl);
+  const sourcePublishedAt = cleanString(project.sourcePublishedAt);
+
   return {
     id: cleanString(project.id) || `${slugify(title)}-${Date.now()}-${index}`,
     title,
     subtitle: cleanString(project.subtitle),
     description: cleanString(project.description),
     category: cleanString(project.category, "Portrait Project") || "Portrait Project",
+    ...(["published", "draft", "private", "featured"].includes(status) ? { status } : {}),
     tags: cleanTags(project.tags),
     models: cleanModelNames(project.models),
     location: cleanLocation(project.location),
     cover,
     media,
+    ...(source ? { source } : {}),
+    ...(externalId ? { externalId } : {}),
+    ...(instagramUrl ? { instagramUrl } : {}),
+    ...(sourcePublishedAt ? { sourcePublishedAt } : {}),
   };
 }
 

@@ -68,6 +68,12 @@ function unique(values = []) {
   return Array.from(new Set(values.map((value) => String(value || "").trim()).filter(Boolean)));
 }
 
+/** 관리자에서 '임시저장/비공개'로 둔 프로젝트는 공개 사이트에 내보내지 않는다. */
+function isPublicProject(project = {}) {
+  const status = String(project?.status || "published").toLowerCase();
+  return status === "published" || status === "featured" || status === "";
+}
+
 function sceneLabel(tags = []) {
   const labels = [
     ["웨딩무드", "웨딩 무드"],
@@ -183,11 +189,22 @@ export async function loadMergedPortfolio(fallbackContent) {
   const base = staticResult.status === "fulfilled" ? staticResult.value : fallbackContent;
   const syncedInstagramProjects = instagramResult.status === "fulfilled" ? instagramResult.value : [];
   const manualProjects = manualResult.status === "fulfilled" ? manualResult.value : [];
-  const staticProjects = Array.isArray(base.projects) ? base.projects : [];
-  const instagramProjects = syncedInstagramProjects.length
-    ? syncedInstagramProjects
-    : buildScreenshotGridProjects(staticProjects);
-  const cleanedStaticProjects = instagramProjects.length
+  const staticProjects = (Array.isArray(base.projects) ? base.projects : []).filter(isPublicProject);
+
+  // 관리자에서 프로젝트로 '가져온' 인스타 게시물은 자동 피드 그리드에서 빼서
+  // 같은 사진이 두 번(피드 카드 + 프로젝트) 보이지 않도록 한다.
+  const promotedIds = new Set(
+    staticProjects
+      .filter((project) => String(project?.source || "") === "instagram" && project?.externalId)
+      .map((project) => String(project.externalId)),
+  );
+  const hasFeed = syncedInstagramProjects.length > 0;
+  const remainingFeedProjects = syncedInstagramProjects.filter(
+    (project) => !project?.externalId || !promotedIds.has(String(project.externalId)),
+  );
+  // 피드 자체가 비어 있을 때만 예전 스크린샷 아카이브 그리드로 대체한다.
+  const instagramProjects = hasFeed ? remainingFeedProjects : buildScreenshotGridProjects(staticProjects);
+  const cleanedStaticProjects = hasFeed
     ? staticProjects.filter((project) => !/archive|아카이브/i.test(`${project?.title || ""} ${project?.category || ""}`))
     : staticProjects;
 

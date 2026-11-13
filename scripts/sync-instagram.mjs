@@ -12,17 +12,38 @@ const accountId = String(process.env.INSTAGRAM_ACCOUNT_ID || "").trim();
 const baseUrl = String(process.env.INSTAGRAM_API_BASE_URL || "https://graph.instagram.com").replace(/\/+$/, "");
 const syncLimit = Math.min(100, Math.max(1, Number(process.env.INSTAGRAM_SYNC_LIMIT || 60)));
 
+// 다운로드 폴더가 없으면 아래 스테이징/다운로드 단계가 실패하므로 스크립트 시작 시점에 보장한다.
+await mkdir(mediaRoot, { recursive: true });
+
 const statusPath = path.join(root, "public", "portfolio", "instagram-status.json");
+
+function sanitizeDetail(value = "") {
+  return String(value || "")
+    .replace(/access_token=[^&\s]+/gi, "access_token=***")
+    .slice(0, 200);
+}
+
 async function writeStatus(status, error = "", count = null) {
   let previous = {};
   try { previous = JSON.parse(await readFile(outputPath, "utf8")); } catch {}
   await mkdir(path.dirname(statusPath), { recursive: true });
-  await writeFile(statusPath, JSON.stringify({ status, attemptedAt: new Date().toISOString(), lastSuccessAt: previous.updatedAt || null, postCount: count ?? previous.projects?.length ?? 0, error }, null, 2) + "\n");
+  await writeFile(statusPath, JSON.stringify({ status, attemptedAt: new Date().toISOString(), lastSuccessAt: previous.updatedAt || null, postCount: count ?? previous.projects?.length ?? 0, error: sanitizeDetail(error) }, null, 2) + "\n");
 }
+
+// 토큰이 아직 없을 때는 6시간마다 실패 메일을 보내는 대신, 상태 파일에 안내만 남기고 정상 종료한다.
 if (!token) {
-  await writeStatus("error", "Instagram 인증 설정이 없습니다. 관리자에서 계정 연결을 확인해주세요.");
-  console.error("Instagram sync failed: INSTAGRAM_ACCESS_TOKEN is not configured.");
-  process.exit(1);
+  const message = "인스타그램 액세스 토큰이 설정되지 않았습니다. GitHub 저장소 Settings → Secrets and variables → Actions 에 INSTAGRAM_ACCESS_TOKEN 을 등록하면 자동 동기화가 시작됩니다.";
+  let previousStatus = null;
+  try { previousStatus = JSON.parse(await readFile(statusPath, "utf8")); } catch {}
+  // 이미 같은 안내를 기록해 두었다면 파일을 다시 쓰지 않는다. (6시간마다 의미 없는 커밋이 쌓이는 것을 막는다)
+  if (previousStatus?.status === "unconfigured" && previousStatus?.error === message) {
+    console.log("::notice title=Instagram sync skipped::INSTAGRAM_ACCESS_TOKEN 이 아직 없어 이번 실행은 건너뜁니다(변경 없음).");
+    process.exit(0);
+  }
+  await writeStatus("unconfigured", message);
+  console.log(`::notice title=Instagram sync skipped::${message}`);
+  console.warn("Instagram sync skipped: INSTAGRAM_ACCESS_TOKEN is not configured.");
+  process.exit(0);
 }
 
 function escapeFilePart(value) {
@@ -208,8 +229,9 @@ await writeFile(outputPath + ".tmp", `${JSON.stringify({ updatedAt: new Date().t
 await rename(outputPath + ".tmp", outputPath);
 await writeStatus("success", "", projects.length);
 console.log(`Instagram sync complete: ${projects.length} posts.`);
-} catch {
-  await writeStatus("error", "Instagram 동기화 실패: 인증 만료·권한·네트워크 상태를 확인해주세요. 마지막 성공 데이터는 유지됩니다.");
-  console.error("Instagram sync failed. Check credentials, API permissions, and network. Previous feed retained.");
+} catch (error) {
+  const detail = sanitizeDetail(error?.message || error || "");
+  await writeStatus("error", `Instagram 동기화 실패: 인증 만료·권한·네트워크 상태를 확인해주세요. 마지막 성공 데이터는 유지됩니다.${detail ? ` (${detail})` : ""}`);
+  console.error(`Instagram sync failed. Check credentials, API permissions, and network. Previous feed retained.${detail ? ` Detail: ${detail}` : ""}`);
   process.exitCode = 1;
 }

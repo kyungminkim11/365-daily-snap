@@ -502,3 +502,311 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── 인스타그램에서 가져오기 ─────────────────────────────── */
+
+.instagram-import-box {
+  margin-top: 14px;
+  border: 1px solid rgba(29, 27, 24, 0.1);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(165, 106, 67, 0.08));
+  padding: 14px;
+}
+
+.instagram-import-box h3 {
+  margin-bottom: 8px;
+}
+
+.instagram-import-box > p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.instagram-import-box .action-row {
+  margin-bottom: 10px;
+}
+
+.instagram-feed-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.project-source-line {
+  margin: 0 0 2px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.project-source-line a {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.project-source-line[hidden] {
+  display: none;
+}
+
+.ghost-button.danger-ghost {
+  border-color: rgba(157, 62, 49, 0.34);
+  color: var(--danger);
+}
+
+.ghost-button.danger-ghost:hover {
+  background: rgba(157, 62, 49, 0.08);
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+.studio-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.studio-modal[hidden] {
+  display: none;
+}
+
+.studio-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(29, 27, 24, 0.46);
+  backdrop-filter: blur(3px);
+}
+
+.studio-modal-panel {
+  position: relative;
+  display: flex;
+  max-height: min(90vh, 940px);
+  width: min(1120px, 100%);
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--panel);
+  box-shadow: 0 30px 80px rgba(29, 27, 24, 0.28);
+  padding: 18px;
+}
+
+.studio-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.studio-modal-head h2 {
+  margin: 0;
+}
+
+.studio-modal-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.studio-modal-toolbar input[type="search"] {
+  flex: 1 1 220px;
+}
+
+.studio-modal-toolbar .inline-field {
+  flex: 0 1 200px;
+}
+
+.check-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.check-field input {
+  width: auto;
+  min-height: 0;
+  accent-color: var(--ink);
+}
+
+.instagram-feed-grid {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 12px;
+  overflow-y: auto;
+  padding: 2px;
+  overscroll-behavior: contain;
+}
+
+.instagram-empty {
+  margin: 0;
+  border: 1px dashed rgba(29, 27, 24, 0.18);
+  border-radius: 18px;
+  color: var(--muted);
+  padding: 26px;
+  text-align: center;
+  grid-column: 1 / -1;
+}
+
+.instagram-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.instagram-card.is-imported {
+  opacity: 0.72;
+}
+
+.instagram-card-check {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.92);
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 820;
+  box-shadow: 0 6px 16px rgba(29, 27, 24, 0.12);
+}
+
+.instagram-card-check input {
+  width: auto;
+  min-height: 0;
+  accent-color: var(--ink);
+}
+
+.instagram-card-thumb {
+  display: grid;
+  aspect-ratio: 4 / 5;
+  place-items: center;
+  background: rgba(29, 27, 24, 0.06);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.instagram-card-thumb img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.instagram-card-body {
+  display: grid;
+  gap: 6px;
+  padding: 11px;
+}
+
+.instagram-card-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.instagram-card-title {
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.instagram-card-caption {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+  min-height: 3em;
+}
+
+.instagram-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.instagram-card-actions a {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.instagram-card-actions a:hover {
+  color: var(--ink);
+}
+
+.instagram-card-actions .secondary-button,
+.instagram-card-actions .ghost-button {
+  min-height: 34px;
+  padding: 7px 11px;
+  font-size: 12px;
+}
+
+.instagram-card-actions button[disabled] {
+  cursor: default;
+  opacity: 0.66;
+}
+
+.studio-modal-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.studio-modal-foot > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 720px) {
+  .studio-modal {
+    padding: 8px;
+  }
+
+  .studio-modal-panel {
+    max-height: 94vh;
+    padding: 14px;
+  }
+
+  .studio-modal-toolbar,
+  .studio-modal-foot {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .instagram-feed-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
